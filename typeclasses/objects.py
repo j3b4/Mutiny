@@ -158,3 +158,16 @@ class Object(DefaultObject):
 
      """
     pass
+
+class Heavy(DefaultObject):
+    "Heavy Object"
+    def at_object_creation(self):
+        "Called whenever a new object is created"
+        # locks the object down by default
+        self.locks.add("get:false()")
+        # the default "get" command looks for this Attribute in order
+        # to return a customized error message (we just happen to know
+        # this, you'd have to look a the code of the 'get' command to 
+        # find out).
+        self.db.get_err_msg = "This is too heavy to pick up."
+
