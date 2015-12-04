@@ -17,6 +17,8 @@ own cmdsets by inheriting from them or directly from `evennia.CmdSet`.
 from evennia import default_cmds
 from evennia import CmdSet
 from commands import command
+# from commands.command import CmdEcho
+# commented the above since I think command already includes it
 
 class CharacterCmdSet(default_cmds.CharacterCmdSet):
     """
@@ -39,6 +41,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(command.CmdCreateNPC())
         self.add(command.CmdEditNPC())
         self.add(command.CmdNPC())
+        self.add(command.CmdEcho())  # 
 
 
 class PlayerCmdSet(default_cmds.PlayerCmdSet):

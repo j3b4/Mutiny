@@ -360,3 +360,29 @@ class CmdNPC(Command):
         # send the command order
         npc.execute_cmd(self.cmdname, sessid=self.caller.sessid)
         caller.msg("You told %s to do '%s'." % (npc.key, self.cmdname))
+
+
+from evennia import default_cmds    # imported above - this is a reminder
+class CmdEcho(default_cmds.MuxCommand):
+    """
+    Simple command example
+
+    Usage:
+        echo <text>
+
+    This command simply echoes text back to the caller.
+    """
+
+    key = "echo"
+    aliases = ["frimble"]   # FYI "frimble" is a similar command on discworld
+                            # mud
+    locks = "cmd:all()"
+    help_category = "Experimental"
+
+    def func(self):
+        "This actually does things"
+        if not self.args:
+            self.caller.msg("You didn't enter anything!")
+        else:
+            self.caller.msg("You hear an echo: '%s'" % self.args)
+# last line
