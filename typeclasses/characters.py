@@ -38,16 +38,19 @@ class Character(DefaultCharacter):
         self.db.power = 1
         self.db.combat_score = 1
 
+        # add the Portage Command Sets
+        self.cmdset.add("commands.portcmdsets")
+
     def return_appearance(self, looker):
         """
-        The return from this method is what looker sees when 
+        The return from this method is what looker sees when
         looking at this object.
         """
         text = super(Character, self).return_appearance(looker)
         cscore = " (combat score: %s)" % self.db.combat_score
         if "\n" in text:
             # text is multi-line, add score after first line.
-            first_line, rest =  text.split("\n", 1)
+            first_line, rest = text.split("\n", 1)
             text = first_line + cscore + "\n" + rest
         else:
             # text is only one line; add score to the end
