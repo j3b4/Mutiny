@@ -28,3 +28,13 @@ lock functions from evennia.locks.lockfuncs.
 #    """
 #    print "%s tried to access %s. Access denied." % (accessing_obj, accessed_obj)
 #    return False
+
+def cmdinside(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage: cmdinside()
+
+    Used to lock commands and only allows access if the command
+    is defined on an object which accessing_obj is inside of.
+    """
+    
+    return accessed_obj.obj == accessing_obj.location
