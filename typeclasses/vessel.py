@@ -65,15 +65,16 @@ class VesselObject(DefaultObject):
         self.location.msg_contents(string % (name, loc_name, src_name),
                 exclude=self)
 
-    def at_desc(self, looker):
-        # trying to see what this does even.
-        if not looker.location == self:
-            return
-        self.msg_contents("You are inside %s, merrily merrily!." % self.name)
+    def at_after_move(self, source_location):
+        """
+        For acharacters, this runs the look command somehow
+        I want to look at the room the vessel moves into and
+        announce the view to the contents of the room.
 
-
-
-
+        """
+        self.msg_contents(self.at_look(self.location))
+        # amazing this works perfectly!
+        
 # end of overload attempt.
 
     def get_underway(self):
@@ -101,9 +102,8 @@ class VesselObject(DefaultObject):
             roomref = self.db.rooms[idx]
             room = search_object(roomref)[0]
             self.move_to(room)
-            self.msg_contents(
-                "The %s is cruising to %s." % (self.key, room.name, )
-                )
+            # self.msg_contents( "The %s is cruising to %s." % (self.key, room.name, ))
+            # above line redundant with look through on after_move
 
 
 
