@@ -385,4 +385,7 @@ class CmdEcho(default_cmds.MuxCommand):
             self.caller.msg("You didn't enter anything!")
         else:
             self.caller.msg("You hear an echo: '%s'" % self.args)
+
+
+#class 
 # last line

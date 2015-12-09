@@ -1,6 +1,7 @@
 # Commands for Ships and Boats etc.
 
 from evennia import Command, CmdSet
+# from evennia import default_cmds
 
 """
 TODO: Commands for navigation.  Set Course. 
@@ -55,11 +56,43 @@ class CmdDebark(Command):
         self.caller.move_to(parent)
 
 
+class CmdLookout(Command):
+    # Trying to overload the look command so that it behaves
+    # differently when called by a character on a vessel.
+    """
+    Look around yourself while on board a vessel.
+
+    Usage: look
+
+    This command is available when you are on a vessel. It will
+    describe the boat or boat-section you are in as well as the area
+    the boat is presently passing through.
+    """
+    key = "lookout"
+    aliases = ["lo","ken","conn", ]
+
+    def func(self):
+        # if the looker is not in the boat then return a default look
+        # if the looker is inside the boat then add value and return
+        vessel = self.obj
+        outside = vessel.location
+        if self.caller.location == vessel:
+            self.msg("You are on a %s.\nOutside you see:\n" % vessel.key)
+            self.msg(vessel.at_look(vessel.location))
+        elif self.caller.location == outside:
+            self.msg("You are not on board trying to lookout")
+        else:
+            self.msg("Something went wrong with the Lookout Command!")
+
+
+
+
 class CmdSetVessel(CmdSet):
     "Add these commands to the vessel when it is created."
 
     def at_cmdset_creation(self):
         self.add(CmdBoard())
         self.add(CmdDebark())
+        self.add(CmdLookout())
 
 # last line
