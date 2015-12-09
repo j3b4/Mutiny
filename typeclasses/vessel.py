@@ -2,7 +2,7 @@
 
 from evennia import DefaultObject, search_object
 from commands.vessel import CmdSetVessel
-from vesselscript import HoveToScript
+# from vesselscript import HoveToScript
 
 
 class VesselObject(DefaultObject):
@@ -19,7 +19,7 @@ class VesselObject(DefaultObject):
         # #4 Eastern Shore; #5 Inlet Head;  #8 West Beach
         self.db.rooms = ["#4", "#5", "#8", ]
         # NEXT TODO: Work on navigation
-        self.scripts.add(HoveToScript)
+        # self.scripts.add(HoveToScript)
 
 
 # attempt full overload of announce_move_from 
@@ -102,7 +102,6 @@ class VesselObject(DefaultObject):
             roomref = self.db.rooms[idx]
             room = search_object(roomref)[0]
             self.move_to(room)
-            # self.msg_contents( "The %s is cruising to %s." % (self.key, room.name, ))
             # above line redundant with look through on after_move
 
 

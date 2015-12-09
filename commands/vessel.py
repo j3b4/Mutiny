@@ -84,6 +84,46 @@ class CmdLookout(Command):
         else:
             self.msg("Something went wrong with the Lookout Command!")
 
+class CmdSteer(Command):
+    """
+    Steer the boat in a direction. 
+    In a coastal room, this will make the vessel move through any available
+    exit which matches the direction named.
+
+    Usage: steer <direction>
+    """
+
+    key = "steer"
+    aliases = ["pilot", "pi", "head", ]
+    help_category = "Mutinous Commands"
+    # arg_regex = r"\s|$"
+
+    def func(self):
+        """
+        Steering the vessel
+        """
+        vessel = self.obj
+        outside = vessel.location
+        exits = outside.exits
+        if self.caller.location == outside:
+            self.msg("You need to be on board to %s" % self.key)
+            return
+
+        if not self.args:
+            self.msg("Usage: steer <direction>")
+            return
+        else:
+            direction = self.args
+            self.msg("You try to move %s." % direction)
+            self.msg("Available exits include: %s." % exits)
+            
+            if not direction in exits:
+               self.msg("%s is not navigable." % direction)
+               return
+            vessel.move_to(direction.destination)
+
+
+
 
 
 
@@ -94,5 +134,6 @@ class CmdSetVessel(CmdSet):
         self.add(CmdBoard())
         self.add(CmdDebark())
         self.add(CmdLookout())
+        self.add(CmdSteer())
 
 # last line

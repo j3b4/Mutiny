@@ -18,7 +18,7 @@ class HoveToScript(DefaultScript):
     def at_script_creation(self):
         self.key = "hove_to"
         # no real idea what any of the next properties really mean
-        self.interval = 10
+        self.interval = 60
         # sets a delay property of 30 secs on this script?
         self.persistent = True
         # not sure what this is.
@@ -39,7 +39,7 @@ class UnderwayScript(DefaultScript):
 
     def at_script_creation(self):
         self.key = "underway"
-        self.interval = 6
+        self.interval = 60
         self.persistent = True
 
     def is_valid(self):
