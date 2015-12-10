@@ -77,7 +77,7 @@ class CmdLookout(Command):
         vessel = self.obj
         outside = vessel.location
         if self.caller.location == vessel:
-            self.msg("You are on a %s.\nOutside you see:\n" % vessel.key)
+            self.msg("{cYou are on a %s. Outside you see:" % vessel.key)
             self.msg(vessel.at_look(vessel.location))
         elif self.caller.location == outside:
             self.msg("You are not on board trying to lookout")
@@ -98,6 +98,11 @@ class CmdSteer(Command):
     help_category = "Mutinous Commands"
     # arg_regex = r"\s|$"
 
+    def parse(self):
+        "Get the direction to use as a command for the ship"
+        #direction = None
+        self.direction = self.args
+
     def func(self):
         """
         Steering the vessel
@@ -108,24 +113,13 @@ class CmdSteer(Command):
         if self.caller.location == outside:
             self.msg("You need to be on board to %s" % self.key)
             return
-
-        if not self.args:
+        if not self.direction:
             self.msg("Usage: steer <direction>")
             return
         else:
-            direction = self.args
-            self.msg("You try to move %s." % direction)
+            self.msg("You try to move %r." % self.direction)
             self.msg("Available exits include: %s." % exits)
-            
-            if not direction in exits:
-               self.msg("%s is not navigable." % direction)
-               return
-            vessel.move_to(direction.destination)
-
-
-
-
-
+            vessel.execute_cmd(self.direction, sessid=self.caller.sessid) 
 
 class CmdSetVessel(CmdSet):
     "Add these commands to the vessel when it is created."
