@@ -7,32 +7,10 @@ I hope.
 
 from evennia import CmdSet, Command, DefaultRoom
 
-# Coastal Rooms
-class CoastalRoom(DefaultRoom):
-    """
-    Coastal rooms need to be defined with co-ordinates so that they
-    can pass that to vessels that leave them for the sea room giving the 
-    vessel its starting position at Sea.
-
-    Finally the Sea will need to know where everyroom is so as to deliver 
-    vessels to the right coastal room as an exit.
-
-    Also I'd like Coastal rooms to have a tag that makes them passable 
-    by vessels. Default rooms can be presumed to be landrooms and not 
-    so passable.  Rivers would make an interesting subset of this.
-    """
-    def at_object_creation(self):
-        self.db.coastline = ""
-        self.db.lat = None
-        self.db.lon = None
-
-    def fix_location(self):
-        return self.db.lon, self.db.lat
-
 
 # Coastal Commands
 
-class FixCmd(Command):
+class CmdFix(Command):
     """
     This returns the coordinates of the caller which should be set by coastal
     rooms when any object enters the room.
@@ -40,7 +18,7 @@ class FixCmd(Command):
     pass
 
 
-class SetPosition(Command):
+class CmdSetPosition(Command):
     """
     Set the global position of a room.
 
@@ -64,14 +42,69 @@ class SetPosition(Command):
     def parse(self):
         "Parse room and position arguments"
         args = self.args
-        room, lon, lat = None, None, None
+        room, position = None, None
         # or should I start with room, position and then parse position into
         # x and y later?
         if "=" in args:
             # attempt to set the position
             # must be comma separated digits
-            room, 
+            room, position = [part.strip() for part in args.rsplit("=", )]
+            self.position = tuple(position)
+            # is this allowed? Well no syntax error!
+        self.room = room
 
+    def func(self):
+        "display position or set it."
+
+        caller = self.caller
+        # position = self.position
+
+        if not self.args or not self.room:
+            # get current room. Hmmm. (review 'look' for iseas)
+            target = caller.location
+            if not target:
+                caller.msg(
+                    "You need to be in a room to use this command!"
+                    )
+                return
+        else: # get target from the supplied argument
+            target = caller.search(self.room)
+            if not target:
+                return
+        # at this point we have a target 
+        if not self.position: # nothing to set just display rooms postition
+            caller.msg("Position of '%s': %s" % target, target.position)
+        else: # room target and position both supplied. Time to display.
+            target.position = self.position
+            caller.msg("New position of '%s': %s" %target, self.position)
+
+class CoastalCmdSet(CmdSet):
+    "This adds the coastal commands to be attached to coastal rooms"
+    key = "Coastal Commands"
+    priority = 1
+    def at_cmdset_creation(self):
+        self.add(CmdSetPosition())
+        self.add(CmdFix())
+
+# Coastal Rooms
+class CoastalRoom(DefaultRoom):
+    """
+    Coastal rooms need to be defined with co-ordinates so that they
+    can pass that to vessels that leave them for the sea room giving the 
+    vessel its starting position at Sea.
+
+    Finally the Sea will need to know where everyroom is so as to deliver 
+    vessels to the right coastal room as an exit.
+
+    Also I'd like Coastal rooms to have a tag that makes them passable 
+    by vessels. Default rooms can be presumed to be landrooms and not 
+    so passable.  Rivers would make an interesting subset of this.
+    """
+    def at_object_creation(self):
+        self.db.coastline = ""
+        self.db.position = (None, None)
+        # add the command set
+        self.cmdset.add_default(CoastalCmdSet)
 
 
 
