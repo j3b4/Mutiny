@@ -109,7 +109,7 @@ class CmdSteer(Command):
         """
         vessel = self.obj
         outside = vessel.location
-        exits = outside.exits
+        #exits = outside.exits
         if self.caller.location == outside:
             self.msg("You need to be on board to %s" % self.key)
             return
@@ -117,9 +117,10 @@ class CmdSteer(Command):
             self.msg("Usage: steer <direction>")
             return
         else:
-            self.msg("You try to move %r." % self.direction)
-            self.msg("Available exits include: %s." % exits)
+            # self.msg("You try to move %r." % self.direction)
+            # self.msg("Available exits include: %s." % exits)
             vessel.execute_cmd(self.direction, sessid=self.caller.sessid) 
+            # This works but its a terrible idea. Cannot stand
 
 class CmdSetVessel(CmdSet):
     "Add these commands to the vessel when it is created."

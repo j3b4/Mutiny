@@ -15,8 +15,26 @@ class CmdFix(Command):
     This returns the coordinates of the caller which should be set by coastal
     rooms when any object enters the room.
     """
+    key = "+fix"
+    help_category = "Mutinous Commands"
+
     pass
 
+class CmdStandOff(Command):
+    """
+    To move away from shore.
+
+    Usage:
+        standoff
+        steer offshore
+    """
+    key = "standoff"
+    # aliases = ["offshore", "out to sea"]
+    help_category = "Mutinous Commands"
+
+    def func(self):
+        "Move the caller to the sea room"
+    pass
 
 class CmdSetPosition(Command):
     """
@@ -93,6 +111,7 @@ class CoastalCmdSet(CmdSet):
     def at_cmdset_creation(self):
         self.add(CmdSetPosition())
         self.add(CmdFix())
+        self.add(CmdStandOff)
 
 # Coastal Rooms
 class CoastalRoom(DefaultRoom):
@@ -114,10 +133,29 @@ class CoastalRoom(DefaultRoom):
         # add the command set
         self.cmdset.add_default(CoastalCmdSet)
 
+    def at_object_receive(self, new_arrival, source_location):
+        """
+        We need to give the arrival our coordinates when then arrive.
+        Set the new arrivals position to match the rooms
+        """
+
+        position = self.db.position
+
+        #debugging messages
+        self.msg_contents(
+                "%s arrives in this room %s" 
+                % (new_arrival.name, position))
+        new_arrival.msg_contents(
+                "%s arrives in this room %s" 
+                % (new_arrival.name, position))
+        # set position on new arrival
+        new_arrival.db.position = position
+
+        pass
 
 
 """
-First costal command will be to go to sea. 
+First coastal command will be to go to sea. 
 Board and Debark are connected to vessels. 
 Not sure what other commands will be coastal only 
 until I implement a higher level of coastal navigation.
@@ -125,7 +163,68 @@ until I implement a higher level of coastal navigation.
 later things like anchor, beach, dock, launch etc...
 """
 
+
+
 # The Sea room
+# Sea Room Commands
+
+class CmdNavTo(Command):
+    """
+    This is a magic navigation command that simply sets the vessels
+    coordinates. Could just as reasonably be attached to the vessel.
+
+    for testing might be redundand as long as user can use +setpos
+    """
+    pass
+
+class CmdLandFall(Command):
+    """
+    Make Landfall - to display available exit to a coastal room and
+    or move the caller to the coastal room that matches its current
+    position.
+
+    Usage:
+        landfall
+    """
+    key = "landfall"
+    alisases = ["lf",]
+    help_category = "Mutinous Commands"
+
+    def func(self):
+        sailor = self.caller
+        sea = sailor.location
+        position = sailor.db.position
+        globe = sea.db.globe
+
+        if position in globe:
+            coast_num = globe[position]
+            # need to get the object 
+            coast_room = self.caller.search(coast_num)
+            sailor.msg("You would land at %s(%s)" % 
+                    (coast_room.name, coast_num))
+
+        else:
+            sailor.msg("Nothing here but water, everywhere.")
+
+
+    # get callers position
+
+    # look position up in globe dictionary
+
+    # move caller there.
+    pass
+
+
+
+class NavCmdSet(CmdSet):
+    "This adds the Navigation commands to be attached to sea rooms"
+    key = "Navigation Commands"
+    priority = 1
+    def at_cmdset_creation(self):
+        self.add(CmdSetPosition())
+        self.add(CmdLandFall())
+        self.add(CmdFix())
+
 class SeaRoom(DefaultRoom):
     """
     If this even needs to be a room. Oh yes b/c it has no location itself.
@@ -138,17 +237,22 @@ class SeaRoom(DefaultRoom):
     room. In the future I'd want newly created coastal rooms to automatically
     report their coordinates to a db somewhere.
     """
-    pass
+    def at_object_creation(self):
+        "hmmm"
+        self.db.globe = {'8,4':'#4', '6,4':'#8','7,3':'#5'}
+        # the globe is a dictionary of coordinates and room references
+        # right now hard coded with three locations
+        self.cmdset.add_default(CoastalCmdSet)
+        self.cmdset.add_default(NavCmdSet)
 
-# Navigate Commands
-class CmdNav(Command):
-    """
-    Ideally I would overload the "steer" command here to change its meaning
-    slightly.  However for now I will make a seperate command "navigate"
+    def at_object_receive(self, new_arrival, source_location):
+        "Note where the arrival came from. Maybe add to db?"
+        position = new_arrival.db.position
+        self.msg_contents( "%s arrives at Sea from %s(%s)" 
+                % (new_arrival.name, source_location, position))
+        new_arrival.msg_contents( "%s arrives at Sea from %s(%s)" 
+                % (new_arrival.name, source_location, position))
+        #
 
-    A useful debuggin cmd would be "fix" that could return an accurate set 
-    of coordinates to allow accurate navigation. 
 
-    """
-    pass
 
