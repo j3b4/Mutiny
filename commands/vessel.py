@@ -96,7 +96,7 @@ class CmdSteer(Command):
     """
 
     key = "steer"
-    aliases = ["pilot", "pi", "head", ]
+    aliases = ["pilot", "pi", ]
     help_category = "Mutinous Commands"
     # arg_regex = r"\s|$"
 

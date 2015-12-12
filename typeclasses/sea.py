@@ -169,24 +169,69 @@ later things like anchor, beach, dock, launch etc...
 
 # The Sea room
 # Sea Room Commands
+# import numpy
 
-class CmdNavTo(Command):
+class CmdHead(Command):
     """
-    This is a magic navigation command that simply sets the vessels
-    coordinates. Could just as reasonably be attached to the vessel.
+    Use this to steer on a heading while at sea
 
-    for testing might be redundand as long as user can use +setpos
+    Usage:
+        head <direction>
+
+    Examples:
+        head s
+        head nw
     """
-    pass
+    key = "head"
+    locks = "cmd:all()"
+    help_category = "Mutinous Commands"
+
+    def func (self):
+        # get the direction
+        vessel = self.caller
+        heading = self.args
+
+        # get position
+        position = vessel.db.position
+        vessel.msg_contents("start position =  %s" % position)
+
+        #parse
+        valid_headings = ("n","e","s","w",)
+        vessel.msg_contents("Args %s" % heading)
+        if heading not in valid_headings:
+            # stop if we dont have a cardinal direction
+            vessel.msg_contents("Valid headings: %s" % str(valid_headings))
+            return
+
+        # translate direction into a vector
+        compass = { 'n':'0,-1', 
+                    'e':'1,0', 
+                    's':'0,1',
+                    'w':'-1,0',
+                    }
+        vector = compass[heading]
+        # add vector to position
+
+        vessel.msg_contents("vector =  %s" % vector)
+        position = map(int, position.split(","))
+        vector =  map(int, vector.split(","))
+        position = [(position[0] + vector[0]), (position[1] + vector[1])]
+                
+        # announce results
+        position = ','.join(str(x) for x in position)
+        vessel.msg_contents("New position = %s" % position)
+        vessel.db.position = position
 
 class CmdLandFall(Command):
     """
     Make Landfall - to display available exit to a coastal room and
     or move the caller to the coastal room that matches its current
     position.
+    
+    Assume the use of the command from within a vessel
 
     Usage:
-        landfall
+        steer landfall
     """
     key = "landfall"
     alisases = ["lf",]
@@ -194,31 +239,22 @@ class CmdLandFall(Command):
 
     def func(self):
         # this all becomes nonsense when sailor is in a vessel
-        sailor = self.caller
-        sea = sailor.location
-        position = sailor.db.position
+        vessel = self.caller
+        sea = vessel.location
+        position = vessel.db.position
         globe = sea.db.globe
 
         if position in globe:
             coast_num = globe[position]
             # need to get the object 
             coast_room = self.caller.search(coast_num)
-            sailor.msg_contents("You will land at %s(%s)" % 
+            vessel.msg_contents("You will land at %s(%s)" % 
                     (coast_room.name, coast_num))
-            sailor.move_to(coast_room)
+            vessel.move_to(coast_room)
             #could it be that east?
 
         else:
-            sailor.msg_contents("Nothing here but water, everywhere.")
-
-
-    # get callers position
-
-    # look position up in globe dictionary
-
-    # move caller there.
-    pass
-
+            vessel.msg_contents("Nothing here but water, everywhere.")
 
 
 class NavCmdSet(CmdSet):
@@ -229,6 +265,7 @@ class NavCmdSet(CmdSet):
         self.add(CmdSetPosition())
         self.add(CmdLandFall())
         self.add(CmdFix())
+        self.add(CmdHead())
 
 class SeaRoom(DefaultRoom):
     """
