@@ -73,6 +73,8 @@ class CmdSetPosition(Command):
             if not re.match(r'\d+,\d+', position):
                 self.caller.msg( "Position must be entered in the form x,y.")
                 return
+        else:
+            room = args
         self.room = room
         self.position = position
 
@@ -191,6 +193,7 @@ class CmdLandFall(Command):
     help_category = "Mutinous Commands"
 
     def func(self):
+        # this all becomes nonsense when sailor is in a vessel
         sailor = self.caller
         sea = sailor.location
         position = sailor.db.position
@@ -200,11 +203,13 @@ class CmdLandFall(Command):
             coast_num = globe[position]
             # need to get the object 
             coast_room = self.caller.search(coast_num)
-            sailor.msg("You would land at %s(%s)" % 
+            sailor.msg_contents("You will land at %s(%s)" % 
                     (coast_room.name, coast_num))
+            sailor.move_to(coast_room)
+            #could it be that east?
 
         else:
-            sailor.msg("Nothing here but water, everywhere.")
+            sailor.msg_contents("Nothing here but water, everywhere.")
 
 
     # get callers position

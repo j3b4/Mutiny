@@ -1,6 +1,8 @@
 # Commands for Ships and Boats etc.
 
 from evennia import Command, CmdSet
+from typeclasses.sea import CmdSetPosition
+
 # from evennia import default_cmds
 
 """
@@ -125,10 +127,14 @@ class CmdSteer(Command):
 class CmdSetVessel(CmdSet):
     "Add these commands to the vessel when it is created."
 
+    key = "Vessel Commands"
+
     def at_cmdset_creation(self):
         self.add(CmdBoard())
         self.add(CmdDebark())
         self.add(CmdLookout())
         self.add(CmdSteer())
+        #okay this is tedious but we neet a cmd from my Sea module
+        self.add(CmdSetPosition())
 
 # last line
