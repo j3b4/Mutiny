@@ -4,7 +4,7 @@ The Ocean rooms, the custom coastal rooms types, navigation commands
 wind, currents and weather.  Whatever I can implement should go in here now
 I hope.
 """
-
+import re
 from evennia import CmdSet, Command, DefaultRoom
 
 
@@ -26,7 +26,7 @@ class CmdSetPosition(Command):
         +setposition [<room>] [= x,y]
 
     Examples:
-        +setposition Paris = 5,9
+        +setposition #4 = 5,9
         +setposition Paris    ---> displays Paris's coordinates: 5, 9
         +setposition          ---> displays position of current room
 
@@ -37,7 +37,7 @@ class CmdSetPosition(Command):
     key = "+setposition"
     aliases = ["+position", "+pos", "+setpos"]
     locks = "cmd:not perm(nonpcs)"
-    help_category = "Mutinous"
+    help_category = "Mutinous Commands"
 
     def parse(self):
         "Parse room and position arguments"
@@ -46,18 +46,23 @@ class CmdSetPosition(Command):
         # or should I start with room, position and then parse position into
         # x and y later?
         if "=" in args:
+            self.caller.msg("Trying to set something...")
             # attempt to set the position
             # must be comma separated digits
             room, position = [part.strip() for part in args.rsplit("=", )]
-            self.position = tuple(position)
-            # is this allowed? Well no syntax error!
+            # self.caller.msg("Input Room = %s" % room)
+            # self.caller.msg("Input pos = %s" % position)
+            if not re.match(r'\d+,\d+', position):
+                self.caller.msg( "Position must be entered in the form x,y.")
+                return
         self.room = room
+        self.position = position
 
     def func(self):
         "display position or set it."
 
         caller = self.caller
-        # position = self.position
+        position = self.position
 
         if not self.args or not self.room:
             # get current room. Hmmm. (review 'look' for iseas)
@@ -72,11 +77,14 @@ class CmdSetPosition(Command):
             if not target:
                 return
         # at this point we have a target 
-        if not self.position: # nothing to set just display rooms postition
-            caller.msg("Position of '%s': %s" % target, target.position)
+
+        if not position: # nothing to set just display rooms postition
+            caller.msg("Position of %s is %s" % (target.name, 
+                target.db.position))
         else: # room target and position both supplied. Time to display.
-            target.position = self.position
-            caller.msg("New position of '%s': %s" %target, self.position)
+            target.db.position = position
+            caller.msg("New position of %s is %s" % (target.name, 
+                    target.db.position))
 
 class CoastalCmdSet(CmdSet):
     "This adds the coastal commands to be attached to coastal rooms"
