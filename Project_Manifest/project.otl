@@ -25,7 +25,8 @@ Current Work Order
 		: 
 		[_] locked to "inside vessel"
 		
-
+	[_] default room
+	[_] coastal room
 Clean Up - REFACTORING for Sanity (et la santé    
 	Continue [SEA NAVIGATION](SEA NAVIGATION)**
 		overload "steer" 
