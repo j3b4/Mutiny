@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"s
+        "http://www.w3.org/TR/html4/strict.dtd">
+    <html><head><title>Current Work Order</title></head>
+<link href="nnnnnn.css" rel="stylesheet" type="text/css">
+<body>
+<div class="DocTitle">
+    <h1>Current Work Order</h1>
+    </div>
+    <div class="MainPage">
+<ol>
+<li  class="L1" >[_] Globe <ol>
+<ol>
+<p  class="P3" >a dictionary of tuples.
+probably an object/class containing the dictionary and an interface
+for editing and reviewing its contents.
+</p>
+<li  class="L3" >[_] create a "globe object" in world. <ol>
+<li  class="L4" >[_] learn how other typeclasses can access it </ol>
+<li  class="L3" >[_] Accessible by certain commands <ol>
+<li  class="L4" >[_] @dig <ol>
+<p  class="P5" >should update the globe with position for every new room
+probably manually. </p>
+</ol>
+<li  class="L4" >[_] @tunnel <ol>
+<p  class="P5" >tunnel is like @dig but will it be allowed to automatically
+choose positions?
+</p>
+<p  class="P5" >
+I doubt it because I don't think I'm prepared to make the
+globe actualy responsible for enforcing cartesian reality </p>
+</ol>
+<li  class="L4" >[_] move_to() <ol>
+<p  class="P5" >need to be able to look up positions in order to see where
+to move an object </p>
+</ol>
+<li  class="L4" >[_] CmdFix <ol>
+<p  class="P5" >a player/builder command to see current coordinates
+an ingame version of this </p>
+</ol>
+</ol>
+</ol>
+<li  class="L2" >[_] CmdSteer <ol>
+<p  class="P3" >
+</p>
+<li  class="L3" >[_] locked to "inside vessel" </ol>
+<li  class="L2" >[_] default room
+<li  class="L2" >[_] coastal room </ol>
+<li  class="L1" >Clean Up - REFACTORING for Sanity (et la santé <ol>
+<li  class="L2" >Continue <a href="SEA">NAVIGATION</a>(SEA NAVIGATION)** <ol>
+<li  class="L3" >overload "steer" <ol>
+<p  class="P4" >so that it sets the course and then begins to move over time...
+(see delayed execeution tut) so I should be able to "steer N"
+and then the ship will sail N, slowly updating position
+periodically. </p>
+</ol>
+<li  class="L3" >Announce upon sighting land OR <ol>
+<p  class="P4" >better yet, automatically "landfall" when entering a coastal
+coordinate.  that would stop me from blithely sailing inland. </p>
+</ol>
+</ol>
+<li  class="L2" >fix "look" on board so that it overloads "look" (refer to <ol>
+<ol>
+<p  class="P4" >tutorial bridge room world bridge room for example) </p>
+</ol>
+<li  class="L3" >default look on board should display the view outside ship plus just </ol>
+<li  class="L2" >the name of the ship room <ol>
+<ol>
+<li  class="L4" >with arguments you can look only inboard or only out to sea </ol>
+<li  class="L3" >store global position as a tuple of integers (or floats?) <ol>
+<li  class="L4" >Using my forced "setpos" command I input the position as a string. - just clean this up.
+<li  class="L4" >So also need to store position on objects as a tuple.
+<li  class="L4" >object contents should all automatically inherit position. <ol>
+<p  class="P5" >Ie. so that if a sailor jumps overboard at sea, they will end
+up in the sea rather than back in the room where they boarded
+or something. </p>
+</ol>
+<li  class="L4" >find out how to update the "globe" <ol>
+<p  class="P5" >(my dictionary of coastal positions) whenever building
+rooms.  on that note, add position property to ALL land and
+coastal rooms (but not ship rooms) </p>
+</ol>
+</ol>
+</ol>
+</ol>
+<li  class="L1" >Implement boats. <ol>
+<li  class="L2" >simple single-room vehicles <ol>
+<li  class="L3" >DONE: players can enter and steer the boat around other rooms </ol>
+<li  class="L2" >multi-roomed ships <ol>
+<li  class="L3" >main deck, quarter-deck, the masthead, the bilge, state room, ward </ol>
+<li  class="L2" >room, galley, gun deck etc... </ol>
+<li  class="L1" >Implement the Ocean <ol>
+<li  class="L2" ><strong>coastal waters</strong> (Right now they are justt standard rooms and the boat can go anywhere) <ol>
+<li  class="L3" >half land and half sea rooms. Characters can walk along the land part using land exits.
+<li  class="L3" >boats traverse water-exits
+<li  class="L3" >boats can transition from the coastal water to the high sea.
+<li  class="L3" >characters should not be able to without a boat </ol>
+</ol>
+<p  class="P1" ><strong>High Sea</strong>
+</p>
+<li  class="L1" >Implement Crew (npcs that sail or help you sail)
+<li  class="L1" >Future <ol>
+<li  class="L2" >Ship to ship combat
+<li  class="L2" >Naval organization and ranking system
+<li  class="L2" >Economy
+<li  class="L2" >WIND & WEATHER at sea, on the coast, and inland </ol>
+</ol>
+</div>
+<div class="Footer">
+<hr>
+
+<br>
+project.otl&nbsp&nbsp 2015/12/14 22:14
+</div>
+</body></html>
