@@ -76,6 +76,17 @@ class VesselObject(DefaultObject):
         # amazing this works perfectly!
         
 # end of overload attempt.
+    def return_view(self):
+        """
+        This should let the view outsite become part of the view
+        inside a vessel object.
+
+        If the vessel has "below decks" or "cabin" type rooms. This would have
+        to be restricted.
+        """
+        view = self.at_look(self.location)
+        return view
+
 
     def get_underway(self):
         self.db.underway = True

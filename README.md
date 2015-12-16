@@ -5,6 +5,10 @@ game summed up with the Hollywood style pitch: Horatio Hornblower meets Dwarf
 Fortress.  If that means something to you, you might be interested in this
 project.
 
+# Project Management
+I will try to keep all project management in the Manifest Folder.  I use vim
+outliner so my files are named .otl but can be viewed and edited with any text
+editor.
 
 # Getting started
 

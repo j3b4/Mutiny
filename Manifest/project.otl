@@ -1,4 +1,8 @@
 Current Work Order
+	[_] fix "look" on board so that it overloads "look" (refer to 
+		: tutorial bridge room world bridge room for example)
+		: Do this first because it will inform the other projects
+		default look on board should display the view outside ship plus just
 	[_] Globe
 		: a dictionary of tuples.  
 		: probably an object/class containing the dictionary and an interface
@@ -22,9 +26,8 @@ Current Work Order
 				: a player/builder command to see current coordinates
 				: an ingame version of this 
 	[_] CmdSteer
-		: 
+		: Work on making steer check where it is.
 		[_] locked to "inside vessel"
-		
 	[_] default room
 	[_] coastal room
 Clean Up - REFACTORING for Sanity (et la santé    
@@ -37,9 +40,6 @@ Clean Up - REFACTORING for Sanity (et la santé
 		Announce upon sighting land OR 
 			: better yet, automatically "landfall" when entering a coastal
 			: coordinate.  that would stop me from blithely sailing inland.  
-	fix "look" on board so that it overloads "look" (refer to 
-			: tutorial bridge room world bridge room for example)
-		default look on board should display the view outside ship plus just
 	the name of the ship room
 			with arguments you can look only inboard or only out to sea
 		store global position as a tuple of integers (or floats?)

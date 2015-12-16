@@ -1,6 +1,7 @@
 # Commands for Ships and Boats etc.
 
 from evennia import Command, CmdSet
+from evennia import default_cmds
 from typeclasses.sea import CmdSetPosition
 
 # from evennia import default_cmds
@@ -58,7 +59,8 @@ class CmdDebark(Command):
         self.caller.move_to(parent)
 
 
-class CmdLookout(Command):
+
+class CmdLookout(default_cmds.CmdLook):
     # Trying to overload the look command so that it behaves
     # differently when called by a character on a vessel.
     """
@@ -70,21 +72,37 @@ class CmdLookout(Command):
     describe the boat or boat-section you are in as well as the area
     the boat is presently passing through.
     """
-    key = "lookout"
-    aliases = ["lo","ken","conn", ]
-
+    # locks = "cmd:cmdinside()"
+    help_category = "Mutinous Commands"
+    # TODO: add a return_outside_view hook to the vessel object.
     def func(self):
-        # if the looker is not in the boat then return a default look
-        # if the looker is inside the boat then add value and return
+        caller = self.caller
         vessel = self.obj
         outside = vessel.location
-        if self.caller.location == vessel:
-            self.msg("{cYou are on a %s. Outside you see:" % vessel.key)
-            self.msg(vessel.at_look(vessel.location))
-        elif self.caller.location == outside:
-            self.msg("You are not on board trying to lookout")
+        " First copy default look function"
+        if not self.args:
+            target = caller.location
+            if not target:
+                self.caller.msg("No location to look at!")
+                return
+            if caller.location == outside:
+                self.msg(caller.at_look(target))
+                return
+            # no args means this is where the vessel look should sit.
+            outboard_view = (vessel.at_look(outside))
+            inboard_view = self.caller.at_look(target)
+            caller.msg("You're on the %s" % vessel.key)
+            caller.msg("Outside you see:")
+            caller.msg(outboard_view)
+            caller.msg("Inside you see:\n")
+            caller.msg(inboard_view)
         else:
-            self.msg("Something went wrong with the Lookout Command!")
+            # if there are arguemnts then do a standard look on them
+            target = self.caller.search(self.args)
+            if not target:
+                return
+            self.msg(caller.at_look(target))
+            
 
 class CmdSteer(Command):
     """
@@ -98,6 +116,7 @@ class CmdSteer(Command):
     key = "steer"
     aliases = ["pilot", "pi", ]
     help_category = "Mutinous Commands"
+    locks = "cmd:cmdinside()"
     # arg_regex = r"\s|$"
 
     def parse(self):
@@ -110,11 +129,13 @@ class CmdSteer(Command):
         Steering the vessel
         """
         vessel = self.obj
-        outside = vessel.location
-        #exits = outside.exits
+        """
+        # outside = vessel.location
+        # exits = outside.exits
         if self.caller.location == outside:
             self.msg("You need to be on board to %s" % self.key)
             return
+        """
         if not self.direction:
             self.msg("Usage: steer <direction>")
             return
@@ -128,6 +149,7 @@ class CmdSetVessel(CmdSet):
     "Add these commands to the vessel when it is created."
 
     key = "Vessel Commands"
+    priority = 1
 
     def at_cmdset_creation(self):
         self.add(CmdBoard())
