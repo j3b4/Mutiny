@@ -1,8 +1,25 @@
 Current Work Order
-	[_] fix "look" on board so that it overloads "look" (refer to 
-		: tutorial bridge room world bridge room for example)
-		: Do this first because it will inform the other projects
-		default look on board should display the view outside ship plus just
+	[X] CmdSteer
+		Notes:
+			: Work on making steer check where it is.  Wait, I think I got it.
+			: If the sea room has headings as commands...  Just like the
+			: coastal room had exits...  Then "steer nw" will work as
+			: expected. 
+			:
+			: This will suffice at this stage. The future goal of having 32 or
+			: even 360 headings can probably wait. 
+			:
+			: For now I'll be happy with at least 8 and at most 16 headings.
+			: 16 headings will suffice me a long time I think.  
+			:
+			: So the headings, are like exits, commands attached to the room.
+			: This means u don't even have to do anything to the "steer"
+			: command. At least not on this account. I might still want to
+			: consider a way to prevent vessels from executing too many random
+			: commands.
+		[X] locked to "inside vessel"
+			: No, better to keep using the parser to simply give an error msg
+			: to players who try to steer from outside the vessel.
 	[_] Globe
 		: a dictionary of tuples.  
 		: probably an object/class containing the dictionary and an interface
@@ -25,11 +42,15 @@ Current Work Order
 			[_] CmdFix
 				: a player/builder command to see current coordinates
 				: an ingame version of this 
-	[_] CmdSteer
-		: Work on making steer check where it is.
-		[_] locked to "inside vessel"
 	[_] default room
 	[_] coastal room
+	[X] Debug "at_after_move" hook on vessel typeclass.
+		: Fixed by reseting skiff to use vessel typeclass
+	[X] fix "look" on board so that it overloads "look" (refer to 
+		: tutorial bridge room world bridge room for example)
+		: Do this first because it will inform the other projects
+		: default look on board should display the view outside ship plus just
+		: perhaps the name of the vessel?
 Clean Up - REFACTORING for Sanity (et la santé    
 	Continue [SEA NAVIGATION](SEA NAVIGATION)**
 		overload "steer" 

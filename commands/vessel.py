@@ -90,12 +90,12 @@ class CmdLookout(default_cmds.CmdLook):
                 return
             # no args means this is where the vessel look should sit.
             outboard_view = (vessel.at_look(outside))
-            inboard_view = self.caller.at_look(target)
+            #inboard_view = self.caller.at_look(target)
             caller.msg("You're on the %s" % vessel.key)
-            caller.msg("Outside you see:")
+            #caller.msg("Outside you see:")
             caller.msg(outboard_view)
-            caller.msg("Inside you see:\n")
-            caller.msg(inboard_view)
+            #caller.msg("Inside you see:\n")
+            #caller.msg(inboard_view)
         else:
             # if there are arguemnts then do a standard look on them
             target = self.caller.search(self.args)
@@ -116,7 +116,7 @@ class CmdSteer(Command):
     key = "steer"
     aliases = ["pilot", "pi", ]
     help_category = "Mutinous Commands"
-    locks = "cmd:cmdinside()"
+    # locks = "cmd:cmdinside()"
     # arg_regex = r"\s|$"
 
     def parse(self):
@@ -129,13 +129,11 @@ class CmdSteer(Command):
         Steering the vessel
         """
         vessel = self.obj
-        """
-        # outside = vessel.location
+        outside = vessel.location
         # exits = outside.exits
         if self.caller.location == outside:
             self.msg("You need to be on board to %s" % self.key)
             return
-        """
         if not self.direction:
             self.msg("Usage: steer <direction>")
             return
@@ -143,6 +141,7 @@ class CmdSteer(Command):
             # self.msg("You try to move %r." % self.direction)
             # self.msg("Available exits include: %s." % exits)
             vessel.execute_cmd(self.direction, sessid=self.caller.sessid) 
+            print("\n\nExecuting a command:\n\n")
             # This works but its a terrible idea. Cannot stand
 
 class CmdSetVessel(CmdSet):

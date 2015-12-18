@@ -68,13 +68,22 @@ class CmdSetPosition(Command):
             # attempt to set the position
             # must be comma separated digits
             room, position = [part.strip() for part in args.rsplit("=", )]
-            # self.caller.msg("Input Room = %s" % room)
-            # self.caller.msg("Input pos = %s" % position)
+            self.caller.msg("Input Room = %s" % room)
             if not re.match(r'\d+,\d+', position):
                 self.caller.msg( "Position must be entered in the form x,y.")
                 return
+            # position comes in as a string
+            position = map(int, position.split(','))
+            position = tuple(position)
+            print("Position type = %s\n\n" % type(position) )
+            self.caller.msg("Input pos = %s" % str(position))
+            # now convert string to tuple.
+
+
         else:
+            # no '=' sign means we just want a report on rooms position.
             room = args
+        # store stuff in DB
         self.room = room
         self.position = position
 
@@ -147,14 +156,11 @@ class CoastalRoom(DefaultRoom):
         self.msg_contents(
                 "%s arrives in this room %s" 
                 % (new_arrival.name, position))
-        new_arrival.msg_contents(
-                "%s arrives in this room %s" 
-                % (new_arrival.name, position))
+        new_arrival.msg_contents( "%s arrives in this room %s" % (new_arrival.name, position))
         # set position on new arrival
         new_arrival.db.position = position
 
         pass
-
 
 """
 First coastal command will be to go to sea. 
@@ -169,8 +175,65 @@ later things like anchor, beach, dock, launch etc...
 
 # The Sea room
 # Sea Room Commands
-# import numpy
+class CmdNorth(Command):
+    """
+    These commands move the vessel calling them on the global grid by
+    incrementing their position.
 
+    Usage: <steer> <direction> 
+        Note you have to use this command with "steer" if you are onboard a
+        vessel.
+    """
+
+    "This is the command to move North"
+    key = "north"
+    aliases = ["n", ]
+    help_category = "Mutinous Commands"
+
+    def func (self):
+        # get the direction
+        vessel = self.caller
+        heading = self.args
+
+        # get position
+        position = vessel.db.position
+        vessel.msg_contents("start position =  %s" % position)
+
+        #parse
+        #valid_headings = ("n","e","s","w",)
+        vessel.msg_contents("Heading %s" % self.key)
+
+        # translate direction into a vector
+        vector = {0,-1}
+        # add vector to position
+
+        vessel.msg_contents("vector =  %s" % vector)
+        position = map(int, position.split(","))
+        vector =  map(int, vector.split(","))
+        position = [(position[0] + vector[0]), (position[1] + vector[1])]
+                
+        # announce results
+        position = ','.join(str(x) for x in position)
+        vessel.msg_contents("New position = %s" % position)
+        vessel.db.position = position
+
+    pass
+class CmdSouth(Command):
+    pass
+class CmdEast(Command):
+    pass
+class CmdWest(Command):
+    pass
+class CmdNorthEast(Command):
+    pass
+class CmdNorthWest(Command):
+    pass
+class CmdSouthEast(Command):
+    pass
+class CmdSouthWest(Command):
+    pass
+
+'''
 class CmdHead(Command):
     """
     Use this to steer on a heading while at sea
@@ -221,6 +284,7 @@ class CmdHead(Command):
         position = ','.join(str(x) for x in position)
         vessel.msg_contents("New position = %s" % position)
         vessel.db.position = position
+'''
 
 class CmdLandFall(Command):
     """
@@ -265,7 +329,6 @@ class NavCmdSet(CmdSet):
         self.add(CmdSetPosition())
         self.add(CmdLandFall())
         self.add(CmdFix())
-        self.add(CmdHead())
 
 class SeaRoom(DefaultRoom):
     """
@@ -281,7 +344,8 @@ class SeaRoom(DefaultRoom):
     """
     def at_object_creation(self):
         "hmmm"
-        self.db.globe = {'8,4':'#4', '6,4':'#8','7,3':'#5'}
+        self.db.globe = {(8,4):'#4', (6,4):'#8',(7,3):'#5'}
+        # I believe these are tuples now.
         # the globe is a dictionary of coordinates and room references
         # right now hard coded with three locations
         self.cmdset.add_default(CoastalCmdSet)

@@ -11,13 +11,14 @@ class VesselObject(DefaultObject):
         # working on the sailing functions
         self.cmdset.add_default(CmdSetVessel)
         # not moving upon creation
-        self.db.underway = False
+        # self.db.underway = False
         # The direction the boat is sailing East or West
+        self.db.testing = True
         # 1 for West, -1 for East
-        self.db.direction = 1
+        # self.db.direction = 1
         # The rooms that the vessel will move through
         # #4 Eastern Shore; #5 Inlet Head;  #8 West Beach
-        self.db.rooms = ["#4", "#5", "#8", ]
+        # self.db.rooms = ["#4", "#5", "#8", ]
         # NEXT TODO: Work on navigation
         # self.scripts.add(HoveToScript)
 
@@ -67,12 +68,16 @@ class VesselObject(DefaultObject):
 
     def at_after_move(self, source_location):
         """
-        For acharacters, this runs the look command somehow
+        For characters, this runs the look command somehow
         I want to look at the room the vessel moves into and
         announce the view to the contents of the room.
 
         """
+        print("\n\nat_after_move...\n\n")
+        #TODO: figure out why this doesn't show up anymore
         self.msg_contents(self.at_look(self.location))
+        #self.location.msg_contents("I just completeed at_after_move!")
+        #self.msg(self.at_look(self.location))
         # amazing this works perfectly!
         
 # end of overload attempt.
