@@ -1,5 +1,50 @@
 Current Work Order
-	[_] CmdSteer
+	[_] Globe
+		: a dictionary of tuples.  
+		: probably an object/class containing the dictionary and an interface
+		: for editing and reviewing its contents.
+		[_] create a "globe object" in world.
+			[_] learn how other typeclasses can access it
+			Use a Script object -see typeclasses/scripts.py
+				: It has pretty much everything you would want to know.
+		[_] Accessible by certain commands
+			[_] @dig
+				: should update the globe with position for every new room
+				: probably manually.
+			[_] @tunnel
+				: tunnel is like @dig but will it be allowed to automatically
+				: choose positions?
+				:
+				: I doubt it because I don't think I'm prepared to make the
+				: globe actualy responsible for enforcing cartesian reality
+			[_] move_to()
+				: need to be able to look up positions in order to see where
+				: to move an object
+			[_] CmdFix
+				: a player/builder command to see current coordinates
+				: an ingame version of this 
+	[_] Website and Portal
+		[_] make a cgi to display the manifest/project.html on the portal
+	[_] Navigation Project
+		[_] Steer over time
+			: so that it sets the course and then begins to move over time...
+			: (see delayed execeution tut) so I should be able to "steer N"
+			: and then the ship will sail N, slowly updating position
+			: periodically.
+		[_] Automate Landfall
+			: automatically "landfall" when entering a coastal
+			: coordinate.  that would stop me from blithely sailing inland.  
+		[_] object contents should all automatically inherit position. 
+			:Ie. so that if a sailor jumps overboard at sea, they will end
+			:up in the sea rather than back in the room where they boarded
+			:or something.
+[_] coastal room
+	definitely should require a position
+	maybe use a script to enforce this?
+[_] default room
+	should it have a position?
+Done (for now)
+	[X] CmdSteer
 		Notes:
 			: Work on making steer check where it is.  Wait, I think I got it.
 			: If the sea room has headings as commands...  Just like the
@@ -17,34 +62,10 @@ Current Work Order
 			: command. At least not on this account. I might still want to
 			: consider a way to prevent vessels from executing too many random
 			: commands.
-		[_] Make directional commands for the Sea room
+		[X] Make directional commands for the Sea room
 		[X] locked to "inside vessel"
 			: No, better to keep using the parser to simply give an error msg
 			: to players who try to steer from outside the vessel.
-	[_] Globe
-		: a dictionary of tuples.  
-		: probably an object/class containing the dictionary and an interface
-		: for editing and reviewing its contents.
-		[_] create a "globe object" in world.
-			[_] learn how other typeclasses can access it
-		[_] Accessible by certain commands
-			[_] @dig
-				: should update the globe with position for every new room
-				: probably manually.
-			[_] @tunnel
-				: tunnel is like @dig but will it be allowed to automatically
-				: choose positions?
-				:
-				: I doubt it because I don't think I'm prepared to make the
-				: globe actualy responsible for enforcing cartesian reality
-			[_] move_to()
-				: need to be able to look up positions in order to see where
-				: to move an object
-			[_] CmdFix
-				: a player/builder command to see current coordinates
-				: an ingame version of this 
-	[_] default room
-	[_] coastal room
 	[X] Debug "at_after_move" hook on vessel typeclass.
 		: Fixed by reseting skiff to use vessel typeclass
 	[X] fix "look" on board so that it overloads "look" (refer to 
@@ -52,45 +73,24 @@ Current Work Order
 		: Do this first because it will inform the other projects
 		: default look on board should display the view outside ship plus just
 		: perhaps the name of the vessel?
-Clean Up - REFACTORING for Sanity (et la santé    
-	Continue [SEA NAVIGATION](SEA NAVIGATION)**
-		overload "steer" 
-			: so that it sets the course and then begins to move over time...
-			: (see delayed execeution tut) so I should be able to "steer N"
-			: and then the ship will sail N, slowly updating position
-			: periodically.
-		Announce upon sighting land OR 
-			: better yet, automatically "landfall" when entering a coastal
-			: coordinate.  that would stop me from blithely sailing inland.  
-	the name of the ship room
-			with arguments you can look only inboard or only out to sea
-		store global position as a tuple of integers (or floats?)
-			Using my forced "setpos" command I input the position as a string. - just clean this up.
-			So also need to store position on objects as a tuple.
-			object contents should all automatically inherit position. 
-				:Ie. so that if a sailor jumps overboard at sea, they will end
-				:up in the sea rather than back in the room where they boarded
-				:or something.
-			find out how to update the "globe" 
-				: (my dictionary of coastal positions) whenever building
-				: rooms.  on that note, add position property to ALL land and
-				: coastal rooms (but not ship rooms)
-Implement boats.
-	simple single-room vehicles
-		DONE: players can enter and steer the boat around other rooms
-	multi-roomed ships
-		main deck, quarter-deck, the masthead, the bilge, state room, ward
-	room, galley, gun deck etc...
-Implement the Ocean
-	**coastal waters** (Right now they are justt standard rooms and the boat can go anywhere)
-		half land and half sea rooms. Characters can walk along the land part using land exits.
-		boats traverse water-exits
-		boats can transition from the coastal water to the high sea.
-		characters should not be able to without a boat
-    **High Sea**
-Implement Crew (npcs that sail or help you sail) 
-Future
+Design Strategy
+	Implement the Ocean
+		**coastal waters** (Right now they are justt standard rooms and the boat can go anywhere)
+			half land and half sea rooms. Characters can walk along the land part using land exits.
+			boats traverse water-exits
+			boats can transition from the coastal water to the high sea.
+			characters should not be able to without a boat
+		**High Sea**
+	Implement boats.
+		simple single-room vehicles
+			DONE: players can enter and steer the boat around other rooms
+		multi-roomed ships
+			main deck, quarter-deck, the masthead, the bilge, state room, ward
+		room, galley, gun deck etc...
+	Implement Crew (npcs that sail or help you sail) 
+Future as in Another build alltogether probably
 	Ship to ship combat
 	Naval organization and ranking system
 	Economy
 	WIND & WEATHER at sea, on the coast, and inland
+Older anachronistic Notes:
