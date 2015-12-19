@@ -186,7 +186,6 @@ class CmdNorth(Command):
         vessel.
     """
 
-    "This is the command to move North"
     key = "north"
     aliases = ["n", ]
     help_category = "Mutinous Commands"
@@ -221,10 +220,11 @@ class CmdNorth(Command):
 
 class CmdSouth(CmdNorth):
     # Can I just inherit from North and alter the name and vector????
-    # you betcha!
     key = "south"
     aliases = ["s", ]
     vector = (0,1)
+    # ...
+    # OMG my world just exploded into rainbows and unicorns.
 
 class CmdEast(CmdNorth):
     key = "east"
@@ -274,9 +274,11 @@ class CmdLandFall(Command):
 
     def func(self):
         # this all becomes nonsense when sailor is in a vessel
+        print("Attempting Landfall")
         vessel = self.caller
         sea = vessel.location
-        position = vessel.db.position
+        position = tuple(vessel.db.position)
+        print ("from position: %s" % str(position))
         globe = sea.db.globe
 
         if position in globe:
@@ -286,8 +288,6 @@ class CmdLandFall(Command):
             vessel.msg_contents("You will land at %s(%s)" % 
                     (coast_room.name, coast_num))
             vessel.move_to(coast_room)
-            #could it be that east?
-
         else:
             vessel.msg_contents("Nothing here but water, everywhere.")
 
