@@ -1,5 +1,5 @@
 Current Work Order
-	[X] CmdSteer
+	[_] CmdSteer
 		Notes:
 			: Work on making steer check where it is.  Wait, I think I got it.
 			: If the sea room has headings as commands...  Just like the
@@ -17,6 +17,7 @@ Current Work Order
 			: command. At least not on this account. I might still want to
 			: consider a way to prevent vessels from executing too many random
 			: commands.
+		[_] Make directional commands for the Sea room
 		[X] locked to "inside vessel"
 			: No, better to keep using the parser to simply give an error msg
 			: to players who try to steer from outside the vessel.

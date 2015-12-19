@@ -123,6 +123,7 @@ class CoastalCmdSet(CmdSet):
         self.add(CmdSetPosition())
         self.add(CmdFix())
         self.add(CmdStandOff)
+        
 
 # Coastal Rooms
 class CoastalRoom(DefaultRoom):
@@ -189,102 +190,72 @@ class CmdNorth(Command):
     key = "north"
     aliases = ["n", ]
     help_category = "Mutinous Commands"
+    # translate direction into a vector
+    vector = (0,-1)
 
     def func (self):
         # get the direction
         vessel = self.caller
-        heading = self.args
+        key = self.key
+        vector = self.vector
+
+        #print("Tried to go %s" % key)
+        #print("Vector = %s" % str(vector))
 
         # get position
         position = vessel.db.position
-        vessel.msg_contents("start position =  %s" % position)
+        vessel.msg_contents("start position =  %s" % str(position))
 
         #parse
         #valid_headings = ("n","e","s","w",)
-        vessel.msg_contents("Heading %s" % self.key)
+        vessel.msg_contents("Heading %s" % key)
 
-        # translate direction into a vector
-        vector = {0,-1}
         # add vector to position
-
-        vessel.msg_contents("vector =  %s" % vector)
-        position = map(int, position.split(","))
-        vector =  map(int, vector.split(","))
+        vessel.msg_contents("vector =  %s" % str(vector))
         position = [(position[0] + vector[0]), (position[1] + vector[1])]
                 
         # announce results
-        position = ','.join(str(x) for x in position)
-        vessel.msg_contents("New position = %s" % position)
+        #position = ','.join(str(x) for x in position)
+        vessel.msg_contents("New position = %s" % str(position))
         vessel.db.position = position
 
-    pass
-class CmdSouth(Command):
-    pass
-class CmdEast(Command):
-    pass
-class CmdWest(Command):
-    pass
-class CmdNorthEast(Command):
-    pass
-class CmdNorthWest(Command):
-    pass
-class CmdSouthEast(Command):
-    pass
-class CmdSouthWest(Command):
-    pass
+class CmdSouth(CmdNorth):
+    # Can I just inherit from North and alter the name and vector????
+    # you betcha!
+    key = "south"
+    aliases = ["s", ]
+    vector = (0,1)
 
-'''
-class CmdHead(Command):
-    """
-    Use this to steer on a heading while at sea
+class CmdEast(CmdNorth):
+    key = "east"
+    aliases = ["e", ]
+    vector = (1,0)
 
-    Usage:
-        head <direction>
-
-    Examples:
-        head s
-        head nw
-    """
-    key = "head"
-    locks = "cmd:all()"
-    help_category = "Mutinous Commands"
-
-    def func (self):
-        # get the direction
-        vessel = self.caller
-        heading = self.args
-
-        # get position
-        position = vessel.db.position
-        vessel.msg_contents("start position =  %s" % position)
-
-        #parse
-        valid_headings = ("n","e","s","w",)
-        vessel.msg_contents("Args %s" % heading)
-        if heading not in valid_headings:
-            # stop if we dont have a cardinal direction
-            vessel.msg_contents("Valid headings: %s" % str(valid_headings))
-            return
-
-        # translate direction into a vector
-        compass = { 'n':'0,-1', 
-                    'e':'1,0', 
-                    's':'0,1',
-                    'w':'-1,0',
-                    }
-        vector = compass[heading]
-        # add vector to position
-
-        vessel.msg_contents("vector =  %s" % vector)
-        position = map(int, position.split(","))
-        vector =  map(int, vector.split(","))
-        position = [(position[0] + vector[0]), (position[1] + vector[1])]
-                
-        # announce results
-        position = ','.join(str(x) for x in position)
-        vessel.msg_contents("New position = %s" % position)
-        vessel.db.position = position
-'''
+class CmdWest(CmdNorth):
+    key = "west"
+    aliases = ["w", ]
+    vector = (-1,0)
+    
+class CmdNorthEast(CmdNorth):
+    key = "northeast"
+    aliases = ["ne", ]
+    vector = (1,-1)
+    
+class CmdNorthWest(CmdNorth):
+    key = "northwest"
+    aliases = ["nw", ]
+    vector = (-1,-1)
+    
+class CmdSouthEast(CmdNorth):
+    key = "southeast"
+    aliases = ["se", ]
+    vector = (1,1)
+    
+class CmdSouthWest(CmdNorth):
+    key = "southwest"
+    aliases = ["sw", ]
+    vector = (-1,1)
+    
 
 class CmdLandFall(Command):
     """
@@ -329,6 +300,14 @@ class NavCmdSet(CmdSet):
         self.add(CmdSetPosition())
         self.add(CmdLandFall())
         self.add(CmdFix())
+        self.add(CmdNorth())
+        self.add(CmdSouth())
+        self.add(CmdEast())
+        self.add(CmdWest())
+        self.add(CmdNorthEast())
+        self.add(CmdNorthWest())
+        self.add(CmdSouthEast())
+        self.add(CmdSouthWest())
 
 class SeaRoom(DefaultRoom):
     """
