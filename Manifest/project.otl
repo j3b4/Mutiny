@@ -23,6 +23,9 @@ Current Work Order
 			[_] CmdFix
 				: a player/builder command to see current coordinates
 				: an ingame version of this 
+		Global properties?
+			It might also be possible to develop other properties of the globe
+			such as currents and weather and climate patterns.  I'm not sure.
 	[_] Website and Portal
 		[_] make a cgi to display the manifest/project.html on the portal
 	[_] Navigation Project
@@ -38,11 +41,11 @@ Current Work Order
 			:Ie. so that if a sailor jumps overboard at sea, they will end
 			:up in the sea rather than back in the room where they boarded
 			:or something.
-[_] coastal room
-	definitely should require a position
-	maybe use a script to enforce this?
-[_] default room
-	should it have a position?
+	[_] coastal room
+		definitely should require a position
+		maybe use a script to enforce this?
+	[_] default room
+		should it have a position?
 Done (for now)
 	[X] CmdSteer
 		Notes:
@@ -93,4 +96,3 @@ Future as in Another build alltogether probably
 	Naval organization and ranking system
 	Economy
 	WIND & WEATHER at sea, on the coast, and inland
-Older anachronistic Notes:
