@@ -7,9 +7,10 @@ from typeclasses.sea import CmdSetPosition
 # from evennia import default_cmds
 
 """
-TODO: Commands for navigation.  Set Course. 
+TODO: Commands for navigation.  Set Course.
 
 """
+
 
 class CmdBoard(Command):
     """
@@ -31,8 +32,8 @@ class CmdBoard(Command):
 
     def func(self):
         vessel = self.obj
-        self.caller.msg("You board the vessel")
         self.caller.move_to(vessel)
+        self.caller.msg("You board the %s" % vessel)
 
 
 class CmdDebark(Command):
@@ -59,7 +60,6 @@ class CmdDebark(Command):
         self.caller.move_to(parent)
 
 
-
 class CmdLookout(default_cmds.CmdLook):
     # Trying to overload the look command so that it behaves
     # differently when called by a character on a vessel.
@@ -75,6 +75,7 @@ class CmdLookout(default_cmds.CmdLook):
     # locks = "cmd:cmdinside()"
     help_category = "Mutinous Commands"
     # TODO: add a return_outside_view hook to the vessel object.
+
     def func(self):
         caller = self.caller
         vessel = self.obj
@@ -90,23 +91,23 @@ class CmdLookout(default_cmds.CmdLook):
                 return
             # no args means this is where the vessel look should sit.
             outboard_view = (vessel.at_look(outside))
-            #inboard_view = self.caller.at_look(target)
+            inboard_view = self.caller.at_look(target)
             caller.msg("You're on the %s" % vessel.key)
-            #caller.msg("Outside you see:")
+            # caller.msg("Outside you see:")
             caller.msg(outboard_view)
-            #caller.msg("Inside you see:\n")
-            #caller.msg(inboard_view)
+            caller.msg("Inside you see:\n")
+            caller.msg(inboard_view)
         else:
             # if there are arguemnts then do a standard look on them
             target = self.caller.search(self.args)
             if not target:
                 return
             self.msg(caller.at_look(target))
-            
+
 
 class CmdSteer(Command):
     """
-    Steer the boat in a direction. 
+    Steer the boat in a direction.
     In a coastal room, this will make the vessel move through any available
     exit which matches the direction named.
 
@@ -121,7 +122,7 @@ class CmdSteer(Command):
 
     def parse(self):
         "Get the direction to use as a command for the ship"
-        #direction = None
+        # direction = None
         self.direction = self.args
 
     def func(self):
@@ -140,9 +141,10 @@ class CmdSteer(Command):
         else:
             # self.msg("You try to move %r." % self.direction)
             # self.msg("Available exits include: %s." % exits)
-            vessel.execute_cmd(self.direction, sessid=self.caller.sessid) 
+            vessel.execute_cmd(self.direction, sessid=self.caller.sessid)
             print("\nExecuting a command: %s\n" % str(self.direction))
             # This works but its a terrible idea. Cannot stand
+
 
 class CmdSetVessel(CmdSet):
     "Add these commands to the vessel when it is created."
@@ -153,9 +155,16 @@ class CmdSetVessel(CmdSet):
     def at_cmdset_creation(self):
         self.add(CmdBoard())
         self.add(CmdDebark())
-        self.add(CmdLookout())
         self.add(CmdSteer())
-        #okay this is tedious but we neet a cmd from my Sea module
+        # okay this is tedious but we neet a cmd from my Sea module
         self.add(CmdSetPosition())
 
+
+class CmdSetLook(CmdSet):
+    "Add this look command to the player when they enter the vessel"
+    key = "Vessel Look"
+    priority = 1
+
+    def at_cmdset_creation(self):
+        self.add(CmdLookout())
 # last line

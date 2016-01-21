@@ -76,6 +76,44 @@ Done (for now)
 		: Do this first because it will inform the other projects
 		: default look on board should display the view outside ship plus just
 		: perhaps the name of the vessel?
+	[X] cmd_set conflicts
+		: Problem is that the commands in the Vessel command set are loaded
+		: for all objects in a room.  If there are two objects they conflict
+		: with eatchother.
+		Fixed.
+			: The "multi match" condition is resolved by inviting the user to 
+			: narrow their target by typing N-commant where N is the  index in 
+			: a list of commands. Passable for now. In the future I might wish
+			: for an improved interface.  I.e. allow players to target the
+			: command in advance by argument. 
+		board
+			Make this a universal command on characters
+				require a target argument (vessel to board)
+				check target is:
+					vessel; 
+					AND boardable by caller
+				Else say
+					You cannot board <target>
+			BUT:
+				before doing this, check out whether there is advice for this
+				already.
+		look
+			Use Chris's approach
+				Create a CmdSetLook
+					priority = 1
+					def at_cmdset_creation(self)
+						self.add(CmdLookShip())
+				Then define a new 'look' command
+				Finally edit the hooks on my vessel typeclass
+					at_object_leave
+					at_obect_receive
+					define a view_outside function
+			My idea
+				edit the default 'look' to return a 'view' attribute
+				: Some objects might have a "view" attribute.  If you you look at
+				: an object with a view it the look message will return the view
+				: as well as the standard description, if you are inside the
+				: object at the time.
 Design Strategy
 	Implement the Ocean
 		**coastal waters** (Right now they are justt standard rooms and the boat can go anywhere)
@@ -91,8 +129,17 @@ Design Strategy
 			main deck, quarter-deck, the masthead, the bilge, state room, ward
 		room, galley, gun deck etc...
 	Implement Crew (npcs that sail or help you sail) 
-Future as in Another build alltogether probably
+Future features as in Another build alltogether probably
+	Boatview Improvements
+		When looking from on board a boat:
+			strip out the contents of the room.
+			colour code the inboard and outboard view?
+	Boarding ships
+		: When their are two vessels in the same room: I would like to be 
+		: able to specify by key which one I want to board. I.e. board boat 
+		: vs board skiff.
 	Ship to ship combat
 	Naval organization and ranking system
 	Economy
 	WIND & WEATHER at sea, on the coast, and inland
+Reference

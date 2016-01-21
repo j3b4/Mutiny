@@ -1,7 +1,7 @@
 # VESSELS - Boats etc.
 
 from evennia import DefaultObject, search_object
-from commands.vessel import CmdSetVessel
+from commands.vessel import CmdSetVessel, CmdSetLook
 # from vesselscript import HoveToScript
 
 
@@ -23,7 +23,7 @@ class VesselObject(DefaultObject):
         # self.scripts.add(HoveToScript)
 
 
-# attempt full overload of announce_move_from 
+# attempt full overload of announce_move_from
     def announce_move_from(self, destination):
         """
         Called if the move is to be announced. This is
@@ -40,7 +40,7 @@ class VesselObject(DefaultObject):
         dest_name = destination.name
         string = "The %s is leaving %s, cruising towads %s."
         self.location.msg_contents(string % (name, loc_name, dest_name),
-                exclude=self)
+                                   exclude=self)
 
     def announce_move_to(self, source_location):
         """
@@ -64,7 +64,7 @@ class VesselObject(DefaultObject):
             src_name = source_location.name
         string = "The %s arrives at %s, cruising in from %s."
         self.location.msg_contents(string % (name, loc_name, src_name),
-                exclude=self)
+                                   exclude=self)
 
     def at_after_move(self, source_location):
         """
@@ -74,12 +74,18 @@ class VesselObject(DefaultObject):
 
         """
         print("\n\nat_after_move...\n\n")
-        #TODO: figure out why this doesn't show up anymore
+        # TODO: figure out why this doesn't show up anymore
         self.msg_contents(self.at_look(self.location))
-        #self.location.msg_contents("I just completeed at_after_move!")
-        #self.msg(self.at_look(self.location))
+        # self.location.msg_contents("I just completeed at_after_move!")
+        # self.msg(self.at_look(self.location))
         # amazing this works perfectly!
-        
+
+    def at_object_receive(self, moved_obj, source_location):
+        self.cmdset.add(CmdSetLook, permanent=True)
+
+    def at_object_leave(self, moved_obj, target_location):
+        self.cmdset.delete(CmdSetLook)
+
 # end of overload attempt.
     def return_view(self):
         """
@@ -92,7 +98,6 @@ class VesselObject(DefaultObject):
         view = self.at_look(self.location)
         return view
 
-
     def get_underway(self):
         self.db.underway = True
         self.msg_contents("The %s gets underway." % self.key)
@@ -101,7 +106,7 @@ class VesselObject(DefaultObject):
         # TODO: research other terms
         self.db.underway = False
         self.msg_contents("The %s heaves to at %s." % (self.key,
-            self.location))
+                          self.location))
 
     def goto_next_room(self):
         # this might only make sense for the train track set up
@@ -110,7 +115,7 @@ class VesselObject(DefaultObject):
         # remember 1 = West and 2 = East
 
         if idx < 0 or idx >= len(self.db.rooms):
-            # We've reached the end of the bay 
+            # We've reached the end of the bay
             self.heave_to()
             # reverse the direction of the vessel
             self.db.direction *= -1
@@ -119,7 +124,5 @@ class VesselObject(DefaultObject):
             room = search_object(roomref)[0]
             self.move_to(room)
             # above line redundant with look through on after_move
-
-
 
 # last line
