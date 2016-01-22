@@ -1,13 +1,30 @@
 Current Work Order
+	[_] Dynamicaly created Sea rooms
+		: Upon entering the Sea - a vessel is given a new unique room.  The
+		: rooms coordinates change 
+		Master Sea Room
+			: at recieve object, immediately spawn a dyanmic room with a
+			: coordinate property provided by the last coastal room the vessel
+			: was in. 
+		Dynamic Rooms
+			: interesting idea I was thinkign of making 'landfal' search the
+			: db a room that matched current coordingates. If the vessel
+			: position matches a room's coordinates, then move the vessel
+			: direectly to that room.  This will work for landfall as well as
+			: for ships meeting, finally if dynamic rooms persist in a cache
+			: for a time, it would allow for picking up flotsam, or persons
+			: overboard...
+			new typeclass
+				commands made available
 	[_] Navigation Project
+		[_] Automate Landfall
+			: automatically "landfall" when entering a coastal
+			: coordinate.  that would stop me from blithely sailing inland.  
 		[_] Steer over time
 			: so that it sets the course and then begins to move over time...
 			: (see delayed execeution tut) so I should be able to "steer N"
 			: and then the ship will sail N, slowly updating position
 			: periodically.
-		[_] Automate Landfall
-			: automatically "landfall" when entering a coastal
-			: coordinate.  that would stop me from blithely sailing inland.  
 		[_] object contents should all automatically inherit position. 
 			:Ie. so that if a sailor jumps overboard at sea, they will end
 			:up in the sea rather than back in the room where they boarded
@@ -16,6 +33,9 @@ Current Work Order
 		[_] make a cgi to display the manifest/project.html on the portal
 	[_] coastal room
 		definitely should require a position
+		use a property unique to rooms 
+			rooms have 'coordinates'
+			objects have 'positions'
 		maybe use a script to enforce this?
 	[_] default room
 		should it have a position?
