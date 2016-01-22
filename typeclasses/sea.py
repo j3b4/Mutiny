@@ -7,9 +7,9 @@ I hope.
 import re
 from evennia import CmdSet, Command, DefaultRoom
 from world import globe
-
-
+from evennia.utils import search
 # Coastal Commands
+
 
 class CmdFix(Command):
     """
@@ -32,34 +32,13 @@ class CmdFix(Command):
         "Ask the globe module to look in the atlas:"
         position = self.args
         print position, type(position)
-        '''
-        if not re.match(r'\d+,\d+', position):
-            self.caller.msg("Position must be entered in the form x,y.")
-            return
-        '''
         # must send a tuple to the globe module
         position = map(int, position.split(','))
         position = tuple(position)
-
-        room = globe.lookUp(position)
-        print ("Room = %s" % room)
+        # "Find the room by searching the DB for an object"
+        # "With the correct position attribute."
+        room = search.search_object_attribute(key="position", value=position)
         self.caller.msg(room)
-
-
-class CmdStandOff(Command):
-    """
-    To move away from shore.
-
-    Usage:
-        standoff
-        steer offshore
-    """
-    key = "standoff"
-    # aliases = ["offshore", "out to sea"]
-    help_category = "Mutinous Commands"
-
-    def func(self):
-        "Move the caller to the sea room"
 
 
 class CmdGlobeTest(Command):
@@ -168,7 +147,6 @@ class CoastalCmdSet(CmdSet):
     def at_cmdset_creation(self):
         self.add(CmdSetPosition())
         self.add(CmdFix())
-        self.add(CmdStandOff)
         self.add(CmdGlobeTest())
 
 

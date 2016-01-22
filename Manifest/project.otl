@@ -1,33 +1,4 @@
 Current Work Order
-	[_] Globe
-		: a dictionary of tuples.  
-		: probably an object/class containing the dictionary and an interface
-		: for editing and reviewing its contents.
-		[_] create a "globe object" in world.
-			[_] learn how other typeclasses can access it
-			Use a Script object -see typeclasses/scripts.py
-				: It has pretty much everything you would want to know.
-		[_] Accessible by certain commands
-			[_] @dig
-				: should update the globe with position for every new room
-				: probably manually.
-			[_] @tunnel
-				: tunnel is like @dig but will it be allowed to automatically
-				: choose positions?
-				:
-				: I doubt it because I don't think I'm prepared to make the
-				: globe actualy responsible for enforcing cartesian reality
-			[_] move_to()
-				: need to be able to look up positions in order to see where
-				: to move an object
-			[_] CmdFix
-				: a player/builder command to see current coordinates
-				: an ingame version of this 
-		Global properties?
-			It might also be possible to develop other properties of the globe
-			such as currents and weather and climate patterns.  I'm not sure.
-	[_] Website and Portal
-		[_] make a cgi to display the manifest/project.html on the portal
 	[_] Navigation Project
 		[_] Steer over time
 			: so that it sets the course and then begins to move over time...
@@ -41,6 +12,8 @@ Current Work Order
 			:Ie. so that if a sailor jumps overboard at sea, they will end
 			:up in the sea rather than back in the room where they boarded
 			:or something.
+	[_] Website and Portal
+		[_] make a cgi to display the manifest/project.html on the portal
 	[_] coastal room
 		definitely should require a position
 		maybe use a script to enforce this?
@@ -142,4 +115,31 @@ Future features as in Another build alltogether probably
 	Naval organization and ranking system
 	Economy
 	WIND & WEATHER at sea, on the coast, and inland
+	[_] Globe
+		: a dictionary of tuples.  
+		: probably an object/class containing the dictionary and an interface
+		: for editing and reviewing its contents.
+		[_] create a "globe object" in world.
+			[_] learn how other typeclasses can access it
+			Use a Script object -see typeclasses/scripts.py
+				: It has pretty much everything you would want to know.
+		[_] Accessible by certain commands
+			[_] @dig
+				: should update the globe with position for every new room
+				: probably manually.
+			[_] @tunnel
+				: tunnel is like @dig but will it be allowed to automatically
+				: choose positions?
+				:
+				: I doubt it because I don't think I'm prepared to make the
+				: globe actualy responsible for enforcing cartesian reality
+			[_] move_to()
+				: need to be able to look up positions in order to see where
+				: to move an object
+			[_] CmdFix
+				: a player/builder command to see current coordinates
+				: an ingame version of this 
+		Global properties?
+			It might also be possible to develop other properties of the globe
+			such as currents and weather and climate patterns.  I'm not sure.
 Reference
