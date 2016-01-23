@@ -41,25 +41,6 @@ class CmdFix(Command):
         self.caller.msg(room)
 
 
-class CmdGlobeTest(Command):
-    """
-    Proof that I know how to access the globe object in game:
-
-    Usage:
-      testglobe
-
-    This will ask the globe to respond with a message confirming its there.
-    """
-    key = "testglobe"
-    help_category = "Mutinous Commands"
-
-    def func(self):
-        "Looking at the globe"
-        print "testing the globe"
-        test = globe.testGlobe()
-        self.caller.msg(test)
-
-
 class CmdSetPosition(Command):
     """
     Set the global position of a room.
@@ -245,12 +226,9 @@ class CmdNorth(Command):
 
 
 class CmdSouth(CmdNorth):
-    # Can I just inherit from North and alter the name and vector????
     key = "south"
     aliases = ["s", ]
     vector = (0, 1)
-    # ...
-    # OMG my world just exploded into rainbows and unicorns.
 
 
 class CmdEast(CmdNorth):

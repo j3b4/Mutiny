@@ -143,7 +143,6 @@ class CmdSteer(Command):
             # self.msg("Available exits include: %s." % exits)
             vessel.execute_cmd(self.direction, sessid=self.caller.sessid)
             print("\nExecuting a command: %s\n" % str(self.direction))
-            # This works but its a terrible idea. Cannot stand
 
 
 class CmdSetVessel(CmdSet):
