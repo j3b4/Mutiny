@@ -6,7 +6,8 @@ Rooms are simple containers that has no location of their own.
 """
 
 from evennia import DefaultRoom
-from commands.default_cmdsets import ChargenCmdset
+from commands.searoom import CoastalCmdSet
+from commands.searoom import NavCmdSet
 
 
 class Room(DefaultRoom):
@@ -22,38 +23,16 @@ class Room(DefaultRoom):
     pass
 
 
-class ChargenRoom(Room):
-    """
-    This room class is used by character-generation rooms. It makes
-    the ChargenCmdset available.
-    """
-    def at_object_creation(self):
-        "This is called only at first creation."
-        self.cmdset.add(ChargenCmdset, permanent=True)
-
-
 class SeaRoom(Room):
     'Common Parent of master and dynamic sea rooms if needed.'
-    pass
+    def at_object_creation(self):
+        self.cmdset.add_default(NavCmdSet)
+        self.db.coordinates = None
+        self.tags.add("searoom")
 
-
-class MasterSeaRoom(SeaRoom):
-    '''
-    Every coastal room with the exit "offshore" or equivalent should
-    lead to this room (the MSR).  However if any vessel enters
-    the MSR it should trigger a dynamic sea room (DSR) to spawn and the
-    vessel be immediately moved to the new DSR. The DSR will have a set of
-    coordinates derived from the originating coastal room.
-
-    If the coordinates of the to be spawned DSR match an existing DSR, then no
-    new room should spawn and instead the vessel should be moved to the
-    existing one.  This will allow for ships to meet eachother.
-
-    The only hook I can think of right now that would be necessary would be
-    'at_object_receive'
-    It's appropriate to apply to all objects not simply 'vessels'.
-    '''
-    pass
+    def at_object_receive(self, new_arrival, source_location):
+        new_arrival.db.position = self.db.coordinates
+        pass
 
 
 class DynamicRoom(SeaRoom):
@@ -63,3 +42,45 @@ class DynamicRoom(SeaRoom):
     apply here etc.
     '''
     pass
+
+
+# Coastal Rooms
+class CoastalRoom(SeaRoom):
+    """
+    Coastal rooms need to be defined with co-ordinates so that they
+    can pass that to vessels that leave them for the sea room giving the
+    vessel its starting position at Sea.
+
+    Finally the Sea will need to know where everyroom is so as to deliver
+    vessels to the right coastal room as an exit.
+
+    Also I'd like Coastal rooms to have a tag that makes them passable
+    by vessels. Default rooms can be presumed to be landrooms and not
+    so passable.  Rivers would make an interesting subset of this.
+    """
+    def at_object_creation(self):
+        self.db.coastline = ""
+        self.db.position = (None, None)
+        # add the command set
+        self.cmdset.add_default(CoastalCmdSet)
+
+    def at_object_receive(self, new_arrival, source_location):
+        """
+        We need to give the arrival our coordinates when then arrive.
+        Set the new arrivals position to match the rooms
+        """
+
+        position = self.db.position
+
+        # debugging messages
+        self.msg_contents(
+            "%s arrives in this room %s"
+            % (new_arrival.name, position))
+        new_arrival.msg_contents("%s arrives in this room %s"
+                                 % (new_arrival.name, position))
+        # set position on new arrival
+        new_arrival.db.position = position
+
+        pass
+
+# Last line

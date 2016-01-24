@@ -2,7 +2,7 @@
 
 from evennia import Command, CmdSet
 from evennia import default_cmds
-from typeclasses.sea import CmdSetPosition
+from commands.searoom import CmdSetPosition
 
 # from evennia import default_cmds
 

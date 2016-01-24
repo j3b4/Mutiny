@@ -37,6 +37,11 @@ Current Work Order
 			rooms have 'coordinates'
 			objects have 'positions'
 		maybe use a script to enforce this?
+			: First coastal command will be to go to sea.  Board and Debark
+			: are connected to vessels.  Not sure what other commands will be
+			: coastal only until I implement a higher level of coastal
+			: navigation.  later things like anchor, beach, dock, launch
+			: etc...
 	[_] default room
 		should it have a position?
 Done (for now)
@@ -132,6 +137,11 @@ Future features as in Another build alltogether probably
 		: able to specify by key which one I want to board. I.e. board boat 
 		: vs board skiff.
 	Ship to ship combat
+	Rivers
+	Water Exits
+		: This is actually pretty important early on. Vessels can only move
+		: through water exits, AND non vessel cannot move through.  This might
+		: be enough to define coastal cruising and river navigation.
 	Naval organization and ranking system
 	Economy
 	WIND & WEATHER at sea, on the coast, and inland
