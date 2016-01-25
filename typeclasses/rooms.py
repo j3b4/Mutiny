@@ -6,6 +6,7 @@ Rooms are simple containers that has no location of their own.
 """
 
 from evennia import DefaultRoom
+# from evennia import create_script
 from commands.searoom import CoastalCmdSet
 from commands.searoom import NavCmdSet
 
@@ -41,7 +42,54 @@ class DynamicRoom(SeaRoom):
     room that players should ever see.  So for instance the command sets should
     apply here etc.
     '''
-    pass
+
+    def at_object_leave(self, moved_obj, target_location):
+        print "%s left" % moved_obj
+        # if moved_obj was a vessel
+        if not moved_obj.is_typeclass("typeclasses.vessel.VesselObject"):
+            print "not a vessel though so no worries"
+            return
+
+        # then search contents of room for any other vessels
+        print "Remaining objects: "
+        # print self.contents
+        vessel_count = 0
+        for floater in self.contents:
+            print floater
+            if floater.is_typeclass("typeclasses.vessel.VesselObject"):
+                vessel_count = vessel_count + 1
+        print "vessel count = %s" % vessel_count
+        # if any vessels remain, then return
+        if vessel_count > 1:
+            return
+        else:
+            # if none, then add the script
+            self.scripts.add("typeclasses.scripts.CleanSeaRoom")
+
+    def at_object_receive(self, moved_obj, source_location):
+        print "%s has arrived from %s" % (moved_obj, source_location)
+        if self.scripts.get("CleanUp"):
+            if not moved_obj.is_typeclass("typeclasses.vessel.VesselObject"):
+                print "not a vessel though so no worries"
+                return
+            else:
+                print "A vessel arrived so stop the cleanup"
+                self.scripts.delete("CleanUp")
+        else:
+            print "CleanUp wasn't running so no worries."
+
+        '''
+    def SelfClean(self):
+        print "Self cleaning."
+        if self.contents:
+            print "First move all objects to limbo"
+            for floater in self.contents:
+                clean = floater.move_to("#2")  # #2 is limbo for now
+                if not clean:
+                    print "Failed to clean out %s" % floater
+                    break
+        self.delete()
+        '''
 
 
 # Coastal Rooms

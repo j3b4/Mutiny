@@ -73,12 +73,7 @@ class VesselObject(DefaultObject):
         announce the view to the contents of the room.
 
         """
-        print("\n\nat_after_move...\n\n")
-        # TODO: figure out why this doesn't show up anymore
         self.msg_contents(self.at_look(self.location))
-        # self.location.msg_contents("I just completeed at_after_move!")
-        # self.msg(self.at_look(self.location))
-        # amazing this works perfectly!
 
     def at_object_receive(self, moved_obj, source_location):
         self.cmdset.add(CmdSetLook, permanent=True)
