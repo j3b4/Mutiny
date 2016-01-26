@@ -235,41 +235,6 @@ class CmdSouthWest(CmdNorth):
     vector = (-1, 1)
 
 
-class CmdLandFall(Command):
-    """
-    Make Landfall - to display available exit to a coastal room and
-    or move the caller to the coastal room that matches its current
-    position.
-
-    Assume the use of the command from within a vessel
-
-    Usage:
-        steer landfall
-    """
-    key = "landfall"
-    alisases = ["lf", ]
-    help_category = "Mutinous Commands"
-
-    def func(self):
-        # this all becomes nonsense when sailor is in a vessel
-        print("Attempting Landfall")
-        vessel = self.caller
-        sea = vessel.location
-        position = tuple(vessel.db.position)
-        print ("from position: %s" % str(position))
-        globe = sea.db.globe
-
-        if position in globe:
-            coast_num = globe[position]
-            # need to get the object
-            coast_room = self.caller.search(coast_num)
-            vessel.msg_contents("You will land at %s(%s)" %
-                                (coast_room.name, coast_num))
-            vessel.move_to(coast_room)
-        else:
-            vessel.msg_contents("Nothing here but water, everywhere.")
-
-
 class NavCmdSet(CmdSet):
     "This adds the Navigation commands to be attached to sea rooms"
     key = "Navigation Commands"
