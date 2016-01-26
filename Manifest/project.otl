@@ -29,18 +29,35 @@ Current Work Order
 						[_] move them to an arbitrary holder
 					[_] deletes room & self
 	[_] Navigation Project
-		[_] Automate Landfall
-			: automatically "landfall" when entering a coastal
-			: coordinate.  that would stop me from blithely sailing inland.  
+		[_] Define coastlines
+			In a room object?  
+				Coastal rooms prohibit certain directional travel?
+				or inland rooms prohibit arrival
+					on a move attempt
+						: if the direction set would cause the ship to land on
+						: the coast line, belay with a warning.
+					need dryland room typeclass
+				or Coastal rooms do not offer Nav cmds
+					you have to deliberately set out from them?
+					by using an exit
+					ie. offshore? Just like before
+					Then what is the offshore room coordinates?
+			In a database
+				The db designates out of bounds - unnavigable waters.
+					So you cannot sail inland from a coastal room.
+		[_] Create coastal rooms
+			: that would stop me from blithely sailing inland.  
 		[_] Steer over time
 			: so that it sets the course and then begins to move over time...
 			: (see delayed execeution tut) so I should be able to "steer N"
 			: and then the ship will sail N, slowly updating position
 			: periodically.
-		[_] object contents should all automatically inherit position. 
+		[X] object contents should all automatically inherit position. 
 			:Ie. so that if a sailor jumps overboard at sea, they will end
 			:up in the sea rather than back in the room where they boarded
 			:or something.
+			on_object_receive 
+			done I think, for all Searooms
 	[_] Website and Portal
 		[_] make a cgi to display the manifest/project.html on the portal
 	[_] coastal room

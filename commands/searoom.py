@@ -2,6 +2,7 @@
 
 from evennia import CmdSet, Command
 from evennia.utils import search
+from evennia.utils import inherits_from
 from evennia.utils.create import create_object
 import re
 
@@ -125,8 +126,7 @@ class CmdSetPosition(Command):
 
 class CmdNorth(Command):
     """
-    These commands move the vessel calling them on the global grid by
-    incrementing their position.
+    This command moves the vessel in the direction stated.
 
     Usage: <steer> <direction>
         Note you have to use this command with "steer" if you are onboard a
@@ -145,23 +145,16 @@ class CmdNorth(Command):
         key = self.key
         vector = self.vector
 
-        # print("Tried to go %s" % key)
-        # print("Vector = %s" % str(vector))
-
         # get position
         position = vessel.db.position
-        # vessel.msg_contents("start position =  %s" % str(position))
 
         # parse
-        # valid_headings = ("n","e","s","w",)
         vessel.msg_contents("Heading %s" % key)
 
         # add vector to position
-        # vessel.msg_contents("vector =  %s" % str(vector))
         position = [(position[0] + vector[0]), (position[1] + vector[1])]
 
         # announce results
-        # position = ','.join(str(x) for x in position)
         vessel.msg_contents("New position = %s" % str(position))
         vessel.db.position = position
 
@@ -173,6 +166,12 @@ class CmdNorth(Command):
         if room:
             vessel.msg_contents("%s already exists." % room)
             room = room[0]
+            # TODO: fix this^
+            if inherits_from(room, "typeclasses.rooms.DryLandRoom"):
+                vessel.msg_contents("It's dry land!")
+                return
+            else:
+                print "This room is navigable."
             vessel.msg_contents("Moving to %s" % room)
             vessel.move_to(room)
         elif vessel.location.is_typeclass("rooms.DynamicRoom"):
@@ -241,7 +240,7 @@ class NavCmdSet(CmdSet):
     priority = 1
 
     def at_cmdset_creation(self):
-        self.add(CmdLandFall())
+        self.add(CmdSetPosition())
         self.add(CmdFix())
         self.add(CmdNorth())
         self.add(CmdSouth())
@@ -259,7 +258,6 @@ class CoastalCmdSet(CmdSet):
     priority = 1
 
     def at_cmdset_creation(self):
-        self.add(CmdSetPosition())
-        self.add(CmdFix())
+        pass
 
 # Last line

@@ -24,16 +24,24 @@ class Room(DefaultRoom):
     pass
 
 
-class SeaRoom(Room):
+class Outside(Room):
+    """
+    Sea rooms and dry land will inherit from this. Probably where weather
+    effects will be defined.
+
+    All Outside rooms have global coordinates and give their position to any
+    object they receive.
+    """
+    def at_object_receive(self, new_arrival, source_location):
+        new_arrival.db.position = self.db.coordinates
+
+
+class SeaRoom(Outside):
     'Common Parent of master and dynamic sea rooms if needed.'
     def at_object_creation(self):
         self.cmdset.add_default(NavCmdSet)
         self.db.coordinates = None
         self.tags.add("searoom")
-
-    def at_object_receive(self, new_arrival, source_location):
-        new_arrival.db.position = self.db.coordinates
-        pass
 
 
 class DynamicRoom(SeaRoom):
@@ -96,10 +104,9 @@ class CoastalRoom(SeaRoom):
     by vessels. Default rooms can be presumed to be landrooms and not
     so passable.  Rivers would make an interesting subset of this.
     """
-    def at_object_creation(self):
-        pass
 
-    def at_object_receive(self, new_arrival, source_location):
-        pass
 
+# Dry land
+class DryLandRoom(Outside):
+    pass
 # Last line
