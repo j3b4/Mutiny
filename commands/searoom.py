@@ -7,7 +7,7 @@ from evennia.utils.create import create_object
 import re
 
 """
-These should apply to Sea Rooms and to Master Sea Rooms
+These should apply to Sea Rooms
 """
 
 
@@ -147,7 +147,7 @@ class CmdNorth(Command):
 
         # get position
         position = vessel.db.position
-        print "original position = %s" % position
+        vessel.msg_contents("original position = %s" % position)
 
         # parse
         vessel.msg_contents("Heading %s" % key)
@@ -164,7 +164,7 @@ class CmdNorth(Command):
                                               value=position)
         # move to room
         if room:
-            # If the room exists, we go there.
+            # If the destination room exists, we go there.
             vessel.msg_contents("%s already exists." % room)
             room = room[0]
             # TODO: fix this^ throw on multimatch rooms there should only
@@ -175,23 +175,22 @@ class CmdNorth(Command):
                 return
             # but if not dry land... lets get on with it and move
             else:
-                print "The room at %s is navigable." % position
-            vessel.msg_contents("Moving to %s" % room)
-            vessel.move_to(room)
-            vessel.db.position = position
-            # not sure why I need this since the room should provide pos.
-        elif vessel.location.is_typeclass("rooms.DynamicRoom"):
-            # The target room does not exists AND we are in a Dynamic room.
-            # starting in a dynaroom means that the room changes coordinates
-            # but we don't change rooms.
-            vessel.msg_contents("updating room coordinates to %s" % position)
+                vessel.msg_contents("Moving to %s" % room)
+                vessel.move_to(room)
+                return
+        elif (vessel.location.is_typeclass("rooms.DynamicRoom") and
+                len(vessel.location.contents) == 1):
+            # This means we are in a dynamic room alone
+            vessel.msg_contents("updating room coordinates to %s"
+                                % position)
             vessel.location.db.coordinates = position
             # have to update vessel position to match rooms new position
             vessel.db.position = position
-
-        else:
+            return
+        elif len(vessel.location.contents) > 1:
+            vessel.msg_contents("but there are objects in this room")
             # create the room
-            vessel.msg_contents("Creating the room at %s" % position)
+            vessel.msg_contents("Creating new room at %s" % position)
             room = create_object(typeclass="rooms.DynamicRoom",
                                  key=str("dynasea"),
                                  location=None,
@@ -199,6 +198,8 @@ class CmdNorth(Command):
             room.db.coordinates = position
             vessel.msg_contents("Moving to %s" % room)
             vessel.move_to(room)
+            return
+        print "Something else went wrong"
 
 
 class CmdSouth(CmdNorth):

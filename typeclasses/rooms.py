@@ -40,8 +40,6 @@ class SeaRoom(Outside):
     'Common Parent of master and dynamic sea rooms if needed.'
     def at_object_creation(self):
         self.cmdset.add_default(NavCmdSet)
-        self.db.coordinates = None
-        self.tags.add("searoom")
 
 
 class DynamicRoom(SeaRoom):
@@ -51,8 +49,8 @@ class DynamicRoom(SeaRoom):
     apply here etc.
     '''
 
+    '''
     def at_object_leave(self, moved_obj, target_location):
-        '''
         This function was set up to handle deletion of temporary rooms when no
         longer needed.  not
         print "%s left" % moved_obj
@@ -76,15 +74,7 @@ class DynamicRoom(SeaRoom):
         else:
             # if none, then add the script
             self.scripts.add("typeclasses.scripts.CleanSeaRoom")
-        '''
-
-    def at_object_receive(self, moved_obj, source_location):
-        super(DynamicRoom, self).at_object_receive(moved_obj,
-                                                   source_location)
-        print "%s has arrived from %s" % (moved_obj, source_location)
-        if moved_obj.is_typeclass("typeclasses.vessel.VesselObject"):
-            print "a vessel has arrived at %s" % self.db.coordinates
-
+    '''
     def at_server_reload(self):
         # this cleans up extra dyanmic rooms if they are not being used.
         if not self.contents:
@@ -106,6 +96,7 @@ class CoastalRoom(SeaRoom):
     by vessels. Default rooms can be presumed to be landrooms and not
     so passable.  Rivers would make an interesting subset of this.
     """
+    pass
 
 
 # Dry land
