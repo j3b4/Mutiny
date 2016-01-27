@@ -2,23 +2,8 @@ Current Work Order
 	[_] Dynamicaly created Sea rooms
 		: Upon entering the Sea - a vessel is given a new unique room.  
 		Dynamic Room
-			: According to this theory, the room will hold the vessel and 
-		Pruned
-			Master Sea Room
-				: at recieve object, immediately spawn a dyanmic room with a
-				: coordinate property provided by the last coastal room the
-				: vessel was in. 
-				Revision
-					I don't think this is necessary anymore 
-					Instead creat a new room with each move.
-			[_] Dynamic rooms
-			: interesting idea I was thinkign of making 'landfal' search the
-			: db a room that matched current coordingates. If the vessel
-			: position matches a room's coordinates, then move the vessel
-			: direectly to that room.  This will work for landfall as well as
-			: for ships meeting, finally if dynamic rooms persist in a cache
-			: for a time, it would allow for picking up flotsam, or persons
-			: overboard...
+		: According to this theory, the room will hold the vessel and 
+		: update its own position as needed.
 			[_] Clean up
 				Script
 					[_] triggered by the absence of any vessels
@@ -29,6 +14,12 @@ Current Work Order
 						[_] move them to an arbitrary holder
 					[_] deletes room & self
 	[_] Navigation Project
+		[X] Problem with vessel updating position even when move fails.
+		[_] Nav commands should not be available to non-vessels
+			Idea: 
+			: vessels provide a command "take the conn; conn" that then adds a
+			: command set to the player with all the directional commands.
+			: "conn" will check that the player is INSIDE the vessel or quit.
 		[_] Define coastlines
 			In a room object?  
 				Coastal rooms prohibit certain directional travel?
