@@ -70,22 +70,51 @@ class Script(DefaultScript):
                   at the current time. If is_valid() returns False, the running
                   script is stopped and removed from the game. You can use this
                   to check state changes (i.e. an script tracking some combat
-                  stats at regular intervals is only valid to run while there is
-                  actual combat going on).
-      at_start() - Called every time the script is started, which for persistent
-                  scripts is at least once every server start. Note that this is
-                  unaffected by self.delay_start, which only delays the first
-                  call to at_repeat().
+                  stats at regular intervals is only valid to run while there
+                  is actual combat going on).
+      at_start() - Called every time the script is started, which for
+                  persistent scripts is at least once every server start. Note
+                  that this is unaffected by self.delay_start, which only
+                  delays the first call to at_repeat().
       at_repeat() - Called every self.interval seconds. It will be called
-                  immediately upon launch unless self.delay_start is True, which
-                  will delay the first call of this method by self.interval
-                  seconds. If self.interval==0, this method will never
-                  be called.
+                  immediately upon launch unless self.delay_start is True,
+                  which will delay the first call of this method by
+                  self.interval seconds. If self.interval==0, this method will
+                  never be called.
       at_stop() - Called as the script object is stopped and is about to be
-                  removed from the game, e.g. because is_valid() returned False.
-      at_server_reload() - Called when server reloads. Can be used to
-                  save temporary variables you want should survive a reload.
+                  removed from the game, e.g. because is_valid() returned
+                  False.  at_server_reload() - Called when server reloads. Can
+                  be used to save temporary variables you want should survive a
+                  reload.
       at_server_shutdown() - called at a full server shutdown.
 
     """
     pass
+
+
+class CleanSeaRoom(Script):
+    """
+    The CleanSeaRoom Script is added to every new dynamic sea room upon
+    creation and fires when the last vessel object leaves the room. It then
+    starts a timer. If no new vessel arrives in the room before the timer
+    expires then all flotsam (floating objects) in the room are moved to an
+    arbitrary room and the room itself is deleted.
+
+    Not using it for now. Maybe it's totally unneccesary.
+    """
+
+    def at_script_creation(self):
+        self.key = "CleanUp"
+        self.interval = 20
+        self.repeats = 1
+        self.start_delay = True
+        print "%s will delete %s in %s seconds" % (self.key,
+                                                   self.obj.dbref,
+                                                   self.interval)
+
+    def at_repeat(self):
+        print "%s secs later. Time to clean up. Unlesss..." % self.interval
+        self.obj.delete()
+        # self.obj.SelfClean()
+
+# Last Line

@@ -14,14 +14,7 @@ class VesselObject(DefaultObject):
         # self.db.underway = False
         # The direction the boat is sailing East or West
         self.db.testing = True
-        # 1 for West, -1 for East
-        # self.db.direction = 1
-        # The rooms that the vessel will move through
-        # #4 Eastern Shore; #5 Inlet Head;  #8 West Beach
-        # self.db.rooms = ["#4", "#5", "#8", ]
-        # NEXT TODO: Work on navigation
-        # self.scripts.add(HoveToScript)
-
+        self.permissions.add("vessel")
 
 # attempt full overload of announce_move_from
     def announce_move_from(self, destination):
@@ -73,12 +66,7 @@ class VesselObject(DefaultObject):
         announce the view to the contents of the room.
 
         """
-        print("\n\nat_after_move...\n\n")
-        # TODO: figure out why this doesn't show up anymore
         self.msg_contents(self.at_look(self.location))
-        # self.location.msg_contents("I just completeed at_after_move!")
-        # self.msg(self.at_look(self.location))
-        # amazing this works perfectly!
 
     def at_object_receive(self, moved_obj, source_location):
         self.cmdset.add(CmdSetLook, permanent=True)

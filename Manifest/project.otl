@@ -1,49 +1,76 @@
 Current Work Order
-	[_] Globe
-		: a dictionary of tuples.  
-		: probably an object/class containing the dictionary and an interface
-		: for editing and reviewing its contents.
-		[_] create a "globe object" in world.
-			[_] learn how other typeclasses can access it
-			Use a Script object -see typeclasses/scripts.py
-				: It has pretty much everything you would want to know.
-		[_] Accessible by certain commands
-			[_] @dig
-				: should update the globe with position for every new room
-				: probably manually.
-			[_] @tunnel
-				: tunnel is like @dig but will it be allowed to automatically
-				: choose positions?
-				:
-				: I doubt it because I don't think I'm prepared to make the
-				: globe actualy responsible for enforcing cartesian reality
-			[_] move_to()
-				: need to be able to look up positions in order to see where
-				: to move an object
-			[_] CmdFix
-				: a player/builder command to see current coordinates
-				: an ingame version of this 
-		Global properties?
-			It might also be possible to develop other properties of the globe
-			such as currents and weather and climate patterns.  I'm not sure.
-	[_] Website and Portal
-		[_] make a cgi to display the manifest/project.html on the portal
+	[_] Dynamicaly created Sea rooms
+		: Upon entering the Sea - a vessel is given a new unique room.  
+		Dynamic Room
+			: According to this theory, the room will hold the vessel and 
+		Pruned
+			Master Sea Room
+				: at recieve object, immediately spawn a dyanmic room with a
+				: coordinate property provided by the last coastal room the
+				: vessel was in. 
+				Revision
+					I don't think this is necessary anymore 
+					Instead creat a new room with each move.
+			[_] Dynamic rooms
+			: interesting idea I was thinkign of making 'landfal' search the
+			: db a room that matched current coordingates. If the vessel
+			: position matches a room's coordinates, then move the vessel
+			: direectly to that room.  This will work for landfall as well as
+			: for ships meeting, finally if dynamic rooms persist in a cache
+			: for a time, it would allow for picking up flotsam, or persons
+			: overboard...
+			[_] Clean up
+				Script
+					[_] triggered by the absence of any vessels
+						[X] only "at object leave"
+						[_] interupted by "at object receive" 
+							: only if new object is a vessel
+					[_] cleans up all non-vessel objects
+						[_] move them to an arbitrary holder
+					[_] deletes room & self
 	[_] Navigation Project
+		[_] Define coastlines
+			In a room object?  
+				Coastal rooms prohibit certain directional travel?
+				or inland rooms prohibit arrival
+					on a move attempt
+						: if the direction set would cause the ship to land on
+						: the coast line, belay with a warning.
+					need dryland room typeclass
+				or Coastal rooms do not offer Nav cmds
+					you have to deliberately set out from them?
+					by using an exit
+					ie. offshore? Just like before
+					Then what is the offshore room coordinates?
+			In a database
+				The db designates out of bounds - unnavigable waters.
+					So you cannot sail inland from a coastal room.
+		[_] Create coastal rooms
+			: that would stop me from blithely sailing inland.  
 		[_] Steer over time
 			: so that it sets the course and then begins to move over time...
 			: (see delayed execeution tut) so I should be able to "steer N"
 			: and then the ship will sail N, slowly updating position
 			: periodically.
-		[_] Automate Landfall
-			: automatically "landfall" when entering a coastal
-			: coordinate.  that would stop me from blithely sailing inland.  
-		[_] object contents should all automatically inherit position. 
+		[X] object contents should all automatically inherit position. 
 			:Ie. so that if a sailor jumps overboard at sea, they will end
 			:up in the sea rather than back in the room where they boarded
 			:or something.
+			on_object_receive 
+			done I think, for all Searooms
+	[_] Website and Portal
+		[_] make a cgi to display the manifest/project.html on the portal
 	[_] coastal room
 		definitely should require a position
+		use a property unique to rooms 
+			rooms have 'coordinates'
+			objects have 'positions'
 		maybe use a script to enforce this?
+			: First coastal command will be to go to sea.  Board and Debark
+			: are connected to vessels.  Not sure what other commands will be
+			: coastal only until I implement a higher level of coastal
+			: navigation.  later things like anchor, beach, dock, launch
+			: etc...
 	[_] default room
 		should it have a position?
 Done (for now)
@@ -139,7 +166,39 @@ Future features as in Another build alltogether probably
 		: able to specify by key which one I want to board. I.e. board boat 
 		: vs board skiff.
 	Ship to ship combat
+	Rivers
+	Water Exits
+		: This is actually pretty important early on. Vessels can only move
+		: through water exits, AND non vessel cannot move through.  This might
+		: be enough to define coastal cruising and river navigation.
 	Naval organization and ranking system
 	Economy
 	WIND & WEATHER at sea, on the coast, and inland
+	[_] Globe
+		: a dictionary of tuples.  
+		: probably an object/class containing the dictionary and an interface
+		: for editing and reviewing its contents.
+		[_] create a "globe object" in world.
+			[_] learn how other typeclasses can access it
+			Use a Script object -see typeclasses/scripts.py
+				: It has pretty much everything you would want to know.
+		[_] Accessible by certain commands
+			[_] @dig
+				: should update the globe with position for every new room
+				: probably manually.
+			[_] @tunnel
+				: tunnel is like @dig but will it be allowed to automatically
+				: choose positions?
+				:
+				: I doubt it because I don't think I'm prepared to make the
+				: globe actualy responsible for enforcing cartesian reality
+			[_] move_to()
+				: need to be able to look up positions in order to see where
+				: to move an object
+			[_] CmdFix
+				: a player/builder command to see current coordinates
+				: an ingame version of this 
+		Global properties?
+			It might also be possible to develop other properties of the globe
+			such as currents and weather and climate patterns.  I'm not sure.
 Reference
