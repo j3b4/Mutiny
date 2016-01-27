@@ -147,11 +147,6 @@ class CmdNorth(Command):
 
         # get position
         position = vessel.db.position
-        if position != vessel.location.db.coordinates:
-            vessel.msg_contents(
-                "Vessel position %s mismatch with starting coordinates %s"
-                % (position, vessel.location.db.coordinates))
-            return
         print "original position = %s" % position
 
         # parse
