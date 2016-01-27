@@ -38,6 +38,17 @@ class Exit(DefaultExit):
                                         which case that will simply be echoed.
     """
     def at_object_creation(self):
+        # hiding this in case it can be solved by simply prioritising vessel
+        # navigation commands over exits.
         self.locks.add("traverse: NOT perm(vessel)")
+        # self.db.err_traverse = "Dry land!"
+        # TODO: echo this to vessel contents.
+        # probably best to simply build vessels to echo all msgs they receive.
         # vessels cannot use normal default exits.
-    pass
+
+    def at_failed_traverse(exit, vessel):
+        # Tell the occupants of a vessel why move through exit failed.
+        vessel.msg_contents("The %s cannot sail on to dry land" % vessel)
+        print "This is where I would put a message to the boat"
+        print "exit = %s" % exit
+        print "vessel = %s" % vessel

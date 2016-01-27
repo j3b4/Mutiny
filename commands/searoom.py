@@ -12,37 +12,37 @@ These should apply to Sea Rooms and to Master Sea Rooms
 
 
 class CmdFix(Command):
-    """
-    This returns the coordinates of the caller which should be set by coastal
-    rooms when any object enters the room.
+        """
+        This returns the coordinates of the caller which should be set by
+        coastal rooms when any object enters the room.
 
-    Usage:
-      fix <coordinates>
+        Usage:
+        fix <coordinates>
 
-    E.G.:
-      fix 6,7
+        E.G.:
+        fix 6,7
 
-      > At 6,7 is room #45
+        > At 6,7 is room #45
 
-    """
-    key = "fix"
-    help_category = "Mutinous Commands"
+        """
+        key = "fix"
+        help_category = "Mutinous Commands"
 
-    def func(self):
-        "Ask the globe module to look in the atlas:"
-        position = self.args
-        if not position:
-            print "usage: fix <x,y>"
-            return
-        print position, type(position)
-        # must send a tuple to the globe module
-        position = map(int, position.split(','))
-        position = tuple(position)
-        # "Find the room by searching the DB for an object"
-        # "With the correct position attribute."
-        room = search.search_object_attribute(key="coordinates",
-                                              value=position)
-        self.caller.msg(room)
+        def func(self):
+            "Ask the globe module to look in the atlas:"
+            position = self.args
+            if not position:
+                print "usage: fix <x,y>"
+                return
+            print position, type(position)
+            # must send a tuple to the globe module
+            position = map(int, position.split(','))
+            position = tuple(position)
+            # "Find the room by searching the DB for an object"
+            # "With the correct position attribute."
+            room = search.search_object_attribute(key="coordinates",
+                                                  value=position)
+            self.caller.msg(room)
 
 
 class CmdSetPosition(Command):
@@ -117,11 +117,11 @@ class CmdSetPosition(Command):
 
         if not coordinates:  # nothing to set just display rooms postition
             caller.msg("Coordinates of %s is %s" % (target.name,
-                       target.db.coordinates))
+                                                    target.db.coordinates))
         else:  # room target and position both supplied. Time to display.
             target.db.coordinates = coordinates
             caller.msg("New position of %s is %s" % (target.name,
-                       target.db.coordinates))
+                                                     target.db.coordinates))
 
 
 class CmdNorth(Command):
@@ -147,6 +147,12 @@ class CmdNorth(Command):
 
         # get position
         position = vessel.db.position
+        if position != vessel.location.db.coordinates:
+            vessel.msg_contents(
+                "Vessel position %s mismatch with starting coordinates %s"
+                % (position, vessel.location.db.coordinates))
+            return
+        print "original position = %s" % position
 
         # parse
         vessel.msg_contents("Heading %s" % key)
@@ -156,7 +162,6 @@ class CmdNorth(Command):
 
         # announce results
         vessel.msg_contents("New position = %s" % str(position))
-        vessel.db.position = position
 
         # Look up room then move to it or create it and move to it
         # Look up room
@@ -164,21 +169,30 @@ class CmdNorth(Command):
                                               value=position)
         # move to room
         if room:
+            # If the room exists, we go there.
             vessel.msg_contents("%s already exists." % room)
             room = room[0]
-            # TODO: fix this^
+            # TODO: fix this^ throw on multimatch rooms there should only
+            # ever be one room per coordinates
+            # unless it is dry land
             if inherits_from(room, "typeclasses.rooms.DryLandRoom"):
-                vessel.msg_contents("It's dry land!")
+                vessel.msg_contents("It's dry land so cancelling move.")
                 return
+            # but if not dry land... lets get on with it and move
             else:
-                print "This room is navigable."
+                print "The room at %s is navigable." % position
             vessel.msg_contents("Moving to %s" % room)
             vessel.move_to(room)
+            vessel.db.position = position
+            # not sure why I need this since the room should provide pos.
         elif vessel.location.is_typeclass("rooms.DynamicRoom"):
+            # The target room does not exists AND we are in a Dynamic room.
             # starting in a dynaroom means that the room changes coordinates
             # but we don't change rooms.
-            vessel.msg_contents("updating room coordinates to " % position)
+            vessel.msg_contents("updating room coordinates to %s" % position)
             vessel.location.db.coordinates = position
+            # have to update vessel position to match rooms new position
+            vessel.db.position = position
 
         else:
             # create the room

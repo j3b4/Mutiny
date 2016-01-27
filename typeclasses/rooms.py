@@ -79,6 +79,8 @@ class DynamicRoom(SeaRoom):
         '''
 
     def at_object_receive(self, moved_obj, source_location):
+        super(DynamicRoom, self).at_object_receive(moved_obj,
+                                                   source_location)
         print "%s has arrived from %s" % (moved_obj, source_location)
         if moved_obj.is_typeclass("typeclasses.vessel.VesselObject"):
             print "a vessel has arrived at %s" % self.db.coordinates
