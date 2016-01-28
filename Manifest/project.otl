@@ -1,4 +1,23 @@
 Current Work Order
+	Fix Coastal Cruising
+		: This is caused by the fact that my "navigation commands" are bare
+		: directions and therefore conflict unsurprisingly with directional
+		: exits.  But this is unnessessary. Steering a ship should only be
+		: done from INSIDE a vessel object which should have no internal exits
+		: with cardinal names.
+		:
+		: SO this probably provides my final justification for relocating all
+		: nav commands from the sea rooms to the vessel.  But not attach them
+		: to the vessel but instead make them available to a character, on
+		: board, upon issuing a particular command.
+		:
+		: Eg.  "Take the Helm"  which adds a command set which lets the driver
+		: steer the ship in cardinal directions.  This in turn makes the ship
+		: move according to the coordinate system but does not require the
+		: ship to access exits. This would also remove the need to "lock"
+		: exits agains vessel traffic.
+	[_] % Conning Mode
+		this is the fix.
 	[_] % World Building Tools
 		Require coordinates
 			: Every "Outside" room should have coordinates
@@ -9,6 +28,7 @@ Current Work Order
 				for special rooms not to have coordinates
 				or for interior rooms maybe
 	[_] 60% Navigation Project
+		Test transition from coastal to coastal rooms
 		[_] % Quieter travel
 			No room announcements
 			Except:
