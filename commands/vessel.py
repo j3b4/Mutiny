@@ -1,8 +1,10 @@
 # Commands for Ships and Boats etc.
 
-from evennia import Command, CmdSet
 from evennia import default_cmds
-from commands.searoom import CmdSetPosition
+from evennia import CmdSet, Command
+from evennia.utils import search
+from evennia.utils import inherits_from
+from evennia.utils.create import create_object
 
 # from evennia import default_cmds
 
@@ -61,8 +63,6 @@ class CmdDebark(Command):
 
 
 class CmdLookout(default_cmds.CmdLook):
-    # Trying to overload the look command so that it behaves
-    # differently when called by a character on a vessel.
     """
     Look around yourself while on board a vessel.
 
@@ -106,64 +106,166 @@ class CmdLookout(default_cmds.CmdLook):
             self.msg(caller.at_look(target))
 
 
-class CmdSteer(Command):
-    """
-    Steer the boat in a direction.
-    In a coastal room, this will make the vessel move through any available
-    exit which matches the direction named.
+class CmdNorth(Command):
 
-    Usage: steer <direction>
-    """
+    key = "north"
 
-    key = "steer"
-    aliases = ["pilot", "pi", ]
+    """
+    This command moves the vessel in the direction stated.
+
+    Usage: <%s>
+        Note you have to use this command with "steer" if you are onboard a
+        vessel.
+    """ % key
+
+    aliases = ["n", ]
     help_category = "Mutinous Commands"
-    # locks = "cmd:cmdinside()"
-    # arg_regex = r"\s|$"
-
-    def parse(self):
-        "Get the direction to use as a command for the ship"
-        # direction = None
-        self.direction = self.args
+    # translate direction into a vector
+    vector = (0, -1)
 
     def func(self):
-        """
-        Steering the vessel
-        """
-        vessel = self.obj
-        outside = vessel.location
-        # exits = outside.exits
-        if self.caller.location == outside:
-            self.msg("You need to be on board to %s" % self.key)
+        # get the direction
+        vessel = self.caller
+        key = self.key
+        vector = self.vector
+
+        # get position
+        position = vessel.db.position
+        vessel.msg_contents("original position = %s" % position)
+
+        # parse
+        vessel.msg_contents("Heading %s" % key)
+
+        # add vector to position
+        position = [(position[0] + vector[0]), (position[1] + vector[1])]
+
+        # announce results
+        vessel.msg_contents("New position = %s" % str(position))
+
+        # Look up room then move to it or create it and move to it
+        # Look up room
+        room = search.search_object_attribute(key="coordinates",
+                                              value=position)
+        # move to room
+        if room:
+            # If the destination room exists, we go there.
+            vessel.msg_contents("%s already exists." % room)
+            room = room[0]
+            # TODO: fix this^ throw on multimatch rooms there should only
+            # ever be one room per coordinates
+            # unless it is dry land
+            if inherits_from(room, "typeclasses.rooms.DryLandRoom"):
+                vessel.msg_contents("It's dry land so cancelling move.")
+                return
+            # but if not dry land... lets get on with it and move
+            else:
+                vessel.msg_contents("Moving to %s" % room)
+                vessel.move_to(room)
+                return
+        elif (vessel.location.is_typeclass("rooms.DynamicRoom") and
+                len(vessel.location.contents) == 1):
+            # This means we are in a dynamic room alone
+            vessel.msg_contents("updating room coordinates to %s"
+                                % position)
+            vessel.location.db.coordinates = position
+            # have to update vessel position to match rooms new position
+            vessel.db.position = position
             return
-        if not self.direction:
-            self.msg("Usage: steer <direction>")
+        elif len(vessel.location.contents) > 1:
+            vessel.msg_contents("but there are objects in this room")
+            # create the room
+            vessel.msg_contents("Creating new room at %s" % position)
+            room = create_object(typeclass="rooms.DynamicRoom",
+                                 key=str("dynasea"),
+                                 location=None,
+                                 )
+            room.db.coordinates = position
+            vessel.msg_contents("Moving to %s" % room)
+            vessel.move_to(room)
             return
-        else:
-            # self.msg("You try to move %r." % self.direction)
-            # self.msg("Available exits include: %s." % exits)
-            vessel.execute_cmd(self.direction, sessid=self.caller.sessid)
+        print "Something else went wrong"
+
+
+class CmdSouth(CmdNorth):
+    key = "south"
+    aliases = ["s", ]
+    vector = (0, 1)
+
+
+class CmdEast(CmdNorth):
+    key = "east"
+    aliases = ["e", ]
+    vector = (1, 0)
+
+
+class CmdWest(CmdNorth):
+    key = "west"
+    aliases = ["w", ]
+    vector = (-1, 0)
+
+
+class CmdNorthEast(CmdNorth):
+    key = "northeast"
+    aliases = ["ne", ]
+    vector = (1, -1)
+
+
+class CmdNorthWest(CmdNorth):
+    key = "northwest"
+    aliases = ["nw", ]
+    vector = (-1, -1)
+
+
+class CmdSouthEast(CmdNorth):
+    key = "southeast"
+    aliases = ["se", ]
+    vector = (1, 1)
+
+
+class CmdSouthWest(CmdNorth):
+    key = "southwest"
+    aliases = ["sw", ]
+    vector = (-1, 1)
+
+
+class CmdSetLook(CmdSet):
+    "Add this look command to the player when they enter the vessel"
+    # TODO: Consider moving this to conning set, to simulate the requirement to
+    # get up on the conning tower to be able to realls see out there.
+
+    key = "Vessel Look"
+    priority = 1
+
+    def at_cmdset_creation(self):
+        self.add(CmdLookout())
+
+
+class CmdSetConn(CmdSet):
+    "This adds the Conning commands to be attached to sea rooms"
+    # These commands control the entire ship in a powerful "driving mode"
+    # In the future they might be unavailable ot regular users. Since they
+    # allow instant movement in any direction on the grid.
+    pass
+    key = "Conning Commands"
+    priority = 1
+
+    def at_cmdset_creation(self):
+        self.add(CmdNorth())
+        self.add(CmdSouth())
+        self.add(CmdEast())
+        self.add(CmdWest())
+        self.add(CmdNorthEast())
+        self.add(CmdNorthWest())
+        self.add(CmdSouthEast())
+        self.add(CmdSouthWest())
 
 
 class CmdSetVessel(CmdSet):
     "Add these commands to the vessel when it is created."
-
     key = "Vessel Commands"
     priority = 1
 
     def at_cmdset_creation(self):
         self.add(CmdBoard())
         self.add(CmdDebark())
-        self.add(CmdSteer())
-        # okay this is tedious but we neet a cmd from my Sea module
-        self.add(CmdSetPosition())
-
-
-class CmdSetLook(CmdSet):
-    "Add this look command to the player when they enter the vessel"
-    key = "Vessel Look"
-    priority = 1
-
-    def at_cmdset_creation(self):
-        self.add(CmdLookout())
 # last line
