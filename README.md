@@ -1,9 +1,11 @@
 # Welcome to Portage
-This is a learning project by Joshua Bearden intended to help me learn enough
-to eventually build a project tentatively titled Mutiny Mud. A multi-user text
-game summed up with the Hollywood style pitch: Horatio Hornblower meets Dwarf
-Fortress.  If that means something to you, you might be interested in this
-project.
+## "Horatio Hornblower meets Dwarf Fortress!"  
+If that means something to you, you might be interested in this project. Even if it doesn't the project might interest you if you love Naval action and adventure set during the Age of Sail (1650-1850).  
+### Horatio
+https://en.wikipedia.org/wiki/Horatio_Hornblower
+
+### Dwarf Fortress
+http://www.bay12games.com/dwarves/
 
 # Project Management
 I will try to keep all project management in the Manifest Folder.  I use vim
