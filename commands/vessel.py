@@ -91,11 +91,12 @@ class CmdLookout(default_cmds.CmdLook):
                 return
             # no args means this is where the vessel look should sit.
             outboard_view = (vessel.at_look(outside))
+            # TODO: Process the outboard_view, strip out exits.
             inboard_view = self.caller.at_look(target)
             caller.msg("You're on the %s" % vessel.key)
             # caller.msg("Outside you see:")
             caller.msg(outboard_view)
-            caller.msg("Inside you see:\n")
+            # caller.msg("Inside you see:\n")
             caller.msg(inboard_view)
         else:
             # if there are arguemnts then do a standard look on them

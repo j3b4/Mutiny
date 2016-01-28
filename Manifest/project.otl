@@ -1,5 +1,33 @@
 Current Work Order
+	[_] % World Building Tools
+		Require coordinates
+			: Every "Outside" room should have coordinates
+			: enforce this in the building tools
+			modify @dig to throw error or prompt for coordinates.
+			modify @tunnel to automatically place rooms at coordinate points
+			allow exception
+				for special rooms not to have coordinates
+				or for interior rooms maybe
 	[_] 60% Navigation Project
+		[_] % Quieter travel
+			No room announcements
+			Except:
+				Entering Coastal Rooms
+				Entering Rooms containing other objects or vessels
+			Both exceptions involve moving into an existing room
+			Occasionally nav will move into an empty dynamic room
+				Make this quiet too
+				Or
+				Automatically delete all empty dynamic rooms 
+					: this makes lots of sense, instead of waiting until
+					: reload or instead of running any script.  Just have a
+					: hook on at_object_leave  check if it was the last object
+					: and if so, delete the room.  NO SCRIPT nec.
+					:
+					: And as for cleaning out objects, implement that along
+					: with water and sinking/floating/drifting so essentially
+					: objects take care of cleaning themselves out of a
+					: room.
 		[_] Nav commands should not be available to non-vessels
 			Idea: 
 			: vessels provide a command "take the conn; conn" that then adds a
