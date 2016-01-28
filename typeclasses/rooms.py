@@ -8,7 +8,6 @@ Rooms are simple containers that has no location of their own.
 from evennia import DefaultRoom
 # from evennia import create_script
 # from commands.searoom import CoastalCmdSet
-from commands.searoom import NavCmdSet
 
 
 class Room(DefaultRoom):
@@ -38,8 +37,6 @@ class Outside(Room):
 
 class SeaRoom(Outside):
     'Common Parent of master and dynamic sea rooms if needed.'
-    def at_object_creation(self):
-        self.cmdset.add_default(NavCmdSet)
 
 
 class DynamicRoom(SeaRoom):

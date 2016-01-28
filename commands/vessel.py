@@ -106,8 +106,27 @@ class CmdLookout(default_cmds.CmdLook):
             self.msg(caller.at_look(target))
 
 
-class CmdNorth(Command):
+class CmdConn(Command):
+    """
+    Take control of the vessel
 
+    Usage:
+        conn
+
+    This allows you to direct the vessel instantly in 8 directions.
+    """
+    key = "Conn"
+    help_category = "Mutinous Commands"
+    aliases = ["take the helm", ]
+
+    def func(self):
+        captain = self.caller
+        captain.cmdset.add(CmdSetConn, permanent=True)
+
+        # self.cmdset.add(CmdSetOnboard, permanent=True)
+
+
+class CmdNorth(Command):
     key = "north"
 
     """
@@ -228,16 +247,17 @@ class CmdSouthWest(CmdNorth):
     vector = (-1, 1)
 
 
-class CmdSetLook(CmdSet):
+class CmdSetOnboard(CmdSet):
     "Add this look command to the player when they enter the vessel"
     # TODO: Consider moving this to conning set, to simulate the requirement to
     # get up on the conning tower to be able to realls see out there.
 
-    key = "Vessel Look"
+    key = "Onboard Commands"
     priority = 1
 
     def at_cmdset_creation(self):
         self.add(CmdLookout())
+        self.add(CmdConn())
 
 
 class CmdSetConn(CmdSet):
@@ -268,4 +288,5 @@ class CmdSetVessel(CmdSet):
     def at_cmdset_creation(self):
         self.add(CmdBoard())
         self.add(CmdDebark())
+        # add the conn command below
 # last line

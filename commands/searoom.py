@@ -2,8 +2,8 @@
 
 from evennia import CmdSet, Command
 from evennia.utils import search
-from evennia.utils import inherits_from
-from evennia.utils.create import create_object
+# from evennia.utils import inherits_from
+# from evennia.utils.create import create_object
 import re
 
 """
@@ -124,7 +124,6 @@ class CmdSetPosition(Command):
                                                      target.db.coordinates))
 
 
-
 class CoastalCmdSet(CmdSet):
     "This adds the coastal commands to be attached to coastal rooms"
     key = "Coastal Commands"
@@ -133,4 +132,8 @@ class CoastalCmdSet(CmdSet):
     def at_cmdset_creation(self):
         pass
 
+
+class NavCmdSet(CmdSet):
+    key = "Navigiation Commands"
+    pass
 # Last line

@@ -1,7 +1,7 @@
 # VESSELS - Boats etc.
 
-from evennia import DefaultObject, search_object
-from commands.vessel import CmdSetVessel, CmdSetLook
+from evennia import DefaultObject  # , search_object
+from commands.vessel import CmdSetVessel, CmdSetOnboard, CmdSetConn
 # from vesselscript import HoveToScript
 
 
@@ -69,10 +69,11 @@ class VesselObject(DefaultObject):
         self.msg_contents(self.at_look(self.location))
 
     def at_object_receive(self, moved_obj, source_location):
-        self.cmdset.add(CmdSetLook, permanent=True)
+        self.cmdset.add(CmdSetOnboard, permanent=True)
 
     def at_object_leave(self, moved_obj, target_location):
-        self.cmdset.delete(CmdSetLook)
+        self.cmdset.delete(CmdSetOnboard)
+        self.cmdset.delete(CmdSetConn)
 
 # end of overload attempt.
     def return_view(self):
@@ -96,6 +97,7 @@ class VesselObject(DefaultObject):
         self.msg_contents("The %s heaves to at %s." % (self.key,
                           self.location))
 
+'''
     def goto_next_room(self):
         # this might only make sense for the train track set up
         currentroom = self.location.dbref
@@ -112,5 +114,5 @@ class VesselObject(DefaultObject):
             room = search_object(roomref)[0]
             self.move_to(room)
             # above line redundant with look through on after_move
-
+'''
 # last line
