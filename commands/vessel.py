@@ -137,39 +137,45 @@ class CmdConn(Command):
 
 
 class CmdNorth(Command):
-    key = "north"
-
     """
     This command moves the vessel in the direction stated.
 
-    Usage: <%s>
+    Usage: North
         Note you have to use this command with "steer" if you are onboard a
         vessel.
-    """ % key
+    """  # % key
 
+    key = "north"
     aliases = ["n", ]
     help_category = "Mutinous Commands"
+    auto_help = False   # so we can create a dynamic help strings
     # translate direction into a vector
     vector = (0, -1)
 
     def func(self):
         # get the direction
-        vessel = self.caller
+        captain = self.caller
+        vessel = self.caller.location
         key = self.key
         vector = self.vector
 
         # get position
         position = vessel.db.position
-        vessel.msg_contents("original position = %s" % position)
+        if not position:
+            string = ("AVAST! %s lacks a starting position" % vessel)
+            string += " navigation impossible!"
+            vessel.msg_contents(string)
+            return
+        # vessel.msg_contents("original position = %s" % position)
 
         # parse
-        vessel.msg_contents("Heading %s" % key)
+        vessel.msg_contents("%s steers the %s %s" % (captain, vessel, key))
 
         # add vector to position
         position = [(position[0] + vector[0]), (position[1] + vector[1])]
 
         # announce results
-        vessel.msg_contents("New position = %s" % str(position))
+        # vessel.msg_contents("New position = %s" % str(position))
 
         # Look up room then move to it or create it and move to it
         # Look up room
