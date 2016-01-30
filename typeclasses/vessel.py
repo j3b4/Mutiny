@@ -69,11 +69,14 @@ class VesselObject(DefaultObject):
         self.msg_contents(self.at_look(self.location))
 
     def at_object_receive(self, moved_obj, source_location):
-        self.cmdset.add(CmdSetOnboard, permanent=True)
+        moved_obj.cmdset.add(CmdSetOnboard, permanent=True)
+        print "Adding Onboard commands to %s" % moved_obj
 
     def at_object_leave(self, moved_obj, target_location):
-        self.cmdset.delete(CmdSetOnboard)
-        self.cmdset.delete(CmdSetConn)
+        moved_obj.cmdset.delete(CmdSetOnboard)
+        print "Deleting Onboard commands from %s" % moved_obj
+        moved_obj.cmdset.delete(CmdSetConn)
+        print "Deleting Conning commands from %s" % moved_obj
 
 # end of overload attempt.
     def return_view(self):

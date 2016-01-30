@@ -115,7 +115,7 @@ class CmdConn(Command):
 
     This allows you to direct the vessel instantly in 8 directions.
     """
-    key = "Conn"
+    key = "conn"
     help_category = "Mutinous Commands"
     aliases = ["take the helm", ]
 
