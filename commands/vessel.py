@@ -26,7 +26,7 @@ class CmdBoard(Command):
     """
 
     key = "board"
-    aliases = ["embark", "board ship", "come aboard", ]
+    aliases = ["embark", "go onboard", "come aboard", ]
     help_category = "Mutinous Commands"
     locks = "cmd:not cmdinside()"
 
@@ -42,6 +42,9 @@ class CmdBoard(Command):
             vessel = self.caller.search(self.target)
             if not vessel:
                 # caller.search handles error messages. Thanks!
+                return
+            if not vessel.is_typeclass("vessel.VesselObject"):
+                self.caller.msg("You cannot board the %s." % vessel)
                 return
             self.caller.msg("You to board the %s" % vessel)
             self.caller.move_to(vessel)
@@ -294,7 +297,7 @@ class CmdSetVessel(CmdSet):
     duplicates = False
 
     def at_cmdset_creation(self):
-        self.add(CmdBoard())
         self.add(CmdDebark())
+        self.add(CmdBoard())
         # add the conn command below
 # last line
