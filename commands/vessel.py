@@ -90,21 +90,18 @@ class CmdLookout(default_cmds.CmdLook):
 
     def func(self):
         caller = self.caller
-        vessel = self.obj
+        vessel = caller.location
         outside = vessel.location
         " First copy default look function"
         if not self.args:
-            target = caller.location
+            target = vessel
             if not target:
-                self.caller.msg("No location to look at!")
-                return
-            if caller.location == outside:
-                self.msg(caller.at_look(target))
+                caller.msg("No location to look at!")
                 return
             # no args means this is where the vessel look should sit.
             outboard_view = (vessel.at_look(outside))
             # TODO: Process the outboard_view, strip out exits.
-            inboard_view = self.caller.at_look(target)
+            inboard_view = caller.at_look(target)
             caller.msg("You're on the %s" % vessel.key)
             # caller.msg("Outside you see:")
             caller.msg(outboard_view)
@@ -112,7 +109,7 @@ class CmdLookout(default_cmds.CmdLook):
             caller.msg(inboard_view)
         else:
             # if there are arguemnts then do a standard look on them
-            target = self.caller.search(self.args)
+            target = caller.search(self.args)
             if not target:
                 return
             self.msg(caller.at_look(target))
@@ -133,7 +130,10 @@ class CmdConn(Command):
 
     def func(self):
         captain = self.caller
+        vessel = captain.location
         captain.cmdset.add(CmdSetConn, permanent=True)
+        captain.msg("You take the Conn.")
+        vessel.msg_contents("%s takes the Conn!" % captain)
 
 
 class CmdNorth(Command):

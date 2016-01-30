@@ -69,8 +69,10 @@ class VesselObject(DefaultObject):
         self.msg_contents(self.at_look(self.location))
 
     def at_object_receive(self, moved_obj, source_location):
-        moved_obj.cmdset.add(CmdSetOnboard, permanent=True)
-        print "Adding Onboard commands to %s" % moved_obj
+        if moved_obj.is_typeclass("characters.Character"):
+            # only pc or npcs can have these commands
+            moved_obj.cmdset.add(CmdSetOnboard, permanent=True)
+            print "Adding Onboard commands to %s" % moved_obj
 
     def at_object_leave(self, moved_obj, target_location):
         moved_obj.cmdset.delete(CmdSetOnboard)
