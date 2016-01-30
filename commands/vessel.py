@@ -31,11 +31,20 @@ class CmdBoard(Command):
     locks = "cmd:not cmdinside()"
 
     # adding a parser? or something to allow multiple vessels in one room.
+    def parse(self):
+        self.target = self.args.strip()
 
     def func(self):
-        vessel = self.obj
-        self.caller.move_to(vessel)
-        self.caller.msg("You board the %s" % vessel)
+        if not self.target:
+            self.caller.msg("Usage: board <vessel>")
+            return
+        else:
+            vessel = self.caller.search(self.target)
+            if not vessel:
+                # caller.search handles error messages. Thanks!
+                return
+            self.caller.msg("You to board the %s" % vessel)
+            self.caller.move_to(vessel)
 
 
 class CmdDebark(Command):
@@ -122,8 +131,6 @@ class CmdConn(Command):
     def func(self):
         captain = self.caller
         captain.cmdset.add(CmdSetConn, permanent=True)
-
-        # self.cmdset.add(CmdSetOnboard, permanent=True)
 
 
 class CmdNorth(Command):
@@ -284,6 +291,7 @@ class CmdSetVessel(CmdSet):
     "Add these commands to the vessel when it is created."
     key = "Vessel Commands"
     priority = 1
+    duplicates = False
 
     def at_cmdset_creation(self):
         self.add(CmdBoard())
