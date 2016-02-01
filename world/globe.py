@@ -1,9 +1,7 @@
-# this is just a module I guess.
-atlas = {(6, 4): '#8',
-         (6, 5): '#41',
-         (7, 3): '#5',
-         (8, 4): '#4',
-         }
+# The Globe Rules
+"""
+Updating to implement the Haversone Formula
+"""
 
 style = "round"
 
@@ -14,7 +12,7 @@ def lookUp(position):
         print "error: position needs to be a tuple"
         return
     else:
-        return atlas[position]
+        "a position"
 
 
 def testGlobe():
