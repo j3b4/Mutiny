@@ -5,7 +5,7 @@ from evennia import CmdSet, Command
 from evennia.utils import search
 from evennia.utils import inherits_from
 from evennia.utils.create import create_object
-from world.globe import measure
+from world.globe import measure, travel
 # from evennia import default_cmds
 
 """
@@ -283,11 +283,11 @@ class CmdGlobalMeasure(Command):
     aliases = ["distance between", ]
 
     def parse(self):
-        caller = self.caller
-        report = caller.msg
         """
         Parse the input for 2 points with 2 coordinates each
         """
+        caller = self.caller
+        report = caller.msg
         args = self.args
         # report(args)
         if "&" in self.args:
@@ -319,6 +319,68 @@ class CmdGlobalMeasure(Command):
         report("From %s to %s is %s nautical miles" % (a, b, distance))
 
 
+class CmdTravel(Command):
+    """
+    Accept an initial heading 3 figure degrees and distance in nautical miles
+    from the conning player.  Then move the vessel that distance following a
+    great circle course.
+
+    # figure notation means include a 3 digits even if you have to use leading
+    zer
+    Ie.  North = 000, (or 360)
+         East = 090
+         South = 180
+         West = 270
+
+    Usage:
+        travel <bearing> <distance>   (help travel for details)
+
+    Example:
+        assume vessel is starting at Null Island (0N, 0E):
+        travel 090 120
+
+        Result:
+            The vessel will move 120 nautical miles East and end up at
+            coordinates: (0N, 2E)
+    """
+
+    key = "travel"
+    help_category = "Mutinous Commands"
+    aliases = ["move", "tr"]
+    usage = "travel <bearing> <distance>   (help travel for details)"
+
+    def parse(self):
+        # check args are just two numbers
+        caller = self.caller
+        report = caller.msg
+        usage = self.usage
+        self.bearing, self.distance = self.args.split()
+
+        if not self.args:
+            report(usage)
+            return
+
+    def func(self):
+        caller = self.caller
+        vessel = caller.location
+        report = caller.msg
+        bearing = int(self.bearing)
+        print bearing
+        distance = int(self.distance)
+        print distance
+
+        report("You set a bearing of %s, and travel %s nautical miles"
+               % (str(bearing), str(distance)))
+
+        start_position = tuple(vessel.db.position)
+        # start_position = (0, 0)
+        report("given a starting position of %s" % str(start_position))
+
+        final_position = travel(start_position, bearing, distance)
+
+        report("You will arrive at %s" % str(final_position))
+
+
 class CmdSetOnboard(CmdSet):
     "Add this look command to the player when they enter the vessel"
     # TODO: Consider moving this to conning set, to simulate the requirement to
@@ -344,6 +406,7 @@ class CmdSetConn(CmdSet):
     priority = 1
 
     def at_cmdset_creation(self):
+        self.add(CmdTravel())
         self.add(CmdNorth())
         self.add(CmdSouth())
         self.add(CmdEast())

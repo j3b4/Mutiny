@@ -78,6 +78,10 @@ def travel(start_point, bearing, distance):
 
     lat = (180/pi) * latr
     lon = (180/pi) * lonr
+
+    # rounding
+    lat = int(lat)
+    lon = int(lon)
     print debug
 
     destination = (lat, lon)
