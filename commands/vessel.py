@@ -5,7 +5,7 @@ from evennia import CmdSet, Command
 from evennia.utils import search
 from evennia.utils import inherits_from
 from evennia.utils.create import create_object
-
+from world.globe import measure
 # from evennia import default_cmds
 
 """
@@ -263,6 +263,62 @@ class CmdSouthWest(CmdNorth):
     vector = (-1, 1)
 
 
+class CmdGlobalMeasure(Command):
+    """
+    Measure the distance between two points on the globe.
+
+    Usage:
+        measure lat,lon & lat,lon
+
+    Example:
+        measure 0,5 & 6,6
+        measure -42,39 & -2,41
+
+    This command lets the user of the conn measure the distance between any two
+    points of latitude and longitude
+    """
+
+    key = "measure"
+    help_category = "Mutinous Commands"
+    aliases = ["distance between", ]
+
+    def parse(self):
+        caller = self.caller
+        report = caller.msg
+        """
+        Parse the input for 2 points with 2 coordinates each
+        """
+        args = self.args
+        # report(args)
+        if "&" in self.args:
+            # point_a, point_b = None, None
+            point_a, point_b = [part.strip() for part in args.split("&")]
+            if not point_a or not point_b:
+                report("Usage: measure lat,long & lat,long")
+                return
+
+            # convert to lists or tuples
+            a = tuple(map(float, point_a.split(',')))
+            b = tuple(map(float, point_b.split(',')))
+            report("Points:  a = %s and b = %s" % (a, b))
+            self.a = a
+            self.b = b
+        else:
+            report("Usage: measure lat,long & lat,long")
+            return
+
+    def func(self):
+        caller = self.caller
+        report = caller.msg
+        # if not self.a or not self.b:
+        #    report("Usage: measure lat,long & lat,long")
+        #    return
+        a = self.a
+        b = self.b
+        distance = measure(a, b)
+        report("From %s to %s is %s nautical miles" % (a, b, distance))
+
+
 class CmdSetOnboard(CmdSet):
     "Add this look command to the player when they enter the vessel"
     # TODO: Consider moving this to conning set, to simulate the requirement to
@@ -281,6 +337,8 @@ class CmdSetConn(CmdSet):
     # These commands control the entire ship in a powerful "driving mode"
     # In the future they might be unavailable ot regular users. Since they
     # allow instant movement in any direction on the grid.
+    #
+    # Adding global measurements and movemnt commands
     pass
     key = "Conning Commands"
     priority = 1
@@ -305,5 +363,6 @@ class CmdSetVessel(CmdSet):
     def at_cmdset_creation(self):
         self.add(CmdDebark())
         self.add(CmdBoard())
+        self.add(CmdGlobalMeasure())
         # add the conn command below
 # last line
