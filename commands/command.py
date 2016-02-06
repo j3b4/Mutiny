@@ -40,7 +40,7 @@ class Command(BaseCommand):
     # optional
     # auto_help = False    #uncomment to deactive auto-help for this command.
     # arg_regex = r"\s.*?|$" #optional regex detailing how the part after
-                           # the cmdname must look to match this command.
+    # the cmdname must look to match this command.
 
     # (we don't implement hook method access() here, you don't need to
     #  modify that unless you want to change how the lock system works
@@ -84,8 +84,8 @@ class Command(BaseCommand):
     def func(self):
         """
         This is the hook function that actually does all the work. It is called
-        by the `cmdhandler` right after `self.parser()` finishes, and so has access
-        to all the variables defined therein.
+        by the `cmdhandler` right after `self.parser()` finishes, and so has
+        access to all the variables defined therein.
         """
         self.caller.msg("Command called!")
 
@@ -105,24 +105,26 @@ class MuxCommand(default_cmds.MuxCommand):
 
     A MUXCommand command understands the following possible syntax:
 
-        name[ with several words][/switch[/switch..]] arg1[,arg2,...] [[=|,] arg[,..]]
+        name[ with several words][/switch[/switch..]] arg1[,arg2,...] [[=|,]
+        arg[,..]]
 
     The `name[ with several words]` part is already dealt with by the
-    `cmdhandler` at this point, and stored in `self.cmdname`. The rest is stored
-    in `self.args`.
+    `cmdhandler` at this point, and stored in `self.cmdname`. The rest is
+    stored in `self.args`.
 
-    The MuxCommand parser breaks `self.args` into its constituents and stores them
-    in the following variables:
+    The MuxCommand parser breaks `self.args` into its constituents and stores
+    them in the following variables:
         self.switches = optional list of /switches (without the /).
         self.raw = This is the raw argument input, including switches.
         self.args = This is re-defined to be everything *except* the switches.
-        self.lhs = Everything to the left of `=` (lhs:'left-hand side'). If
-                     no `=` is found, this is identical to `self.args`.
-        self.rhs: Everything to the right of `=` (rhs:'right-hand side').
-                    If no `=` is found, this is `None`.
+        self.lhs = Everything to the left of `=` (lhs:'left-hand side'). 
+                   If no `=` is found, this is identical to `self.args`.
+        self.rhs: Everything to the right of `=` (rhs:'right-hand side').  
+                  If no `=` is found, this is `None`.
         self.lhslist - `self.lhs` split into a list by comma.
         self.rhslist - list of `self.rhs` split into a list by comma.
-        self.arglist = list of space-separated args (including `=` if it exists).
+        self.arglist = list of space-separated args (including `=` if it
+                       exists).
 
     All args and list members are stripped of excess whitespace around the
     strings, but case is preserved.
@@ -131,14 +133,15 @@ class MuxCommand(default_cmds.MuxCommand):
     def func(self):
         """
         This is the hook function that actually does all the work. It is called
-        by the `cmdhandler` right after `self.parser()` finishes, and so has access
-        to all the variables defined therein.
+        by the `cmdhandler` right after `self.parser()` finishes, and so has
+        access to all the variables defined therein.
         """
         # this can be removed in your child class, it's just
         # printing the ingoing variables as a demo.
         super(MuxCommand, self).func()
 
-#from evennia import Command #just fof clarity; already imported above
+# from evennia import Command #just fof clarity; already imported above
+
 
 class CmdSetPower(Command):
     """
@@ -172,6 +175,7 @@ class CmdSetPower(Command):
         self.caller.db.power = power
         self.caller.msg("Your Power was set to %i." % power)
 
+
 class CmdAttack(Command):
     """
     Issues an attack
@@ -195,21 +199,22 @@ class CmdAttack(Command):
             # our custom Character typeclass
             power = 1
         combat_score = random.randint(1, 10 * power)
-            # interesting, I'm guessing random.randint takes two
-            # arguments a from x to y range.  In this case the y
-            # equals 10 times our power score. This produces a flat
-            # curve
+        # interesting, I'm guessing random.randint takes two
+        # arguments a from x to y range.  In this case the y
+        # equals 10 times our power score. This produces a flat
+        # curve
         caller.db.combat_score = combat_score
 
         # Announce
         message = "%s +attack%s with a combat score of %s!"
         caller.msg(message % ("You", "", combat_score))
         caller.location.msg_contents(message %
-                                    (caller.key, "s", combat_score),
-                                    exclude=caller)
+                                     (caller.key, "s", combat_score),
+                                     exclude=caller)
 
 
 from evennia import create_object
+
 
 class CmdCreateNPC(Command):
     """
@@ -240,14 +245,14 @@ class CmdCreateNPC(Command):
         name = self.args.strip().capitalize()
         # create npc in caller's location
         npc = create_object("characters.Character",
-                key=name,
-                location=caller.location,
-                locks="edit:id(%i) and perm(Builders)" % caller.id)
-        #announce
+                            key=name, location=caller.location,
+                            locks="edit:id(%i) and perm(Builders)"
+                            % caller.id)
+        # announce
         message = "%s created the NPC '%s'."
         caller.msg(message % ("You", name))
-        caller.location.msg_contents(message % (caller.key, name),
-                exclude=caller)
+        caller.location.msg_contents(message % (caller.key, npc.key),
+                                     exclude=caller)
 
 
 class CmdEditNPC(Command):
@@ -292,7 +297,7 @@ class CmdEditNPC(Command):
 
         caller = self.caller
         if not self.args or not self.name:
-        # if not self.args or not self.key:  # try this
+            # if not self.args or not self.key:  # try this
             caller.msg("Usage: +editnpc name[/propname][=propval]")
             return
         npc = caller.search(self.name)
@@ -311,19 +316,20 @@ class CmdEditNPC(Command):
             caller.msg(output)
         elif self.propname not in allowed_propnames:
             caller.msg("You may only change $s." %
-                    ", ".join(allowed_propnames))
+                       ", ".join(allowed_propnames))
         elif self.propval:
             # assigning a new propvalue
             # in this example, the properties are all integers...
             intpropval = int(self.propval)
             npc.attributes.add(self.propname, intpropval)
             caller.msg("Set %s's  property '%s' to %s" %
-                    (npc.key, self.propname, self.propval))
+                       (npc.key, self.propname, self.propval))
         else:
             # propname set, but not propval - show current value
             caller.msg("%s has property %s = %s" %
-                    (npc.key, self.propname,
+                       (npc.key, self.propname,
                         npc.attributes.get(propname, default="N/A")))
+
 
 class CmdNPC(Command):
     """
@@ -331,7 +337,7 @@ class CmdNPC(Command):
 
     Usage: +npc <name> = <command>
 
-    This causes the npc to perform a command as itself. It will do so 
+    This causes the npc to perform a command as itself. It will do so
     with its own permissions and accesses.
     """
     key = "+npc"
@@ -341,8 +347,8 @@ class CmdNPC(Command):
 
     def parse(self):
         "Simple split of the = sign"
-        name, cmdname = [part.strip()
-                for part in self.args.rsplit("=", 1)]
+        name, cmdname = [part.strip() for part in
+                         self.args.rsplit("=", 1)]
         self.name, self.cmdname = name, cmdname
 
     def func(self):
@@ -363,6 +369,8 @@ class CmdNPC(Command):
 
 
 from evennia import default_cmds    # imported above - this is a reminder
+
+
 class CmdEcho(default_cmds.MuxCommand):
     """
     Simple command example
@@ -374,8 +382,8 @@ class CmdEcho(default_cmds.MuxCommand):
     """
 
     key = "echo"
-    aliases = ["frimble"]   # FYI "frimble" is a similar command on discworld
-                            # mud
+    aliases = ["frimble"]   # FYI "frimble" is a similar command
+    # on discworld mud
     locks = "cmd:all()"
     help_category = "Experimental"
 
@@ -387,5 +395,5 @@ class CmdEcho(default_cmds.MuxCommand):
             self.caller.msg("You hear an echo: '%s'" % self.args)
 
 
-#class 
+# class
 # last line
