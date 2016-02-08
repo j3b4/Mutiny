@@ -117,9 +117,9 @@ class MuxCommand(default_cmds.MuxCommand):
         self.switches = optional list of /switches (without the /).
         self.raw = This is the raw argument input, including switches.
         self.args = This is re-defined to be everything *except* the switches.
-        self.lhs = Everything to the left of `=` (lhs:'left-hand side'). 
+        self.lhs = Everything to the left of `=` (lhs:'left-hand side').
                    If no `=` is found, this is identical to `self.args`.
-        self.rhs: Everything to the right of `=` (rhs:'right-hand side').  
+        self.rhs: Everything to the right of `=` (rhs:'right-hand side').
                   If no `=` is found, this is `None`.
         self.lhslist - `self.lhs` split into a list by comma.
         self.rhslist - list of `self.rhs` split into a list by comma.
@@ -363,9 +363,22 @@ class CmdNPC(Command):
         if not npc.access(caller, "edit"):
             caller.msg("You may not order this NPC to do anything.")
             return
+
+        # Prepare a callback
+        def my_callback(result):
+            """
+            Trying to understand what is going on.
+            My hope is that this will display to the caller of +npc whatever
+            the npc would have seen as a result of their ordered action.
+            """
+            self.msg(result)
+            self.caller.msg("message to self.caller: %s" % result)
+
         # send the command order
-        npc.execute_cmd(self.cmdname, sessid=self.caller.sessid)
+        deferred = npc.execute_cmd(self.cmdname, sessid=self.caller.sessid)
         caller.msg("You told %s to do '%s'." % (npc.key, self.cmdname))
+        deferred.addCallback(my_callback)
+        self.caller.msg(type(deferred))
 
 
 from evennia import default_cmds    # imported above - this is a reminder
