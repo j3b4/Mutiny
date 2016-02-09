@@ -379,6 +379,7 @@ class CmdNPC(Command):
         caller.msg("You told %s to do '%s'." % (npc.key, self.cmdname))
         deferred.addCallback(my_callback)
         self.caller.msg(type(deferred))
+        self.caller.msg(deferred.key)
 
 
 from evennia import default_cmds    # imported above - this is a reminder

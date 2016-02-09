@@ -8,7 +8,7 @@ Current Work Order
 			assume starting coordinates
 			input heading + distance
 			output new coordinates
-	[_] 0% World Building Tools
+	[X] 100% World Building Tools
 		Require coordinates
 			: Every "Outside" room should have coordinates
 			: enforce this in the building tools
@@ -17,6 +17,16 @@ Current Work Order
 			allow exception
 				for special rooms not to have coordinates
 				or for interior rooms maybe
+	[_] Sailing
+		Start with single force impulse movement over time
+			Derived from vector movements above
+			So the current travel command should work as basis
+				Just decide on a rate ie. distance/time
+		Then upgrade to Multiple forces
+		: so that it sets the course and then begins to move over time...
+		: (see delayed execeution tut) so I should be able to "steer N"
+		: and then the ship will sail N, slowly updating position
+		: periodically.
 	[_] 60% Navigation Project
 		[X] Test transition from coastal to coastal rooms
 		[_] 0% Quieter travel
@@ -38,12 +48,6 @@ Current Work Order
 					: with water and sinking/floating/drifting so essentially
 					: objects take care of cleaning themselves out of a
 					: room.
-		[_] Impulse Movement
-			Derived from vector movements above
-			: so that it sets the course and then begins to move over time...
-			: (see delayed execeution tut) so I should be able to "steer N"
-			: and then the ship will sail N, slowly updating position
-			: periodically.
 		[X] object contents should all automatically inherit position. 
 			:Ie. so that if a sailor jumps overboard at sea, they will end
 			:up in the sea rather than back in the room where they boarded

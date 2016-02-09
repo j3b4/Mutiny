@@ -24,6 +24,8 @@ class CmdRaise(MuxCommand):
 
       Switches:
         tel or teleport - move yourself to the new room
+        inland          - new land will be DryLandRoom
+        coast           - new land will be CoastalRoom
 
     Examples:
         @raise -04,-172,Kiribati Island
@@ -62,10 +64,6 @@ class CmdRaise(MuxCommand):
         else:
             caller.msg(usage)
             return
-        room = "Coastline"
-        if self.rhs:
-            room = self.rhs
-        caller.msg("%s %s %s" % (lat, lon, room))
 
         # convert coordinates to int
         coordinates = (int(lat), int(lon))
@@ -81,8 +79,19 @@ class CmdRaise(MuxCommand):
             caller.msg(report)
             return
 
-        # create a coastal room
-        typeclass = "rooms.CoastalRoom"
+        # choose the typeclass
+        if "inland" in self.switches:
+            typeclass = "rooms.DryLandRoom"
+            room = "Inland"
+        else:
+            typeclass = "rooms.CoastalRoom"
+            room = "Coastline"
+
+        # over write the default name if name was provided
+        if self.rhs:
+            room = self.rhs
+
+        # create a room
         lockstring = "control:id(%s) or perm(Immortals); delete:id(%s)"
         lockstring += " or perm(Wizards); edit:id(%s) or perm(Wizards)"
         lockstring = lockstring % (caller.dbref, caller.dbref, caller.dbref)
@@ -159,6 +168,11 @@ class CmdWalk(MuxCommand):
         caller = self.caller
         location = caller.location
         old_coord = location.db.coordinates  # lat,lon of starting room
+        if not old_coord:
+            string = ("%s has no coordinates we cannot use 'walk' from here")
+            string = string % location
+            caller.msg(string)
+            return
         "Implements the walk command"
         if not self.args or not self.lhs:
             string = "Usage: @walk[/switch] <direction> "
@@ -176,8 +190,11 @@ class CmdWalk(MuxCommand):
         ex = self.lhs
         exname, back = sd[ex][0], sd[ex][1]
         backname = sd[back][0]
+        string = "backname = %s" % backname
         vector = sd[ex][2]
-        caller.msg("Vector for %s is %s" % (ex, vector))
+        # caller.msg("Vector for %s is %s" % (ex, vector))
+        caller.msg(string)
+        string = ""
 
         # calculate location of new_coord for new room
         new_coord = (old_coord[0] + vector[0],
@@ -191,35 +208,37 @@ class CmdWalk(MuxCommand):
             report += "\n%s is accessible as %s"
             report = report % (new_coord, conflict,
                                conflict[0].name, conflict[0].dbref)
-            report += "\n So you can delete it now then re-run this"
+            report += "\nSo you can delete it now then re-run this"
             report += "command, or just try to link to it.\n"
             report += "Automating this is on my todo list."
             caller.msg(report)
             return
 
-        # name the new room
-        roomname = "Inland"
-        if self.rhs:
-            roomname = self.rhs  # this may include aliases; that's fine.
-
         # find the backwards exit from the directions
-        backstring = ""
-        if "oneway" not in self.switches:
-            backstring = ", %s;%s" % (backname, back)
+        # backstring = ", %s;%s" % (backname, back)
 
         # choose the typeclass
-        typeclass = location.typeclass
         if "inland" in self.switches:
-            typeclass = "rooms.DryLandRoom"
+            typeclass_path = "rooms.DryLandRoom"
+            roomname = "Inland"
         elif "coast" in self.switches:
-            typeclass = "rooms.CoastalRoom"
+            typeclass_path = "rooms.CoastalRoom"
+            roomname = "Coastline"
+        else:
+            # no switches  default type and name of start room
+            # but name can be over written
+            typeclass_path = location.typeclass_path
+            roomname = location.name
+
+        # name the new room
+        if self.rhs:
+            roomname = self.rhs  # this may include aliases; that's fine.
 
         # create room
         lockstring = "control:id(%s) or perm(Immortals); delete:id(%s) "
         lockstring += "or perm(Wizards); edit:id(%s) or perm(Wizards)"
         lockstring = lockstring % (caller.dbref, caller.dbref, caller.dbref)
-
-        new_room = create.create_object(typeclass, roomname,
+        new_room = create.create_object(typeclass_path, roomname,
                                         report_to=caller)
 
         # lock the room after creation
@@ -228,32 +247,49 @@ class CmdWalk(MuxCommand):
         # add the coordinates
         new_room.db.coordinates = new_coord
 
-        room_string = "Created room %s(%s)%s of type %s." % (
-            new_room, new_room.dbref, typeclass)
-        caller.mesg(room_string)
+        room_string = "Created room %s(%s) of type %s." % (
+            new_room, new_room.dbref, typeclass_path)
 
         # create exit to room
         # Build the exit to the new room from the current one
         xtc = settings.BASE_EXIT_TYPECLASS
 
         new_to_exit = create.create_object(xtc, exname,
-                                            location,
-                                            aliases=ex,
-                                            locks=lockstring,
-                                            destination=new_room,
-                                            report_to=caller)
+                                           location,
+                                           aliases=ex[0],
+                                           locks=lockstring,
+                                           destination=new_room,
+                                           report_to=caller)
         alias_string = ""
-        if new_to_exit.aliases.all():
-            alias_string = " (%s)" % ", ".join(new_to_exit.aliases.all())
         exit_to_string = "\nCreated Exit from %s to %s: %s(%s)%s."
         exit_to_string = exit_to_string % (location.name,
-                                            new_room.name,
-                                            new_to_exit,
-                                            new_to_exit.dbref,
-                                            alias_string)
-
-
-        # create back exit from room
-        print backstring
+                                           new_room.name,
+                                           new_to_exit,
+                                           new_to_exit.dbref,
+                                           alias_string)
+        # Create exit back from new room
+        # Building the exit back to the current room
+        if not location:
+            exit_back_string = \
+                "\nYou cannot create an exit back to a None-location."
+        else:
+            typeclass = settings.BASE_EXIT_TYPECLASS
+            new_back_exit = create.create_object(typeclass,
+                                                 backname,
+                                                 new_room,
+                                                 aliases=back,
+                                                 locks=lockstring,
+                                                 destination=location,
+                                                 report_to=caller)
+            alias_string = ""
+            exit_back_string = "\nCreated Exit back from %s to %s: %s(%s)%s."
+            exit_back_string = exit_back_string % (new_room.name,
+                                                   location.name,
+                                                   new_back_exit,
+                                                   new_back_exit.dbref,
+                                                   alias_string)
+        caller.msg("%s%s%s" % (room_string, exit_to_string, exit_back_string))
+        if new_room and ('still' not in self.switches):
+            caller.move_to(new_room)
 
 # Last line
