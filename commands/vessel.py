@@ -148,9 +148,9 @@ class CmdNorth(Command):
     key = "north"
     aliases = ["n", ]
     help_category = "Mutinous Commands"
-    auto_help = False   # so we can create a dynamic help strings
+    # auto_help = False   # so we can create a dynamic help strings
     # translate direction into a vector
-    vector = (0, -1)
+    vector = (1, 0)
 
     def func(self):
         # get the direction
@@ -172,10 +172,10 @@ class CmdNorth(Command):
         vessel.msg_contents("%s steers the %s %s" % (captain, vessel, key))
 
         # add vector to position
-        position = [(position[0] + vector[0]), (position[1] + vector[1])]
+        position = ((position[0] + vector[0]), (position[1] + vector[1]))
 
         # announce results
-        # vessel.msg_contents("New position = %s" % str(position))
+        vessel.msg_contents("New position = %s" % str(position))
 
         # Look up room then move to it or create it and move to it
         # Look up room
@@ -201,17 +201,16 @@ class CmdNorth(Command):
                 len(vessel.location.contents) == 1):
             # This means we are in a dynamic room alone
             vessel.msg_contents("updating room coordinates to %s"
-                                % position)
+                                % str(position))
             vessel.location.db.coordinates = position
             # have to update vessel position to match rooms new position
             vessel.db.position = position
             return
-        elif len(vessel.location.contents) > 1:
-            vessel.msg_contents("but there are objects in this room")
+        else:  # Assume the current room is occupied or not dynamic
             # create the room
-            vessel.msg_contents("Creating new room at %s" % position)
+            vessel.msg_contents("Creating new room at %s" % str(position))
             room = create_object(typeclass="rooms.DynamicRoom",
-                                 key=str("dynasea"),
+                                 key="The Open Ocean",
                                  location=None,
                                  )
             room.db.coordinates = position
@@ -224,43 +223,43 @@ class CmdNorth(Command):
 class CmdSouth(CmdNorth):
     key = "south"
     aliases = ["s", ]
-    vector = (0, 1)
+    vector = (-1, 0)
 
 
 class CmdEast(CmdNorth):
     key = "east"
     aliases = ["e", ]
-    vector = (1, 0)
+    vector = (0, 1)
 
 
 class CmdWest(CmdNorth):
     key = "west"
     aliases = ["w", ]
-    vector = (-1, 0)
+    vector = (0, -1)
 
 
 class CmdNorthEast(CmdNorth):
     key = "northeast"
     aliases = ["ne", ]
-    vector = (1, -1)
+    vector = (1, 1)
 
 
 class CmdNorthWest(CmdNorth):
     key = "northwest"
     aliases = ["nw", ]
-    vector = (-1, -1)
+    vector = (1, -1)
 
 
 class CmdSouthEast(CmdNorth):
     key = "southeast"
     aliases = ["se", ]
-    vector = (1, 1)
+    vector = (-1, 1)
 
 
 class CmdSouthWest(CmdNorth):
     key = "southwest"
     aliases = ["sw", ]
-    vector = (-1, 1)
+    vector = (-1, -1)
 
 
 class CmdGlobalMeasure(Command):
@@ -319,6 +318,7 @@ class CmdGlobalMeasure(Command):
         report("From %s to %s is %s nautical miles" % (a, b, distance))
 
 
+# from world.globe import measure, travel
 class CmdTravel(Command):
     """
     Accept an initial heading 3 figure degrees and distance in nautical miles
@@ -403,7 +403,7 @@ class CmdSetConn(CmdSet):
     # Adding global measurements and movemnt commands
     pass
     key = "Conning Commands"
-    priority = 1
+    priority = 2
 
     def at_cmdset_creation(self):
         self.add(CmdTravel())
