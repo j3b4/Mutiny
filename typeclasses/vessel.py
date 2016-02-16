@@ -2,6 +2,8 @@
 
 from evennia import DefaultObject  # , search_object
 from commands.vessel import CmdSetVessel, CmdSetOnboard, CmdSetConn
+# from evennia import utils
+from world.globe import travel
 # from vesselscript import HoveToScript
 
 
@@ -94,30 +96,46 @@ class VesselObject(DefaultObject):
 
     def get_underway(self):
         self.db.underway = True
+        self.db.speed = 60  # speed is in knots aka nautical miles/hour
         self.msg_contents("The %s gets underway." % self.key)
 
     def heave_to(self):
         # TODO: research other terms
         self.db.underway = False
+        self.db.speed = 0  # not moving anymore
         self.msg_contents("The %s heaves to at %s." % (self.key,
                           self.location))
 
-'''
-    def goto_next_room(self):
-        # this might only make sense for the train track set up
-        currentroom = self.location.dbref
-        idx = self.db.rooms.index(currentroom) + self.db.direction
-        # remember 1 = West and 2 = East
+    def steer_to(self, heading):
+        '''
+        This changes the objects heading
+        I guess this is called by a players command. Not sure whether it makes
+        sense here.
+        '''
+        self.db.bearing = heading
+        string = "The %s steers to %s degrees"
+        self.msg_contents(string % (self.key, heading))
 
-        if idx < 0 or idx >= len(self.db.rooms):
-            # We've reached the end of the bay
-            self.heave_to()
-            # reverse the direction of the vessel
-            self.db.direction *= -1
-        else:
-            roomref = self.db.rooms[idx]
-            room = search_object(roomref)[0]
-            self.move_to(room)
-            # above line redundant with look through on after_move
-'''
+    def update_position(self):
+        '''
+        This function updates the ships position after obtaining the time from
+        a script maybe?
+        after collecting information
+        # def travel(start_point, bearing, distance):
+        '''
+        old_pos = self.db.position
+        bearing = self.db.bearing
+        speed = self.db.speed
+
+        new_pos = travel(old_pos, bearing, speed)
+        # coordinates = str(new_pos)
+        self.db.position = new_pos
+        string = "The vessel moves %s knots heading %s"
+        string + " and arrives at %s."
+        self.msg_contents(string)  # % (str(speed), str(bearing), coordinates))
+        """
+        Assume that each travel interval is 1 hour, distance will be equal to
+        speed in knots
+        """
+
 # last line

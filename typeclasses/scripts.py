@@ -117,4 +117,20 @@ class CleanSeaRoom(Script):
         self.obj.delete()
         # self.obj.SelfClean()
 
+
+class VesselMove(Script):
+
+    def at_script_creation(self):
+        self.key = "vesselmove"
+        self.interval = 5
+        self.persisent = True
+        self.repeats = 0
+        self.start_delay = 5
+
+    def at_repeat(self):
+        self.obj.update_position()
+
+    def at_stop(self):
+        pass
+
 # Last Line
