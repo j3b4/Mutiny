@@ -93,4 +93,25 @@ def testGlobe():
     "Returns a message saying yes this is a globe object"
     return "Yes this is the globe.\n"
 
+
+COMPASS_ROSE = [  # a list of directions and directions
+    ("n", "north", 0),
+    ("nne", "north northeast", 45/2),
+    ("ne", "northeast", 45),
+    ("ene", "east northeast", (45 + 45/2)),
+    ("e", "east", 90),
+    ("ese", "east southeast", (90 + 45/2)),
+    ("se", "southeast", 135),
+    ("sse", "south southeast", (135 + 45/2)),
+    ("s", "south", 180),
+    ("ssw", "south southwest", (180 + 45/2)),
+    ("sw", "southwest", 225),
+    ("wsw", "west southwest", 225 + 45/2),
+    ("w", "west", 270),
+    ("wnw", "west northwest", 270 + 45/2),
+    ("nw", "northwest", 315),
+    ("nnw", "north northwest", 315 + 45/2)
+    ]
+
+
 # last line

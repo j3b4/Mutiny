@@ -122,15 +122,21 @@ class VesselMove(Script):
 
     def at_script_creation(self):
         self.key = "vesselmove"
-        self.interval = 5
+        self.interval = 1
         self.persisent = True
-        self.repeats = 0
+        self.repeats = 12
         self.start_delay = 5
+        self.time = 0
 
     def at_repeat(self):
         self.obj.update_position()
+        self.time += 1
 
     def at_stop(self):
+        time = str(self.time)
+        string = "After %s hours of rowing you stop"
+        self.obj.msg_contents(string % time)
+        self.obj.heave_to()
         pass
 
 # Last Line

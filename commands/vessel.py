@@ -381,6 +381,66 @@ class CmdTravel(Command):
         report("You will arrive at %s" % str(final_position))
 
 
+# script based movement
+class CmdGetUnderway(Command):
+    """
+    ROW! A single command which orders the current ship to start moving in
+    what ever direction is is already pointing. Once underway, it is possible
+    to adjust the heading with the steer command. Row takes one argument an
+    integer representing speed in knots.
+
+    Usage:
+        row <speed>
+
+    Example:
+        row 60
+
+    Result:
+        The boat starts moving at 60kts in current direction, use steer to
+        change heading.
+    """
+    key = "row"
+    help_category = "Mutinous Commands"
+    aliases = ["power", ]
+    usage = "row <speed>"
+
+    def func(self):
+        speed = int(self.args)
+        vessel = self.obj.location
+        bearing = vessel.db.bearing
+        "call the get underway function on the vessel object"
+        vessel.get_underway(speed)
+        string = "The %s starts moving at %skts, heading %s"
+        string = string % (vessel, speed, bearing)
+        vessel.msg_contents(string)
+
+
+class CmdHeaveTo(Command):
+    """
+    A single command that halts the ship.  While hove to the ship cannot be
+    steered.
+
+    Usage: hold
+    """
+    key = "hold"
+    aliases = ["heave to", ]
+    help_category = "Mutinous Commands"
+    usage = "hold"
+
+    def func(self):
+        vessel = self.obj.location
+        vessel.msg_contents("You call HOLD! to stop the rowing.")
+        vessel.heave_to()
+
+
+class CmdSteerTo(Command):
+    """
+    A two part command. Steer takes a direction as an argument and translates
+    it into a compass heading
+    """
+    pass
+
+
 class CmdSetOnboard(CmdSet):
     "Add this look command to the player when they enter the vessel"
     # TODO: Consider moving this to conning set, to simulate the requirement to
@@ -407,14 +467,10 @@ class CmdSetConn(CmdSet):
 
     def at_cmdset_creation(self):
         self.add(CmdTravel())
-        self.add(CmdNorth())
-        self.add(CmdSouth())
-        self.add(CmdEast())
-        self.add(CmdWest())
-        self.add(CmdNorthEast())
-        self.add(CmdNorthWest())
-        self.add(CmdSouthEast())
-        self.add(CmdSouthWest())
+        # I removed the direct movement commands.
+        self.add(CmdGetUnderway())
+        self.add(CmdHeaveTo())
+        self.add(CmdSteerTo())
 
 
 class CmdSetVessel(CmdSet):

@@ -1,22 +1,6 @@
 Current Work Order
-	[X] 100% Global Model
-		: If I want to use the historical globe with historical charts I'l
-		: need a way to refer to fixed rooms by lat/lon coordinates
-		: I will also need to implement navigation by those coordinates
-		[X] implement haversine model
-		[X] implement vector movement
-			assume starting coordinates
-			input heading + distance
-			output new coordinates
-	[X] 100% World Building Tools
-		Require coordinates
-			: Every "Outside" room should have coordinates
-			: enforce this in the building tools
-			modify @dig to throw error or prompt for coordinates.
-			modify @tunnel to automatically place rooms at coordinate points
-			allow exception
-				for special rooms not to have coordinates
-				or for interior rooms maybe
+	[_] % Hexaglobe
+		[_] Research hex globes
 	[_] Xebec
 		: this is the rowing over time module, I call it Xebec rather than
 		: galley because it will be a transitional mode.
@@ -24,13 +8,15 @@ Current Work Order
 			Derived from vector movements above
 			So the current travel command should work as basis
 				Just decide on a rate ie. distance/time
-		But in practice sailing over time involves 2 steops
+		But in practice sailing over time involves 2 steps
 			1. steer the boat to face a direction
 				with oars this makes sense, one can turn in place.
 			2. wait for movement to occur
-				giev orders about rwoing speed
+				i. set boat in motion
+				ii. halt forward propulsion
 		Review the vehicle tutorial 
-			a simple script or two and object methods on the vessel should do it.
+			: a simple script or two and object methods on the vessel should
+			: do it.
 		Then upgrade to Multiple forces
 		: so that it sets the course and then begins to move over time...
 		: (see delayed execeution tut) so I should be able to "steer N"
@@ -185,6 +171,24 @@ Done (for now)
 				: objects.
 			[X] Clean up
 				At reload empty dynamic rooms delete themselves
+	[X] 100% World Building Tools
+		Require coordinates
+			: Every "Outside" room should have coordinates
+			: enforce this in the building tools
+			modify @dig to throw error or prompt for coordinates.
+			modify @tunnel to automatically place rooms at coordinate points
+			allow exception
+				for special rooms not to have coordinates
+				or for interior rooms maybe
+	[X] 100% Global Model
+		: If I want to use the historical globe with historical charts I'l
+		: need a way to refer to fixed rooms by lat/lon coordinates
+		: I will also need to implement navigation by those coordinates
+		[X] implement haversine model
+		[X] implement vector movement
+			assume starting coordinates
+			input heading + distance
+			output new coordinates
 Design Strategy
 	[_] 50% Implement boats.
 		[X] simple single-room vehicles
