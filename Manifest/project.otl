@@ -1,57 +1,4 @@
 Current Work Order
-	[_] % Hexaglobe
-		[_] Research hex globes
-	[_] Xebec
-		: this is the rowing over time module, I call it Xebec rather than
-		: galley because it will be a transitional mode.
-		Start with single force impulse movement over time
-			Derived from vector movements above
-			So the current travel command should work as basis
-				Just decide on a rate ie. distance/time
-		But in practice sailing over time involves 2 steps
-			1. steer the boat to face a direction
-				with oars this makes sense, one can turn in place.
-			2. wait for movement to occur
-				i. set boat in motion
-				ii. halt forward propulsion
-		Review the vehicle tutorial 
-			: a simple script or two and object methods on the vessel should
-			: do it.
-		Then upgrade to Multiple forces
-		: so that it sets the course and then begins to move over time...
-		: (see delayed execeution tut) so I should be able to "steer N"
-		: and then the ship will sail N, slowly updating position
-		: periodically.
-	[_] 60% Navigation Project
-		[X] Test transition from coastal to coastal rooms
-		[_] 0% Quieter travel
-			No room announcements
-			Except:
-				Entering Coastal Rooms
-				Entering Rooms containing other objects or vessels
-			Both exceptions involve moving into an existing room
-			Occasionally nav will move into an empty dynamic room
-				Make this quiet too
-				Or
-				Automatically delete all empty dynamic rooms 
-					: this makes lots of sense, instead of waiting until
-					: reload or instead of running any script.  Just have a
-					: hook on at_object_leave  check if it was the last object
-					: and if so, delete the room.  NO SCRIPT nec.
-					:
-					: And as for cleaning out objects, implement that along
-					: with water and sinking/floating/drifting so essentially
-					: objects take care of cleaning themselves out of a
-					: room.
-		[X] object contents should all automatically inherit position. 
-			:Ie. so that if a sailor jumps overboard at sea, they will end
-			:up in the sea rather than back in the room where they boarded
-			:or something.
-			on_object_receive 
-			done I think, for all Searooms
-		[X] Problem with vessel updating position even when move fails.
-	[_] Website and Portal
-		[_] make a cgi to display the manifest/project.html on the portal
 Done (for now)
 	[X] 100% Implement the Ocean
 		[X] **coastal waters** 
@@ -189,16 +136,73 @@ Done (for now)
 			assume starting coordinates
 			input heading + distance
 			output new coordinates
+	[X] 100% Navigation Project
+		[X] Test transition from coastal to coastal rooms
+		[X] object contents should all automatically inherit position. 
+			:Ie. so that if a sailor jumps overboard at sea, they will end
+			:up in the sea rather than back in the room where they boarded
+			:or something.
+			on_object_receive 
+			done I think, for all Searooms
+		[X] Problem with vessel updating position even when move fails.
+	[X] simple single-room vehicles
+		[X] DONE: players can enter and steer the boat around other rooms
 Design Strategy
-	[_] 50% Implement boats.
-		[X] simple single-room vehicles
-			[X] DONE: players can enter and steer the boat around other rooms
+	World Building
+		: Ideally use an historical geocode db to locate land
+		: also use db of coastline
+	Navigation
+	Sailing & Rowing
+	Land and Sea
+	[_] % Implement ships
+		barehull
+			: This is the ship's envelope. A room that contains all parts 
+			: of the ship.  Navigation and Combat is defined on it.
+		Code parts
+			typeclass BareHull
+				: the boat itself as a thing
+				modify VesselObject
+			typeclass ShipStation
+				: all the places tp be within a ship
+			typeclass - other classes substations?
+				specific parts of the ship might get their own TC
+				ie mast, quarter deck, poop, ward room etc.
 		[_] multi-roomed ships
 			: ships have rooms with different functions
-			[_] main deck, quarter-deck, the masthead, the bilge, state room, ward
-			[_] room, galley, gun deck etc...
+			list of room examples:
+				main deck, quarter-deck, the 
+				masthead, the bilge, state room, ward
+				galley, gun deck etc...
 	Implement Crew (npcs that sail or help you sail) 
+		look to it.
+		NPCs are character entities.
+		Contemplate a division of character and player and AI
+		so that All characters are equal, but may by times be played 
+			puppeted by either human or AI players
+
+		
 Future features (wishlist)
+	[_] Xebec
+		: this is the rowing over time module, I call it Xebec rather than
+		: galley because it will be a transitional mode.
+		Start with single force impulse movement over time
+			Derived from vector movements above
+			So the current travel command should work as basis
+				Just decide on a rate ie. distance/time
+		But in practice sailing over time involves 2 steps
+			1. steer the boat to face a direction
+				with oars this makes sense, one can turn in place.
+			2. wait for movement to occur
+				i. set boat in motion
+				ii. halt forward propulsion
+		Review the vehicle tutorial 
+			: a simple script or two and object methods on the vessel should
+			: do it.
+		Then upgrade to Multiple forces
+		: so that it sets the course and then begins to move over time...
+		: (see delayed execeution tut) so I should be able to "steer N"
+		: and then the ship will sail N, slowly updating position
+		: periodically.
 	Coastal detail and navigation
 		: this is the implementation of specifc  coastal conditions and
 		: topography either through representation of abstraction
@@ -234,6 +238,8 @@ Future features (wishlist)
 		: When their are two vessels in the same room: I would like to be 
 		: able to specify by key which one I want to board. I.e. board boat 
 		: vs board skiff.
+	[_] % Hexaglobe
+		[_] Research hex globes
 	Ship to ship combat
 	Rivers
 	Water Exits
@@ -270,4 +276,6 @@ Future features (wishlist)
 		Global properties?
 			It might also be possible to develop other properties of the globe
 			such as currents and weather and climate patterns.  I'm not sure.
+	[_] Website and Portal
+		[_] make a cgi to display the manifest/project.html on the portal
 Reference
