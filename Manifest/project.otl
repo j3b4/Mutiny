@@ -148,12 +148,58 @@ Done (for now)
 	[X] simple single-room vehicles
 		[X] DONE: players can enter and steer the boat around other rooms
 Design Strategy
+	Water World Scheme
+		Summary
+			: With this scheme I start with a globe with a uniform navigable
+			: surface. All water.  In a sense this does not need to be
+			: "designed or built" its not a thing. That is it is not by itself
+			: represented by an in game object. Instead the existance of a
+			: globe is implied by the use of LatLon and the haversine equation
+			: to calculate positions. Possibly every object should at all
+			: times have a position.  
+			:
+			: The work on movement functions, magic, rowing, and sailing.
+			: 
+			: With or before sailing invent wind.  Later invent weather,
+			: waves, and currents.
+			:
+			: Then get sailing working. Then we have a water world. At that
+			: point I'll have to decide whether to work on ships or land.
+		FlowChart
+			Movement
+				magic
+					"skip" or "shift"
+					: > skip 090 55
+					: means move 55 miles due east
+				rowing
+			Wind
+				sailing
+			Weather
+			Current
+				Drifting
+			Decision
+				Land
+				or
+				Ships
+			Ships
+				multirooms
+				navigation functions
+				combat
+			Land
+				:wq
+				:
+	Navigation
+		instant global/spherical navigation
+	Sailing & Rowing
+		Rowing:
+			Navigation over time
+		Sailing:
+			Simulate effect of wind and wave resistance
+	Define Land and Sea
+		: As in what is the difference between solid land and ocean?
 	World Building
 		: Ideally use an historical geocode db to locate land
-		: also use db of coastline
-	Navigation
-	Sailing & Rowing
-	Land and Sea
+		: also use db of coastline means of positioning the dry land
 	[_] % Implement ships
 		barehull
 			: This is the ship's envelope. A room that contains all parts 
@@ -179,8 +225,6 @@ Design Strategy
 		Contemplate a division of character and player and AI
 		so that All characters are equal, but may by times be played 
 			puppeted by either human or AI players
-
-		
 Future features (wishlist)
 	[_] Xebec
 		: this is the rowing over time module, I call it Xebec rather than

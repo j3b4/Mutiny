@@ -2,10 +2,7 @@
 
 from evennia import default_cmds
 from evennia import CmdSet, Command
-from evennia.utils import search
-from evennia.utils import inherits_from
-from evennia.utils.create import create_object
-from world.globe import measure, travel
+from world.globe import measure, travel, arrive_at
 # from evennia import default_cmds
 
 """
@@ -177,46 +174,57 @@ class CmdNorth(Command):
         # announce results
         vessel.msg_contents("New position = %s" % str(position))
 
-        # Look up room then move to it or create it and move to it
-        # Look up room
-        room = search.search_object_attribute(key="coordinates",
-                                              value=position)
-        # move to room
-        if room:
-            # If the destination room exists, we go there.
-            vessel.msg_contents("%s already exists." % room)
-            room = room[0]
-            # TODO: fix this^ throw on multimatch rooms there should only
-            # ever be one room per coordinates
-            # unless it is dry land
-            if inherits_from(room, "typeclasses.rooms.DryLandRoom"):
-                vessel.msg_contents("It's dry land so cancelling move.")
+        # Arrive at
+        arrive_at(vessel, position)
+
+        # Old arrival Code - now moved to Globe
+        '''
+            # The following code moves a vessel to a new position and room that
+            # matches that position.  It should be taken out and packaged in
+            # another function.
+            # ARRIVE AT
+
+            # Look up room then move to it or create it and move to it
+            # Look up room
+            room = search.search_object_attribute(key="coordinates",
+                                                value=position)
+            # move to room
+            if room:
+                # If the destination room exists, we go there.
+                vessel.msg_contents("%s already exists." % room)
+                room = room[0]
+                # TODO: fix this^ throw on multimatch rooms there should only
+                # ever be one room per coordinates
+                # unless it is dry land
+                if inherits_from(room, "typeclasses.rooms.DryLandRoom"):
+                    vessel.msg_contents("It's dry land so cancelling move.")
+                    return
+                # but if not dry land... lets get on with it and move
+                else:
+                    vessel.msg_contents("Moving to %s" % room)
+                    vessel.move_to(room)
+                    return
+            elif (vessel.location.is_typeclass("rooms.DynamicRoom") and
+                    len(vessel.location.contents) == 1):
+                # This means we are in a dynamic room alone
+                vessel.msg_contents("updating room coordinates to %s"
+                                    % str(position))
+                vessel.location.db.coordinates = position
+                # have to update vessel position to match rooms new position
+                vessel.db.position = position
                 return
-            # but if not dry land... lets get on with it and move
-            else:
+            else:  # Assume the current room is occupied or not dynamic
+                # create the room
+                vessel.msg_contents("Creating new room at %s" % str(position))
+                room = create_object(typeclass="rooms.DynamicRoom",
+                                    key="The Open Ocean",
+                                    location=None,
+                                    )
+                room.db.coordinates = position
                 vessel.msg_contents("Moving to %s" % room)
                 vessel.move_to(room)
                 return
-        elif (vessel.location.is_typeclass("rooms.DynamicRoom") and
-                len(vessel.location.contents) == 1):
-            # This means we are in a dynamic room alone
-            vessel.msg_contents("updating room coordinates to %s"
-                                % str(position))
-            vessel.location.db.coordinates = position
-            # have to update vessel position to match rooms new position
-            vessel.db.position = position
-            return
-        else:  # Assume the current room is occupied or not dynamic
-            # create the room
-            vessel.msg_contents("Creating new room at %s" % str(position))
-            room = create_object(typeclass="rooms.DynamicRoom",
-                                 key="The Open Ocean",
-                                 location=None,
-                                 )
-            room.db.coordinates = position
-            vessel.msg_contents("Moving to %s" % room)
-            vessel.move_to(room)
-            return
+            '''
         print "Something else went wrong"
 
 
@@ -333,7 +341,7 @@ class CmdTravel(Command):
          West = 270
 
     Usage:
-        travel <bearing> <distance>   (help travel for details)
+        travel <heading> <distance>   (help travel for details)
 
     Example:
         assume vessel is starting at Null Island (0N, 0E):
@@ -347,38 +355,34 @@ class CmdTravel(Command):
     key = "travel"
     help_category = "Mutinous Commands"
     aliases = ["move", "tr"]
-    usage = "travel <bearing> <distance>   (help travel for details)"
-
-    def parse(self):
-        # check args are just two numbers
-        caller = self.caller
-        report = caller.msg
-        usage = self.usage
-        self.bearing, self.distance = self.args.split()
-
-        if not self.args:
-            report(usage)
-            return
+    usage = "travel <heading> <distance>   (help travel for details)"
 
     def func(self):
         caller = self.caller
+        if not self.args:
+            caller.msg(self.usage)
+            return
+        self.heading, self.distance = self.args.split()
         vessel = caller.location
         report = caller.msg
-        bearing = int(self.bearing)
-        print bearing
+        heading = int(self.heading)
+        print heading
         distance = int(self.distance)
         print distance
 
-        report("You set a bearing of %s, and travel %s nautical miles"
-               % (str(bearing), str(distance)))
+        report("You set a heading of %s, and travel %s nautical miles"
+               % (str(heading), str(distance)))
 
-        start_position = tuple(vessel.db.position)
+        start_position = (tuple(vessel.db.position))
         # start_position = (0, 0)
         report("given a starting position of %s" % str(start_position))
 
-        final_position = travel(start_position, bearing, distance)
+        final_position = travel(start_position, heading, distance)
 
         report("You will arrive at %s" % str(final_position))
+
+        # Lets see if arrive at works out of the box:
+        arrive_at(vessel, final_position)
 
 
 # script based movement
@@ -407,11 +411,11 @@ class CmdGetUnderway(Command):
     def func(self):
         speed = int(self.args)
         vessel = self.obj.location
-        bearing = vessel.db.bearing
+        heading = vessel.db.heading
         "call the get underway function on the vessel object"
         vessel.get_underway(speed)
         string = "The %s starts moving at %skts, heading %s"
-        string = string % (vessel, speed, bearing)
+        string = string % (vessel, speed, heading)
         vessel.msg_contents(string)
 
 
@@ -436,9 +440,33 @@ class CmdHeaveTo(Command):
 class CmdSteerTo(Command):
     """
     A two part command. Steer takes a direction as an argument and translates
-    it into a compass heading
+    it into a three digit compass heading
+
+    Usage: "steer <heading>"
+
+    Example:
+        > steer 000
+        >> (points the vessel North)
+
+        > steer 225
+        >> points the vessel Southwest
     """
-    pass
+    key = "steer"
+    aliases = ["bear", "head", "point", ]
+    help_category = "Mutinous Commands"
+    usage = "steer <heading>"
+
+    def parse(self):
+        "parse the directional argument"
+        self.heading = self.args.strip()
+
+    def func(self):
+        "set the heading attribute"
+        helm = self.obj
+        vessel = self.obj.location
+        heading = self.heading
+        vessel.steer_to(heading)
+        vessel.msg_contents("%s steers the %s %s!" % (helm, vessel, heading))
 
 
 class CmdSetOnboard(CmdSet):

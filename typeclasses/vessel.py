@@ -3,11 +3,8 @@
 from evennia import DefaultObject  # , search_object
 from commands.vessel import CmdSetVessel, CmdSetOnboard, CmdSetConn
 # from evennia import utils
-from evennia.utils import search
-from world.globe import travel
+from world.globe import travel, arrive_at
 from scripts import VesselMove
-from evennia.utils import inherits_from
-from evennia.utils.create import create_object
 
 
 class VesselObject(DefaultObject):
@@ -18,7 +15,7 @@ class VesselObject(DefaultObject):
         # not moving upon creation
         self.db.underway = False
         # The boat is by default pointing north
-        self.db.bearing = 0
+        self.db.heading = 0
         self.permissions.add("vessel")
 
 # attempt full overload of announce_move_from
@@ -117,7 +114,7 @@ class VesselObject(DefaultObject):
         I guess this is called by a players command. Not sure whether it makes
         sense here.
         '''
-        self.db.bearing = heading
+        self.db.heading = heading
         string = "The %s steers to %s degrees"
         self.msg_contents(string % (self.key, heading))
 
@@ -129,65 +126,17 @@ class VesselObject(DefaultObject):
         # def travel(start_point, bearing, distance):
         '''
         old_pos = self.db.position
-        bearing = self.db.bearing
+        heading = self.db.heading
         speed = self.db.speed
         vessel = self
-        position = travel(old_pos, bearing, speed)
+        position = travel(old_pos, heading, speed)
         # coordinates = str(new_pos)
-        vessel.db.position = position
-        string = "The vessel moves %s knots heading %s"
-        string += " and arrives at %s."
-        # self.msg_contents(string % (str(speed), str(bearing), coordinates))
+        # vessel.db.position = position
+        print "The vessel moves %s knots heading %s"
         """
         Assume that each travel interval is 1 hour, distance will be equal to
         speed in knots
         """
-        # Everything below was copied from the "north" command
-
-        # Look up room
-        room = search.search_object_attribute(key="coordinates",
-                                              value=position)
-        # move to room
-        if room:
-            # If the destination room exists, we go there.
-            vessel.msg_contents("%s already exists." % room)
-            room = room[0]
-            # TODO: fix this^ throw on multimatch rooms there should only
-            # ever be one room per coordinates
-            # TODO: of swtich evrything to radian coordinates
-            # so that rooms have unique radian coordinates but can have nore
-            # than one lon,lat coordinate
-            # unless it is dry land
-            if inherits_from(room, "typeclasses.rooms.DryLandRoom"):
-                vessel.msg_contents("It's dry land so cancelling move.")
-                # and reset the boat position to prior to the upate
-                self.db.position = old_pos
-                return
-            # but if not dry land... lets get on with it and move
-            else:
-                vessel.msg_contents("Moving to %s" % room)
-                vessel.move_to(room)
-                return
-        elif (vessel.location.is_typeclass("rooms.DynamicRoom") and
-                len(vessel.location.contents) == 1):
-            # This means we are in a dynamic room alone
-            vessel.msg_contents("updating room coordinates to %s"
-                                % str(position))
-            vessel.location.db.coordinates = position
-            # have to update vessel position to match rooms new position
-            vessel.db.position = position
-            return
-        else:  # Assume the current room is occupied or not dynamic
-            # create the room
-            vessel.msg_contents("Creating new room at %s" % str(position))
-            room = create_object(typeclass="rooms.DynamicRoom",
-                                 key="The Open Ocean",
-                                 location=None,
-                                 )
-            room.db.coordinates = position
-            vessel.msg_contents("Moving to %s" % room)
-            vessel.move_to(room)
-            return
-        print "Something else went wrong"
+        arrive_at(vessel, position)
 
 # last line

@@ -1,9 +1,16 @@
 # The Globe Rules
 """
 Updating to implement the Haversone Formula
+Moving the code that allows a vessel to arrive somwhere here from the original
+Vessel command "North"  so that it can be used in other movement commands.
 """
 
 import math
+from LatLon23 import LatLon  # , Latitude, Longitude, string2latlon
+from evennia.utils import search
+from evennia.utils import inherits_from
+from evennia.utils.create import create_object
+# TODO: replace Haversine with LatLon
 from haversine import haversine
 
 
@@ -38,7 +45,7 @@ def bearing(point_a, point_b):
     pass
 
 
-def travel(start_point, bearing, distance):
+def old_travel(start_point, bearing, distance):
     """
     globe.travel accepts
     a starting point in lat/lon,
@@ -87,6 +94,87 @@ def travel(start_point, bearing, distance):
     destination = (lat, lon)
     print "Finished"
     return(destination)
+
+
+def travel(start_point, heading, distance):
+    """
+    accepts a starting point in lat lon
+    determines destination after travelling a certain distance for
+    a particular start heading
+    """
+    print "**********\ndebugging travel\n*********"
+    distance = distance * 1.852
+    print "Checking on the start_point"
+    print start_point
+    print type(start_point)
+    print "okay?"
+    lat1 = start_point[0]
+    lon1 = start_point[1]
+    origin = LatLon(lat1, lon1)
+    destination_obj = origin.offset(heading, distance)
+    destination_str = destination_obj.to_string()
+    print "Destination string: "
+    print destination_str
+    print "type: %s" % type(destination_str)
+    # destination_list = destination_str.split(str=",")
+    destination_tup = tuple(destination_str)
+    print "**********\nend debugging travel\n*********"
+    return(destination_tup)
+
+
+def arrive_at(vessel, position):
+    '''
+    # The following code moves a vessel to a new position and room that
+    # matches that position.  It should be taken out and packaged in
+    # another function.
+    # ARRIVE AT
+
+    # Look up room then move to it or create it and move to it
+    '''
+
+    # Check the arguments to make sure vessel is a vessel and
+    # position is a position
+
+    # Look up room in teh entier DB
+    room = search.search_object_attribute(key="coordinates",
+                                          value=position)
+    # move to room
+    if room:
+        # If the destination room exists, we go there.
+        vessel.msg_contents("%s already exists." % room)
+        room = room[0]
+        # TODO: fix this^ throw on multimatch rooms there should only
+        # ever be one room per coordinates
+        # unless it is dry land
+        if inherits_from(room, "typeclasses.rooms.DryLandRoom"):
+            vessel.msg_contents("It's dry land so cancelling move.")
+            return
+        # but if not dry land
+        # ... lets get on with it and move
+        else:
+            vessel.msg_contents("Moving to %s" % room)
+            vessel.move_to(room)
+            return
+    elif (vessel.location.is_typeclass("rooms.DynamicRoom") and
+            len(vessel.location.contents) == 1):
+        # This means we are in a dynamic room alone
+        vessel.msg_contents("updating room coordinates to %s"
+                            % str(position))
+        vessel.location.db.coordinates = position
+        # have to update vessel position to match rooms new position
+        vessel.db.position = position
+        return
+    else:  # Assume the current room is occupied or not dynamic
+        # create the room
+        vessel.msg_contents("Creating new room at %s" % str(position))
+        room = create_object(typeclass="rooms.DynamicRoom",
+                             key="The Open Ocean",
+                             location=None,
+                             )
+        room.db.coordinates = position
+        vessel.msg_contents("Moving to %s" % room)
+        vessel.move_to(room)
+        return
 
 
 def testGlobe():

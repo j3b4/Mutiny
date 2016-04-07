@@ -122,9 +122,9 @@ class VesselMove(Script):
 
     def at_script_creation(self):
         self.key = "vesselmove"
-        self.interval = 1
+        self.interval = 3
         self.persisent = True
-        self.repeats = 12
+        self.repeats = 6
         self.start_delay = 5
         self.time = 0
 

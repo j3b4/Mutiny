@@ -21,6 +21,18 @@ from evennia.settings_default import *
 
 # WEBSOCKET_CLIENT_URL = 'ws://j3b.mdns.org'
 
+
+#####################################################################
+# Contrib config                                                    #
+#####################################################################
+GAME_DIRECTORY_LISTING = {
+                  'game_status': 'pre-alpha',
+                  'game_website': 'http://j3b.mdns.org:8000/',
+                  'listing_contact': 'j3b@3b1.org',
+                  'telnet_hostname': 'j3b.mdns.org',
+                  'telnet_port': 4000,
+                  }
+
 ######################################################################
 # Evennia base server config
 ######################################################################
