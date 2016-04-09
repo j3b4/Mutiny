@@ -3,14 +3,18 @@ Current Work Order
 		: So rowing seems to work alright. A two part process. Steer sets an
 		: angular direction. And row sets a speed.  I'l then move at that
 		: speed for six units of time. (the game pretends those are hours).
-		Steering.
+		Steering. and stopping
 			: I can steer while the rowing continues. 
-		Row ... I could make it stop stoping itself. 
-			: let row continue for a much longer period of time, but issue a
-			: stop command.
-			YeS.
-				good idea.
+	Wind
+		Implement wind first. 
+		Attached to the world or the dynamic room?
+		How about the dynamic room gets its wind from a wind server
+		that means that I can start with a static output from the wind server.
+		Is always on.
+		This will change the way vessel move script works. As
 	Sailing
+		The boat gets its wind from the room.
+		The room gets it from the world wind server.
 Done (for now)
 	[X] 100% Implement the Ocean
 		[X] **coastal waters** 
