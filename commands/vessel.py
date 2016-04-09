@@ -367,7 +367,7 @@ class CmdTravel(Command):
         report = caller.msg
         heading = int(self.heading)
         print heading
-        distance = int(self.distance)
+        distance = float(self.distance)
         print distance
 
         report("You set a heading of %s, and travel %s nautical miles"
@@ -421,9 +421,7 @@ class CmdGetUnderway(Command):
 
 class CmdHeaveTo(Command):
     """
-    A single command that halts the ship.  While hove to the ship cannot be
-    steered.
-
+    A single command that halts the ship.
     Usage: hold
     """
     key = "hold"

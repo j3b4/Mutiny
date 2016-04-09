@@ -124,7 +124,7 @@ class VesselMove(Script):
         self.key = "vesselmove"
         self.interval = 3
         self.persisent = True
-        self.repeats = 6
+        self.repeats = 48  # two days non-stop
         self.start_delay = 5
         self.time = 0
 
@@ -134,9 +134,11 @@ class VesselMove(Script):
 
     def at_stop(self):
         time = str(self.time)
-        string = "After %s hours of rowing you stop"
+        string = "After %s hours of rowing you stop."
         self.obj.msg_contents(string % time)
-        self.obj.heave_to()
-        pass
+        self.obj.db.underway = False
+        self.obj.db.speed = 0  # not moving anymore
+        self.obj.msg_contents("The %s heaves to at %s." % (self.obj.key,
+                              self.obj.location))
 
 # Last Line

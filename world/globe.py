@@ -102,31 +102,29 @@ def travel(start_point, heading, distance):
     determines destination after travelling a certain distance for
     a particular start heading
     """
+    distance = distance * 1.852  # convert NM to KM
     print "**********\ndebugging travel\n*********"
-    distance = distance * 1.852
     print "Checking on the start_point"
     print start_point
-    print type(start_point)
-    print "okay?"
+    #  print type(start_point)
     lat1 = start_point[0]
     lon1 = start_point[1]
     origin = LatLon(lat1, lon1)
     destination_obj = origin.offset(heading, distance)
-    destination_str = destination_obj.to_string()
+    destination_tup = destination_obj.to_string()
+    lat2 = round(float(destination_tup[0]), 2)
+    lon2 = round(float(destination_tup[1]), 2)
     print "Destination string: "
-    print destination_str
-    print "type: %s" % type(destination_str)
-    # destination_list = destination_str.split(str=",")
-    destination_tup = tuple(destination_str)
+    print lat2
+    print lon2
     print "**********\nend debugging travel\n*********"
-    return(destination_tup)
+    return((lat2, lon2))
 
 
 def arrive_at(vessel, position):
     '''
     # The following code moves a vessel to a new position and room that
-    # matches that position.  It should be taken out and packaged in
-    # another function.
+    # matches that position.
     # ARRIVE AT
 
     # Look up room then move to it or create it and move to it

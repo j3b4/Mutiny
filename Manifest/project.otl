@@ -1,4 +1,16 @@
 Current Work Order
+	Rowing
+		: So rowing seems to work alright. A two part process. Steer sets an
+		: angular direction. And row sets a speed.  I'l then move at that
+		: speed for six units of time. (the game pretends those are hours).
+		Steering.
+			: I can steer while the rowing continues. 
+		Row ... I could make it stop stoping itself. 
+			: let row continue for a much longer period of time, but issue a
+			: stop command.
+			YeS.
+				good idea.
+	Sailing
 Done (for now)
 	[X] 100% Implement the Ocean
 		[X] **coastal waters** 

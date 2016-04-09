@@ -101,12 +101,7 @@ class VesselObject(DefaultObject):
         self.scripts.add(VesselMove)
 
     def heave_to(self):
-        # TODO: research other terms
-        self.db.underway = False
-        self.db.speed = 0  # not moving anymore
-        self.msg_contents("The %s heaves to at %s." % (self.key,
-                          self.location))
-        self.scripts.stop(VesselMove)
+        self.scripts.delete(key="vesselmove")  # TODO: this isn't
 
     def steer_to(self, heading):
         '''
