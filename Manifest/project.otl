@@ -7,11 +7,12 @@ Current Work Order
 			: I can steer while the rowing continues. 
 	Wind
 		Implement wind first. 
-		Attached to the world or the dynamic room?
-		How about the dynamic room gets its wind from a wind server
-		that means that I can start with a static output from the wind server.
-		Is always on.
-		This will change the way vessel move script works. As
+			World Wind
+				returns wind speed and dir for a particular position
+		Using the wind
+			append to room?
+				as an attribute?
+			change by script
 	Sailing
 		The boat gets its wind from the room.
 		The room gets it from the world wind server.

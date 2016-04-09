@@ -6,9 +6,9 @@ Vessel command "North"  so that it can be used in other movement commands.
 """
 
 import math
+from random import choice, randint
 from LatLon23 import LatLon  # , Latitude, Longitude, string2latlon
-from evennia.utils import search
-from evennia.utils import inherits_from
+from evennia.utils import search, inherits_from
 from evennia.utils.create import create_object
 # TODO: replace Haversine with LatLon
 from haversine import haversine
@@ -180,7 +180,22 @@ def testGlobe():
     return "Yes this is the globe.\n"
 
 
+def world_wind(position):
+    '''
+    call this to ask what is the wind at position
+    returns a direction and a speed
+
+    This working copy just picks two values at random. This will make for
+    dramatic wind shifts.
+    '''
+    direction = choice(COMPASS_ROSE)
+    speed = randint(0, 65)
+    return (direction[1], speed)
+
+
 COMPASS_ROSE = [  # a list of directions and directions
+    # TODO add these to the "Steer" command
+    # and add a heading and bearing command
     ("n", "north", 0),
     ("nne", "north northeast", 45/2),
     ("ne", "northeast", 45),
@@ -192,11 +207,11 @@ COMPASS_ROSE = [  # a list of directions and directions
     ("s", "south", 180),
     ("ssw", "south southwest", (180 + 45/2)),
     ("sw", "southwest", 225),
-    ("wsw", "west southwest", 225 + 45/2),
+    ("wsw", "west southwest", (225 + 45/2)),
     ("w", "west", 270),
-    ("wnw", "west northwest", 270 + 45/2),
+    ("wnw", "west northwest", (270 + 45/2)),
     ("nw", "northwest", 315),
-    ("nnw", "north northwest", 315 + 45/2)
+    ("nnw", "north northwest", (315 + 45/2))
     ]
 
 
