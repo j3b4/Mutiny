@@ -409,13 +409,16 @@ class CmdGetUnderway(Command):
     usage = "row <speed>"
 
     def func(self):
-        speed = int(self.args)
         vessel = self.obj.location
         heading = vessel.db.heading
-        "call the get underway function on the vessel object"
-        vessel.get_underway(speed)
-        string = "The %s starts moving at %skts, heading %s"
-        string = string % (vessel, speed, heading)
+        if self.args:
+            speed = int(self.args)
+            "call the get underway function on the vessel object"
+            vessel.get_underway(speed)
+            string = "The %s starts moving at %skts, heading %s"
+            string = string % (vessel, speed, heading)
+        else:
+            string = "Supply a speed in knots.\n" + self.usage
         vessel.msg_contents(string)
 
 
@@ -462,9 +465,12 @@ class CmdSteerTo(Command):
         "set the heading attribute"
         helm = self.obj
         vessel = self.obj.location
-        heading = self.heading
-        vessel.steer_to(heading)
-        vessel.msg_contents("%s steers the %s %s!" % (helm, vessel, heading))
+        if self.heading:
+            vessel.steer_to(self.heading)
+            string = "%s steers the %s to %s!" % (helm, vessel, self.heading)
+        else:
+            string = "Current heading: %s" % vessel.db.heading
+        vessel.msg_contents(string)
 
 
 class CmdSetOnboard(CmdSet):

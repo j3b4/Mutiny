@@ -30,9 +30,12 @@ class Outside(Room):
 
     All Outside rooms have global coordinates and give their position to any
     object they receive.
+
+    Has wind and weather.
     """
     def at_object_receive(self, new_arrival, source_location):
         new_arrival.db.position = self.db.coordinates
+
 
 
 class SeaRoom(Outside):
