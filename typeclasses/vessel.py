@@ -3,12 +3,21 @@
 from evennia import DefaultObject  # , search_object
 from commands.vessel import CmdSetVessel, CmdSetOnboard, CmdSetConn
 # from evennia import utils
-from world.globe import travel, arrive_at
-from scripts import VesselMove
+from world.globe import arrive_at, actual_course
+from evennia import TICKER_HANDLER as tickerhandler
 
 
-class VesselObject(DefaultObject):
+class FloatingObject(DefaultObject):
+    '''
+    The floating object as a base for vessels etc.
+    However does it make sense to have this at all?
+    Maybe I wont use it at all right now.
+    '''
+    pass
 
+
+class VesselObject(FloatingObject):
+    'This is for objects that can be boarded steered and controlled'
     def at_object_creation(self):
         # working on the sailing functions
         self.cmdset.add_default(CmdSetVessel)
@@ -94,14 +103,21 @@ class VesselObject(DefaultObject):
         view = self.at_look(self.location)
         return view
 
-    def get_underway(self, speed):
-        self.db.underway = True
-        self.db.speed = speed  # speed is in knots aka nautical miles/hour
-        self.msg_contents("The %s gets underway." % self.key)
-        self.scripts.add(VesselMove)
+    def drift(self):
+        '''
+        When adrift, a vessel is subject to movement forces. Current, wind, and
+        even self power like oars. This means a script will start to run
+        updating position constantly based on those forces.
+        '''
+        self.db.adrift = True
+        self.msg_contents("The %s is now adrift." % self.key)
+        tickerhandler.add(self, 3, idstring="drift")  # updates postion
 
-    def heave_to(self):
-        self.scripts.delete(key="vesselmove")  # TODO: this isn't
+    def anchor(self):
+        tickerhandler.remove(self, 3, idstring="drift")
+        self.db.power = 0
+        self.db.underway = False
+        self.db.adrift = False
 
     def steer_to(self, heading):
         '''
@@ -113,7 +129,15 @@ class VesselObject(DefaultObject):
         string = "The %s steers to %s degrees"
         self.msg_contents(string % (self.key, heading))
 
-    def update_position(self):
+    def get_underway(self, power):
+        '''
+        Get going, rowing maybe?
+        '''
+        self.db.power = power
+        self.db.underway = True
+        tickerhandler.add(self, 3, idstring="drift")  # updates postion
+
+    def at_tick(self):
         '''
         This function updates the ships position after obtaining the time from
         a script maybe?
@@ -121,17 +145,11 @@ class VesselObject(DefaultObject):
         # def travel(start_point, bearing, distance):
         '''
         old_pos = self.db.position
+        power = self.db.power
         heading = self.db.heading
-        speed = self.db.speed
-        vessel = self
-        position = travel(old_pos, heading, speed)
-        # coordinates = str(new_pos)
-        # vessel.db.position = position
-        print "The vessel moves %s knots heading %s"
-        """
-        Assume that each travel interval is 1 hour, distance will be equal to
-        speed in knots
-        """
-        arrive_at(vessel, position)
+        # TODO: use a calculation function
+        position = actual_course(old_pos, power, heading)
+        self.msg_contents("new position = %s" % str(position))
+        arrive_at(self, position)
 
 # last line

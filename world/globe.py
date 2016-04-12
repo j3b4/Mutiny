@@ -6,7 +6,7 @@ Vessel command "North"  so that it can be used in other movement commands.
 """
 
 import math
-from random import choice, randint
+# from random import choice, randint
 from LatLon23 import LatLon  # , Latitude, Longitude, string2latlon
 from evennia.utils import search, inherits_from
 from evennia.utils.create import create_object
@@ -134,8 +134,13 @@ def arrive_at(vessel, position):
     # position is a position
 
     # Look up room in teh entier DB
-    room = search.search_object_attribute(key="coordinates",
-                                          value=position)
+    if position:
+        room = search.search_object_attribute(key="coordinates",
+                                              value=position)
+    else:
+        string = "position: %s" % str(position)
+        vessel.msg_contents(string)
+        return
     # move to room
     if room:
         # If the destination room exists, we go there.
@@ -182,15 +187,66 @@ def testGlobe():
 
 def world_wind(position):
     '''
-    call this to ask what is the wind at position
-    returns a direction and a speed
+    Call this to ask what is the wind at position
+    Returns a direction and a speed
 
     This working copy just picks two values at random. This will make for
     dramatic wind shifts.
     '''
+    """
     direction = choice(COMPASS_ROSE)
+    # COMPASS_ROSE contains three values
     speed = randint(0, 65)
-    return (direction[1], speed)
+    return (float(direction[2]), float(speed))
+    """
+    # provisional sane fixed wind
+    return (270.0, 12)  # 12 knots out of the east
+
+
+def current_current(position):
+    '''
+    Returns the current current at position.
+    '''
+    """
+    direction = choice(COMPASS_ROSE)
+    speed = randint(0, 12)  # current speed
+    return (float(direction[2]), float(speed))
+    """
+    return (180.0, 6.0)  # 6 knots southerly current
+
+
+def resultant((dir1, mag1), (dir2, mag2)):
+    '''
+    resultant() adds one polar vector to another.
+    use this as often as needed to add all forces acting on a floating object.
+    '''
+    x = math.sin(dir1) * mag1 + math.sin(dir2) * mag2
+    y = math.cos(dir1) * mag1 + math.cos(dir2) * mag2
+    mag_result = math.hypot(x, y)
+    dir_result = 0.5 * math.pi - math.atan2(y, x)
+    return (mag_result, dir_result)
+
+
+def actual_course(position, power, heading):
+    '''
+    Calculate the vessels actual course if position, power, and heading are
+    known. Use "position" to get local wind and current.  Then add to the power
+    vector using the resultant function above.
+    '''
+    ship_power = (float(heading), float(power))
+    wind = world_wind(position)
+    print "wind: "
+    print wind
+    current = current_current(position)
+    print "current:"
+    print current
+    natural_forces = resultant(wind, current)
+    print "natural forces = %s" % str(natural_forces)
+    actual_course = resultant(natural_forces, ship_power)
+    print "actual course = %s" % str(actual_course)
+    new_position = travel(position, actual_course[0], actual_course[1])
+    print "new position = %s" % str(new_position)
+    return new_position
 
 
 COMPASS_ROSE = [  # a list of directions and directions

@@ -26,12 +26,23 @@ from evennia.settings_default import *
 # Contrib config                                                    #
 #####################################################################
 GAME_DIRECTORY_LISTING = {
-                  'game_status': 'pre-alpha',
-                  'game_website': 'http://j3b.mdns.org:8000/',
-                  'listing_contact': 'j3b@3b1.org',
-                  'telnet_hostname': 'j3b.mdns.org',
-                  'telnet_port': 4000,
-                  }
+        'game_status': 'pre-alpha',
+        'game_website': 'http://j3b.mdns.org:8000/',
+        'listing_contact': 'j3b@3b1.org',
+        'telnet_hostname': 'j3b.mdns.org',
+        'telnet_port': 4000,
+        'short_description': 'Horatio Hornblower meets Dwarf Fortress',
+        'long_description': '''
+Horatio Hornblower is a fictional
+Napoleonic Wars era Royal Navy officer who is the protagonist
+of a series of novels by C. S. Forester. He was later the
+subject of films and radio and television programs..... Dwarf
+Fortress (officially called Slaves to Armok: God of Blood
+Chapter II: Dwarf Fortress) is a part construction and
+management simulation, part roguelike, indie video game
+created by Tarn and Zach Adams.
+'''
+                }
 
 ######################################################################
 # Evennia base server config
