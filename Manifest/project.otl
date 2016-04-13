@@ -1,4 +1,8 @@
 Current Work Order
+	Remote Wind
+		Adjust wind and currnt to  be global scripts that can be controlled
+		by ingame commands.
+		ies. setWind 90 12  = West wind, 12 knots
 	Vector Drift
 		This moves ships/floaters by adding up the forces acting on the vessel
 		Convert the rowing 

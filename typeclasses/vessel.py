@@ -148,7 +148,7 @@ class VesselObject(FloatingObject):
         power = self.db.power
         heading = self.db.heading
         # TODO: use a calculation function
-        position = actual_course(old_pos, power, heading)
+        position = actual_course(old_pos, heading, power)
         self.msg_contents("new position = %s" % str(position))
         arrive_at(self, position)
 

@@ -103,9 +103,9 @@ def travel(start_point, heading, distance):
     a particular start heading
     """
     distance = distance * 1.852  # convert NM to KM
-    print "**********\ndebugging travel\n*********"
-    print "Checking on the start_point"
-    print start_point
+    # print "**********\ndebugging travel\n*********"
+    # print "Checking on the start_point"
+    # print start_point
     #  print type(start_point)
     lat1 = start_point[0]
     lon1 = start_point[1]
@@ -114,10 +114,10 @@ def travel(start_point, heading, distance):
     destination_tup = destination_obj.to_string()
     lat2 = round(float(destination_tup[0]), 2)
     lon2 = round(float(destination_tup[1]), 2)
-    print "Destination string: "
-    print lat2
-    print lon2
-    print "**********\nend debugging travel\n*********"
+    # print "Destination string: "
+    # print lat2
+    # print lon2
+    # print "**********\nend debugging travel\n*********"
     return((lat2, lon2))
 
 
@@ -200,7 +200,7 @@ def world_wind(position):
     return (float(direction[2]), float(speed))
     """
     # provisional sane fixed wind
-    return (270.0, 12)  # 12 knots out of the east
+    return (0.0, 45.0)  # 90 knots out of the south
 
 
 def current_current(position):
@@ -212,7 +212,7 @@ def current_current(position):
     speed = randint(0, 12)  # current speed
     return (float(direction[2]), float(speed))
     """
-    return (180.0, 6.0)  # 6 knots southerly current
+    return (90.0, 45.0)  # 90  knots westerly current
 
 
 def resultant((dir1, mag1), (dir2, mag2)):
@@ -220,14 +220,22 @@ def resultant((dir1, mag1), (dir2, mag2)):
     resultant() adds one polar vector to another.
     use this as often as needed to add all forces acting on a floating object.
     '''
+    # Convert both angles to radians
+    dir1 = math.radians(dir1)
+    dir2 = math.radians(dir2)
     x = math.sin(dir1) * mag1 + math.sin(dir2) * mag2
     y = math.cos(dir1) * mag1 + math.cos(dir2) * mag2
     mag_result = math.hypot(x, y)
-    dir_result = 0.5 * math.pi - math.atan2(y, x)
-    return (mag_result, dir_result)
+    print "\nhypontenuse: %s" % mag_result
+    dir_rad = math.atan2(y, x)
+    print "direction radians: %s\n" % dir_rad
+    # dir_deg = dir_rad * (180/math.pi)  # conversion
+    dir_deg = math.degrees(dir_rad)  # convert radians to degress
+    print "direction degrees: %s\n" % dir_deg
+    return (dir_deg, mag_result)
 
 
-def actual_course(position, power, heading):
+def actual_course(position, heading, power):
     '''
     Calculate the vessels actual course if position, power, and heading are
     known. Use "position" to get local wind and current.  Then add to the power
@@ -235,13 +243,15 @@ def actual_course(position, power, heading):
     '''
     ship_power = (float(heading), float(power))
     wind = world_wind(position)
+    current = current_current(position)
     print "wind: "
     print wind
-    current = current_current(position)
     print "current:"
     print current
     natural_forces = resultant(wind, current)
     print "natural forces = %s" % str(natural_forces)
+    print "\n\n   * adding power vector *"
+    print "power = %s" % str(ship_power)
     actual_course = resultant(natural_forces, ship_power)
     print "actual course = %s" % str(actual_course)
     new_position = travel(position, actual_course[0], actual_course[1])

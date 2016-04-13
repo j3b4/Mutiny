@@ -36,6 +36,42 @@ class Outside(Room):
     def at_object_receive(self, new_arrival, source_location):
         new_arrival.db.position = self.db.coordinates
 
+    def return_appearance(self, looker):
+        """
+        This formats a description. It is the hook a 'look' command
+        should call.
+
+        Args:
+            looker (Object): Object doing the looking.
+        """
+        if not looker:
+            return
+        # get and identify all objects
+        visible = (con for con in self.contents if con != looker and
+                   con.access(looker, "view"))
+        exits, users, things = [], [], []
+        for con in visible:
+            key = con.get_display_name(looker)
+            if con.destination:
+                exits.append(key)
+            elif con.has_player:
+                users.append("{c%s{n" % key)
+            else:
+                things.append(key)
+        # get description, build string
+        string = "{c%s{n\n" % self.get_display_name(looker)
+        desc = self.db.desc
+        wind = self.db.wind
+        if desc:
+            string += "%s" % desc
+        if wind:
+            string += "The wind is blowing %s knots " % wind[1]
+            string += "out of the %s." % wind[0]
+        if exits:
+            string += "\n{wExits:{n " + ", ".join(exits)
+        if users or things:
+            string += "\n{wYou see:{n " + ", ".join(users + things)
+        return string
 
 
 class SeaRoom(Outside):
