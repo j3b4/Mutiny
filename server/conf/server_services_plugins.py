@@ -13,7 +13,7 @@ can be added to it). The function should not return anything. Plugin
 services are started last in the Server startup process.
 
 """
-from evennia.contrib.gamedir_client import EvenniaGameDirService
+from evennia.contrib.egi_client import EvenniaGameIndexService
 
 
 def start_plugin_services(server):
@@ -22,5 +22,5 @@ def start_plugin_services(server):
 
     server - a reference to the main server application.
     """
-    gamedir_service = EvenniaGameDirService()
-    server.services.addService(gamedir_service)
+    egi_service = EvenniaGameIndexService()
+    server.services.addService(egi_service)

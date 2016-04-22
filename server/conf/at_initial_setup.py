@@ -16,4 +16,6 @@ does what you expect it to.
 
 
 def at_initial_setup():
-    pass
+    from evennia import create_script
+    create_script("typeclasses.scripts.WorldWind", key="WorldWind", obj=None)
+    print "Initial Set up was run"

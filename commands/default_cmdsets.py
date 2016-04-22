@@ -45,6 +45,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(command.CmdEcho())
         self.add(builder.CmdRaise())
         self.add(builder.CmdWalk())
+        self.add(builder.CmdWind())
 
 
 class PlayerCmdSet(default_cmds.PlayerCmdSet):

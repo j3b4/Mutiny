@@ -137,6 +137,12 @@ class VesselObject(FloatingObject):
         self.db.underway = True
         tickerhandler.add(self, 3, idstring="drift")  # updates postion
 
+    def get_weather(self, position):
+        '''
+        Query the world wind script/object for the current winds and currents
+        and waves and precipition. Later.
+        '''
+
     def at_tick(self):
         '''
         This function updates the ships position after obtaining the time from
@@ -147,9 +153,10 @@ class VesselObject(FloatingObject):
         old_pos = self.db.position
         power = self.db.power
         heading = self.db.heading
-        # TODO: use a calculation function
+        # Could get wind and current here
+        # then calculate actual course here.
         position = actual_course(old_pos, heading, power)
-        self.msg_contents("new position = %s" % str(position))
+        self.msg_contents("New position = %s" % str(position))
         arrive_at(self, position)
 
 # last line

@@ -146,30 +146,28 @@ class WorldWind(Script):
     '''
     This script is an in game object that stores the current wind speed and
     direction.  Presently one wind for the whole world.
-
     One purpose of this script is to allow me to change the wind in game to
     test other physics.
-
     The plan is to create a single script from this typeclass at_initial_setup
     '''
 
     def at_script_creation(self):
         self.key = "WorldWind"
         self.desc = "stores the current wind speed and direction"
-        self.db.speed = 0.0  # speed in knots
-        self.db.direction = 0.0  # out of 360 degree
+        self.db.wind = (90, 3.3)  # direction, speed
+        self.db.current = (0.0, 0.0)  # direction, speed
         self.interval = 0
         self.persistent = True
 
-    def getWind(self, position):
-        pass
+    def return_wind(self, position):
+        return self.db.wind
 
-    def getCurrent(self, position):
-        pass
+    def return_Current(self, position):
+        return self.db.wind
 
-    def setWind(self, direction, speed):
-        pass
+    def set_wind(self, direction, speed):
+        self.db.wind = (direction, speed)
 
-    def setCurrent(self, direction, speed):
-        pass
+    def set_current(self, direction, speed):
+        self.db.current = (direction, speed)
 # Last Line

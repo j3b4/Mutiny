@@ -25,7 +25,7 @@ from evennia.settings_default import *
 #####################################################################
 # Contrib config                                                    #
 #####################################################################
-GAME_DIRECTORY_LISTING = {
+GAME_INDEX_LISTING = {
         'game_status': 'pre-alpha',
         'game_website': 'http://j3b.mdns.org:8000/',
         'listing_contact': 'j3b@3b1.org',
