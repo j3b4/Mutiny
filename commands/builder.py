@@ -329,14 +329,50 @@ class CmdWind(MuxCommand):
             string = "You set the wind to %s degrees at %s knots"
             self.caller.msg(string % (direction, speed))
             WorldWind.set_wind(direction, speed)
-
         # switches:
         # /direction = single arguemnt is a direction
         # /speed = single argument is speed
-        #
         # single arg can me a direction name without switches
 
         # two arg is always direction then speed
 
         # confirm before setting
+
+
+class CmdCurrent(MuxCommand):
+    """
+    Set the current direction and speed property on the global script.
+    Direction is in degrees and speed in knots.
+
+    usage: +setcurrent/<switches> <direction> <speed>
+    """
+    key = "+setcurrent"
+    aliases = ["+current", ]
+    help_category = "Portage Building"
+    locks = "perm(Builders)"
+
+    def func(self):
+        matches = search.search_script("WorldWind")
+        print "\nmatches = %s, type = %s" % (matches, type(matches))
+        if not matches:
+            print "No match in the db for WorldWind.\n"
+            return
+        WorldWind = matches[0]
+        print "WorldWind type = %s\n\n" % type(WorldWind)
+
+        if not self.args:
+            (direction, speed) = WorldWind.return_current((1, 1))
+            string = "The current is flowing %s degrees at %s knots"
+            self.caller.msg(string % (direction, speed))
+            return
+        elif self.switches:
+            print "Do stuff with switches"
+        else:
+            print "This suggests there were some arguments"
+            [direction, speed] = self.lhs.split()
+            # now set the wind on the object
+            string = "You set the current to %s degrees at %s knots"
+            self.caller.msg(string % (direction, speed))
+            WorldWind.set_current(direction, speed)
+
 # Last line

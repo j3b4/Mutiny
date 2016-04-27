@@ -119,7 +119,6 @@ class CleanSeaRoom(Script):
 
 
 class VesselMove(Script):
-
     def at_script_creation(self):
         self.key = "vesselmove"
         self.interval = 3
@@ -154,7 +153,7 @@ class WorldWind(Script):
     def at_script_creation(self):
         self.key = "WorldWind"
         self.desc = "stores the current wind speed and direction"
-        self.db.wind = (90, 3.3)  # direction, speed
+        self.db.wind = (90.0, 3.3)  # direction, speed
         self.db.current = (0.0, 0.0)  # direction, speed
         self.interval = 0
         self.persistent = True
@@ -162,12 +161,12 @@ class WorldWind(Script):
     def return_wind(self, position):
         return self.db.wind
 
-    def return_Current(self, position):
+    def return_current(self, position):
         return self.db.wind
 
     def set_wind(self, direction, speed):
-        self.db.wind = (direction, speed)
+        self.db.wind = (float(direction), float(speed))
 
     def set_current(self, direction, speed):
-        self.db.current = (direction, speed)
+        self.db.current = (float(direction), float(speed))
 # Last Line

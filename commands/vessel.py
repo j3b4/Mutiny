@@ -2,7 +2,7 @@
 
 from evennia import default_cmds
 from evennia import CmdSet, Command
-from world.globe import measure, travel, arrive_at
+from world.globe import measure, move_vector
 # from evennia import default_cmds
 
 """
@@ -175,7 +175,7 @@ class CmdNorth(Command):
         vessel.msg_contents("New position = %s" % str(position))
 
         # Arrive at
-        arrive_at(vessel, position)
+        self.obj.arrive_at(vessel, position)
 
         # Old arrival Code - now moved to Globe
         '''
@@ -377,12 +377,12 @@ class CmdTravel(Command):
         # start_position = (0, 0)
         report("given a starting position of %s" % str(start_position))
 
-        final_position = travel(start_position, heading, distance)
+        final_position = move_vector(start_position, (heading, distance))
 
         report("You will arrive at %s" % str(final_position))
 
         # Lets see if arrive at works out of the box:
-        arrive_at(vessel, final_position)
+        self.obj.arrive_at(vessel, final_position)
 
 
 # script based movement
@@ -451,7 +451,7 @@ class CmdWeighAnchor(Command):
     def func(self):
         vessel = self.obj.location
         vessel.msg_contents("You weigh anchor, and are now adrift")
-        vessel.drift()
+        vessel.cast_off()
 
 
 class CmdAnchor(Command):
