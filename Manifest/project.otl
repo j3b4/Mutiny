@@ -1,21 +1,24 @@
 Current Work Order
-	Rowing
-		: So rowing seems to work alright. A two part process. Steer sets an
-		: angular direction. And row sets a speed.  I'l then move at that
-		: speed for six units of time. (the game pretends those are hours).
-		Steering. and stopping
-			: I can steer while the rowing continues. 
-	Wind
-		Implement wind first. 
-			World Wind
-				returns wind speed and dir for a particular position
-		Using the wind
-			append to room?
-				as an attribute?
-			change by script
-	Sailing
-		The boat gets its wind from the room.
-		The room gets it from the world wind server.
+	Remote Wind
+		Adjust wind and currnt to  be global scripts that can be controlled
+		by ingame commands.
+		ies. setWind 90 12  = West wind, 12 knots
+	Vector Drift
+		This moves ships/floaters by adding up the forces acting on the vessel
+		Convert the rowing 
+			Rowing
+				: So rowing seems to work alright. A two part process. Steer
+				: sets an angular direction. And row sets a speed.  I'l then
+				: move at that speed for six units of time. (the game pretends
+				: those are hours).
+				Steering. and stopping
+					: I can steer while the rowing continues. 
+					: and stop at any time too.
+			Wind
+			Current
+		Sailing
+				The boat gets its wind from the room.
+				The room gets it from the world wind server.
 Done (for now)
 	[X] 100% Implement the Ocean
 		[X] **coastal waters** 

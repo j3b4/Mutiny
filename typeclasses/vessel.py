@@ -1,24 +1,140 @@
 # VESSELS - Boats etc.
 
-from evennia import DefaultObject  # , search_object
+from evennia import DefaultObject
+from evennia.utils import search, inherits_from
+from evennia.utils.create import create_object
 from commands.vessel import CmdSetVessel, CmdSetOnboard, CmdSetConn
 # from evennia import utils
-from world.globe import travel, arrive_at
-from scripts import VesselMove
+from world.globe import add_vector, move_vector, get_weather
+from evennia import TICKER_HANDLER as tickerhandler
 
 
-class VesselObject(DefaultObject):
-
+class FloatingObject(DefaultObject):
+    '''
+    The floating object as a base for vessels etc.
+    Floating objects can be adrift or anchored. If adrift, they will move every
+    tick.
+    '''
     def at_object_creation(self):
-        # working on the sailing functions
-        self.cmdset.add_default(CmdSetVessel)
-        # not moving upon creation
+        self.cast_off()
+
+    def cast_off(self):
+        '''
+        When cast_off, a vessel is subject to movement forces. Current, wind,
+        and even self power like oars. This means a script will start to run
+        updating position constantly based on those forces.
+        '''
+        self.db.adrift = True
+        self.msg_contents("The %s is now adrift." % self.key)
+        tickerhandler.add(self, 3, idstring="adrift")  # updates postion
+
+    def anchor(self):
+        tickerhandler.remove(self, 3, idstring="adrift")
+        self.db.power = 0
         self.db.underway = False
-        # The boat is by default pointing north
+        self.db.adrift = False
+
+    def make_way(self):
+        '''
+        move in response to impelling forces:
+        wind, current, and power
+        on a bare floating object this is purely based on wind and current
+        a floater doesn't have a heading and never has power.
+        '''
+        # Could get wind and current here
+        (wind, current) = get_weather(self.db.position)
+        print "wind: %s" % str(wind)
+        print "current: %s" % str(current)
+        # then calculate actual course here.
+        course = add_vector(wind, current)
+        position = move_vector(self.db.position, course)
+        self.arrive_at(position)
+
+    def arrive_at(self, position):
+        '''
+        # The following code moves an object to a new position and room that
+        # matches that position.
+        '''
+        vessel = self
+
+        # Check the arguments to make sure vessel is a vessel and
+        # position is a position
+
+        # Look up room in teh entier DB
+        if position:
+            room = search.search_object_attribute(key="coordinates",
+                                                  value=position)
+        else:
+            string = "position: %s" % str(position)
+            self.msg_contents(string)
+            return
+        # move to room
+        if room:
+            # If the destination room exists, we go there.
+            vessel.msg_contents("%s already exists." % room)
+            room = room[0]
+            # TODO: fix this^ throw on multimatch rooms there should only
+            # ever be one room per coordinates
+            # unless it is dry land
+            if inherits_from(room, "typeclasses.rooms.DryLandRoom"):
+                vessel.msg_contents("It's dry land so cancelling move.")
+                return
+            # but if not dry land
+            # ... lets get on with it and move
+            else:
+                vessel.msg_contents("Moving to %s" % room)
+                vessel.move_to(room)
+                return
+        elif (vessel.location.is_typeclass("rooms.DynamicRoom") and
+                len(vessel.location.contents) == 1):
+            # This means we are in a dynamic room alone
+            vessel.msg_contents("updating room coordinates to %s"
+                                % str(position))
+            vessel.location.db.coordinates = position
+            # have to update vessel position to match rooms new position
+            vessel.db.position = position
+            return
+        else:  # Assume the current room is occupied or not dynamic
+            # create the room
+            vessel.msg_contents("Creating new room at %s" % str(position))
+            room = create_object(typeclass="rooms.DynamicRoom",
+                                 key="The Open Ocean",
+                                 location=None,
+                                 )
+            room.db.coordinates = position
+            vessel.msg_contents("Moving to %s" % room)
+            vessel.move_to(room)
+            return
+
+        def make_way(self, course):
+            old_position = self.db.position
+            position = move_vector(old_position, course)
+            self.msg_contents("New position = %s" % str(position))
+            self.arrive_at(self, position)
+
+        def at_tick(self):
+            '''
+            All floating objects move every tick unless anchored/moored.
+            So at tick, we calculate course and make_way
+            '''
+            pass
+
+    def at_tick(self):
+        self.make_way()
+
+
+class VesselObject(FloatingObject):
+    '''
+    This is for floating objects that can be boarded steered and controlled
+    so we'll inherit the basic properties of a floating object and then add
+    boarding functions, control stations, and the power and sail functions
+    '''
+    def at_object_creation(self):
+        self.cmdset.add_default(CmdSetVessel)
+        self.db.underway = False
         self.db.heading = 0
         self.permissions.add("vessel")
 
-# attempt full overload of announce_move_from
     def announce_move_from(self, destination):
         """
         Called if the move is to be announced. This is
@@ -82,7 +198,6 @@ class VesselObject(DefaultObject):
         moved_obj.cmdset.delete(CmdSetConn)
         print "Deleting Conning commands from %s" % moved_obj
 
-# end of overload attempt.
     def return_view(self):
         """
         This should let the view outsite become part of the view
@@ -94,44 +209,45 @@ class VesselObject(DefaultObject):
         view = self.at_look(self.location)
         return view
 
-    def get_underway(self, speed):
-        self.db.underway = True
-        self.db.speed = speed  # speed is in knots aka nautical miles/hour
-        self.msg_contents("The %s gets underway." % self.key)
-        self.scripts.add(VesselMove)
-
-    def heave_to(self):
-        self.scripts.delete(key="vesselmove")  # TODO: this isn't
-
     def steer_to(self, heading):
         '''
         This changes the objects heading
         I guess this is called by a players command. Not sure whether it makes
         sense here.
         '''
-        self.db.heading = heading
+        self.db.heading = float(heading)
         string = "The %s steers to %s degrees"
         self.msg_contents(string % (self.key, heading))
 
-    def update_position(self):
+    def get_underway(self, power):
         '''
-        This function updates the ships position after obtaining the time from
-        a script maybe?
-        after collecting information
-        # def travel(start_point, bearing, distance):
+        Get going, rowing maybe?
         '''
-        old_pos = self.db.position
-        heading = self.db.heading
-        speed = self.db.speed
-        vessel = self
-        position = travel(old_pos, heading, speed)
-        # coordinates = str(new_pos)
-        # vessel.db.position = position
-        print "The vessel moves %s knots heading %s"
-        """
-        Assume that each travel interval is 1 hour, distance will be equal to
-        speed in knots
-        """
-        arrive_at(vessel, position)
+        self.db.power = float(power)
+        self.db.underway = True
+        if not self.db.adrift:
+            self.cast_off()
+        # tickerhandler.add(self, 3, idstring="adrift")  # updates postion
 
+    def make_way(self):  # over ride the floating objects make_way
+        '''
+        move in response to impelling forces:
+        wind, current, and power
+        '''
+        # Could get wind and current here
+        (wind, current) = get_weather(self.db.position)
+        power = self.db.power
+        heading = float(self.db.heading)
+        bearing = (heading, power)
+        print "wind: %s" % str(wind)
+        print "current: %s" % str(current)
+        # then calculate actual course here.
+        course = add_vector(wind, current)
+        if power:
+            print "power: %s" % str(power)
+            print "bearing: %s" % str(bearing)
+            course = add_vector(course, bearing)
+            print "course: %s" % str(course)
+        position = move_vector(self.db.position, course)
+        self.arrive_at(position)
 # last line

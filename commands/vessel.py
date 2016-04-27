@@ -2,7 +2,7 @@
 
 from evennia import default_cmds
 from evennia import CmdSet, Command
-from world.globe import measure, travel, arrive_at
+from world.globe import measure, move_vector
 # from evennia import default_cmds
 
 """
@@ -72,44 +72,44 @@ class CmdDebark(Command):
 
 
 class CmdLookout(default_cmds.CmdLook):
-    """
-    Look around yourself while on board a vessel.
+        """
+        Look around yourself while on board a vessel.
 
-    Usage: look
+        Usage: look
 
-    This command is available when you are on a vessel. It will
-    describe the boat or boat-section you are in as well as the area
-    the boat is presently passing through.
-    """
-    # locks = "cmd:cmdinside()"
-    help_category = "Mutinous Commands"
-    # TODO: add a return_outside_view hook to the vessel object.
+        This command is available when you are on a vessel. It will
+        describe the boat or boat-section you are in as well as the area
+        the boat is presently passing through.
+        """
+        # locks = "cmd:cmdinside()"
+        help_category = "Mutinous Commands"
+        # TODO: add a return_outside_view hook to the vessel object.
 
-    def func(self):
-        caller = self.caller
-        vessel = caller.location
-        outside = vessel.location
-        " First copy default look function"
-        if not self.args:
-            target = vessel
-            if not target:
-                caller.msg("No location to look at!")
-                return
-            # no args means this is where the vessel look should sit.
-            outboard_view = (vessel.at_look(outside))
-            # TODO: Process the outboard_view, strip out exits.
-            inboard_view = caller.at_look(target)
-            caller.msg("You're on the %s" % vessel.key)
-            # caller.msg("Outside you see:")
-            caller.msg(outboard_view)
-            # caller.msg("Inside you see:\n")
-            caller.msg(inboard_view)
-        else:
-            # if there are arguemnts then do a standard look on them
-            target = caller.search(self.args)
-            if not target:
-                return
-            self.msg(caller.at_look(target))
+        def func(self):
+            caller = self.caller
+            vessel = caller.location
+            outside = vessel.location
+            " First copy default look function"
+            if not self.args:
+                target = vessel
+                if not target:
+                    caller.msg("No location to look at!")
+                    return
+                # no args means this is where the vessel look should sit.
+                outboard_view = (vessel.at_look(outside))
+                # TODO: Process the outboard_view, strip out exits.
+                inboard_view = caller.at_look(target)
+                caller.msg("You're on the %s" % vessel.key)
+                # caller.msg("Outside you see:")
+                caller.msg(outboard_view)
+                # caller.msg("Inside you see:\n")
+                caller.msg(inboard_view)
+            else:
+                # if there are arguemnts then do a standard look on them
+                target = caller.search(self.args)
+                if not target:
+                    return
+                self.msg(caller.at_look(target))
 
 
 class CmdConn(Command):
@@ -175,7 +175,7 @@ class CmdNorth(Command):
         vessel.msg_contents("New position = %s" % str(position))
 
         # Arrive at
-        arrive_at(vessel, position)
+        self.obj.arrive_at(vessel, position)
 
         # Old arrival Code - now moved to Globe
         '''
@@ -336,9 +336,9 @@ class CmdTravel(Command):
     # figure notation means include a 3 digits even if you have to use leading
     zer
     Ie.  North = 000, (or 360)
-         East = 090
-         South = 180
-         West = 270
+        East = 090
+        South = 180
+        West = 270
 
     Usage:
         travel <heading> <distance>   (help travel for details)
@@ -377,12 +377,12 @@ class CmdTravel(Command):
         # start_position = (0, 0)
         report("given a starting position of %s" % str(start_position))
 
-        final_position = travel(start_position, heading, distance)
+        final_position = move_vector(start_position, (heading, distance))
 
         report("You will arrive at %s" % str(final_position))
 
         # Lets see if arrive at works out of the box:
-        arrive_at(vessel, final_position)
+        self.obj.arrive_at(vessel, final_position)
 
 
 # script based movement
@@ -436,6 +436,38 @@ class CmdHeaveTo(Command):
         vessel = self.obj.location
         vessel.msg_contents("You call HOLD! to stop the rowing.")
         vessel.heave_to()
+
+
+class CmdWeighAnchor(Command):
+    """
+    Cancels the anchor, set the vessel adrift and starts the ticker again.
+    Subjecting the vessel to wind and current forces.
+    """
+    key = "weigh anchor"
+    aliases = ["weigh", "raise anchor", "cast off"]
+    help_category = "Mutinous Commands"
+    usage = "weigh anchor"
+
+    def func(self):
+        vessel = self.obj.location
+        vessel.msg_contents("You weigh anchor, and are now adrift")
+        vessel.cast_off()
+
+
+class CmdAnchor(Command):
+    """
+    Drop anchor to stop drifting or rowing.
+
+    Usage: anchor
+    """
+    key = "anchor"
+    help_category = "Mutinous Commands"
+    usage = "anchor"
+
+    def func(self):
+        vessel = self.obj.location
+        vessel.msg_contents("You heave anchor")
+        vessel.anchor()
 
 
 class CmdSteerTo(Command):
@@ -503,6 +535,8 @@ class CmdSetConn(CmdSet):
         self.add(CmdGetUnderway())
         self.add(CmdHeaveTo())
         self.add(CmdSteerTo())
+        self.add(CmdAnchor())
+        self.add(CmdWeighAnchor())
 
 
 class CmdSetVessel(CmdSet):

@@ -119,7 +119,6 @@ class CleanSeaRoom(Script):
 
 
 class VesselMove(Script):
-
     def at_script_creation(self):
         self.key = "vesselmove"
         self.interval = 3
@@ -141,4 +140,33 @@ class VesselMove(Script):
         self.obj.msg_contents("The %s heaves to at %s." % (self.obj.key,
                               self.obj.location))
 
+
+class WorldWind(Script):
+    '''
+    This script is an in game object that stores the current wind speed and
+    direction.  Presently one wind for the whole world.
+    One purpose of this script is to allow me to change the wind in game to
+    test other physics.
+    The plan is to create a single script from this typeclass at_initial_setup
+    '''
+
+    def at_script_creation(self):
+        self.key = "WorldWind"
+        self.desc = "stores the current wind speed and direction"
+        self.db.wind = (90.0, 3.3)  # direction, speed
+        self.db.current = (0.0, 0.0)  # direction, speed
+        self.interval = 0
+        self.persistent = True
+
+    def return_wind(self, position):
+        return self.db.wind
+
+    def return_current(self, position):
+        return self.db.wind
+
+    def set_wind(self, direction, speed):
+        self.db.wind = (float(direction), float(speed))
+
+    def set_current(self, direction, speed):
+        self.db.current = (float(direction), float(speed))
 # Last Line
