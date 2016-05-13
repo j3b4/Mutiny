@@ -1,24 +1,19 @@
 Current Work Order
-	Remote Wind
-		Adjust wind and currnt to  be global scripts that can be controlled
-		by ingame commands.
-		ies. setWind 90 12  = West wind, 12 knots
-	Vector Drift
-		This moves ships/floaters by adding up the forces acting on the vessel
-		Convert the rowing 
-			Rowing
-				: So rowing seems to work alright. A two part process. Steer
-				: sets an angular direction. And row sets a speed.  I'l then
-				: move at that speed for six units of time. (the game pretends
-				: those are hours).
-				Steering. and stopping
-					: I can steer while the rowing continues. 
-					: and stop at any time too.
-			Wind
-			Current
-		Sailing
-				The boat gets its wind from the room.
-				The room gets it from the world wind server.
+	[_] 25% Easy Sailing
+		[X] get wind and current from world wind server.
+		[_] look up vessel's polar in DB
+			Where do I store this data?
+				: First thing: put POLs in a folder.
+		[_] review boats heading
+		[_] calculate sail power and leeway?
+			[_] WIND_ANGLE = WIND_DIRECTION - BOAT_HEADING
+			[_] BOATSPEED = WIND_SPEED * WIND_ANGLE * BOAT_POLAR
+		Sailpower replaces wind and power 
+		COG = Sailpower + Current
+	Hard Sailing
+		account for sail trim and canvas
+		account for leeway
+			ie. True course neq Heading
 Done (for now)
 	[X] 100% Implement the Ocean
 		[X] **coastal waters** 
@@ -167,6 +162,29 @@ Done (for now)
 		[X] Problem with vessel updating position even when move fails.
 	[X] simple single-room vehicles
 		[X] DONE: players can enter and steer the boat around other rooms
+	[X] Remote Wind
+		: Adjust wind and currnt to  be global scripts that can be controlled
+		: by ingame commands.  ies. setWind 90 12  = West wind, 12 knots
+		Use Scripts
+			make a wind and weather typeclass global
+				with an interval of 0 so it's always on
+				persisent = yes
+			create it at initial setup
+			it shuld have methods for setting wind and current etc.
+	[X] Vector Drift
+		[X] This moves ships/floaters by adding up the forces acting on the vessel
+		[X] Convert the rowing 
+			[X] Rowing
+				: So rowing seems to work alright. A two part process. Steer
+				: sets an angular direction. And row sets a speed.  I'l then
+				: move at that speed for six units of time. (the game pretends
+				: those are hours).
+				[X] Steering. and stopping
+					: I can steer while the rowing continues. 
+					: and stop at any time too.
+			[X] Wind
+				wind
+			[X] Current
 Design Strategy
 	Water World Scheme
 		Summary
