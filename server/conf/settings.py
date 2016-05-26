@@ -24,12 +24,19 @@ needs to be given explicitly (evennia.foo).
 # Use the defaults from Evennia unless explicitly overridden
 from evennia.settings_default import *
 
+
+######################################################################
+# Mutiny Settings 
+######################################################################
+IN_GAME_ERRORS = True  # this is for development debugging
+
+
 ######################################################################
 # Evennia base server config
 ######################################################################
 
 # This is the name of your game. Make it catchy!
-SERVERNAME = "Portage"
+SERVERNAME = "Mutiny"
 
 ######################################################################
 # Django web features
@@ -52,6 +59,7 @@ GAME_INDEX_LISTING = {
         'listing_contact': 'j3b@3b1.org',
         'telnet_hostname': 'j3b.mdns.org',
         'telnet_port': 4000,
+        'web_client_url': 'http://j3b.mdns.org:8000/webclient',
         'short_description': 'Horatio Hornblower meets Dwarf Fortress',
         'long_description': '''
 Horatio Hornblower is a fictional

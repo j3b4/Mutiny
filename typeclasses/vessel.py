@@ -26,10 +26,11 @@ class FloatingObject(DefaultObject):
         '''
         self.db.adrift = True
         self.msg_contents("The %s is now adrift." % self.key)
-        tickerhandler.add(self, 3, idstring="adrift")  # updates postion
+        tickerhandler.add(3, self.make_way, idstring="adrift")
+        # updates postion
 
     def anchor(self):
-        tickerhandler.remove(self, 3, idstring="adrift")
+        tickerhandler.remove(3, self.make_way, idstring="adrift")
         self.db.power = 0
         self.db.underway = False
         self.db.adrift = False
@@ -227,7 +228,6 @@ class VesselObject(FloatingObject):
         self.db.underway = True
         if not self.db.adrift:
             self.cast_off()
-        # tickerhandler.add(self, 3, idstring="adrift")  # updates postion
 
     def make_way(self):  # over ride the floating objects make_way
         '''
