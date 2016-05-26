@@ -162,7 +162,7 @@ class WorldWind(Script):
         return self.db.wind
 
     def return_current(self, position):
-        return self.db.wind
+        return self.db.current
 
     def set_wind(self, direction, speed):
         self.db.wind = (float(direction), float(speed))

@@ -17,6 +17,7 @@ class FloatingObject(DefaultObject):
     '''
     def at_object_creation(self):
         self.cast_off()
+        self.db.windage = 0.1  # default windage
 
     def cast_off(self):
         '''
@@ -237,11 +238,17 @@ class VesselObject(FloatingObject):
         # Could get wind and current here
         (wind, current) = get_weather(self.db.position)
         power = self.db.power
+        sails = self.db.sails
+        # polar = self.db.polar  # set by spawner?
         heading = float(self.db.heading)
         bearing = (heading, power)
         print "wind: %s" % str(wind)
         print "current: %s" % str(current)
         # then calculate actual course here.
+        if sails:
+            self.msg_contents("You're sailing")
+            wind = (heading, wind[1]/2)
+            # this lets us sail at any wind angle at half windspeed
         course = add_vector(wind, current)
         if power:
             print "power: %s" % str(power)

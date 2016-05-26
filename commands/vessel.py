@@ -505,6 +505,38 @@ class CmdSteerTo(Command):
         vessel.msg_contents(string)
 
 
+class CmdSails(Command):
+    '''
+    Sails commands allows sails to be set or furled. Later reefing might be
+    posible.
+
+    Usage: "sails <up/down>"
+
+    When sails go up, they will automatically be set to make the best course on
+    current heading and wind angle. Setting sails in irons will automatically
+    heave to.
+    '''
+    key = "sails"
+    aliases = ["sail", ]
+    help_category = "Mutinous Commands"
+    usage = "Usage: sails <up/down>"
+
+    def func(self):
+        vessel = self.obj.location
+        order = self.args.strip()
+        canvas = vessel.db.sails
+        if not order:
+            vessel.msg_contents("Sails are at %s" % canvas)
+        elif order == "up":
+            vessel.db.sails = 1.0
+            vessel.msg_contents("Sails are at %s" % vessel.db.sails)
+        elif order == "down":
+            vessel.db.sails = 0
+            vessel.msg_contents("Sails are at %s" % vessel.db.sails)
+        else:
+            vessel.msg_contents(self.usage)
+
+
 class CmdSetOnboard(CmdSet):
     "Add this look command to the player when they enter the vessel"
     # TODO: Consider moving this to conning set, to simulate the requirement to
@@ -537,6 +569,7 @@ class CmdSetConn(CmdSet):
         self.add(CmdSteerTo())
         self.add(CmdAnchor())
         self.add(CmdWeighAnchor())
+        self.add(CmdSails())
 
 
 class CmdSetVessel(CmdSet):
