@@ -1,10 +1,10 @@
 Current Work Order
-	Easy Sail -  no polars
+	Fake Sail -  no polars
 		[X] get wind and current from world wind server.
 		review boats heading
-		find wind angle from boat
-		sailpower is derived by algorythm from wind speed and angle
-			what is this magic algorythm?
+		boat can sail at any angle at 1/2 WS
+		: This take wind and converts its direction to the ships heading and
+		: converts the speed to 1/2 itself. 
 	[_] 25% Medium Sailing with POLARS
 		[X] get wind and current from world wind server.
 		[_] look up vessel's polar in DB

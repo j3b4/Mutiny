@@ -48,6 +48,7 @@ class FloatingObject(DefaultObject):
         print "wind: %s" % str(wind)
         print "current: %s" % str(current)
         # then calculate actual course here.
+        wind[1] = wind[1] * self.windage  # reduces wind effect to a fraction
         course = add_vector(wind, current)
         position = move_vector(self.db.position, course)
         self.arrive_at(position)
@@ -249,6 +250,13 @@ class VesselObject(FloatingObject):
             self.msg_contents("You're sailing")
             wind = (heading, wind[1]/2)
             # this lets us sail at any wind angle at half windspeed
+        else:
+            '''
+            if no sails, then wind exerts a fraction of its power
+            on the floating object based on the vessel's windage
+            '''
+            wind = (wind[0], wind[1] * self.db.windage)
+            # reduces wind effect to a fraction
         course = add_vector(wind, current)
         if power:
             print "power: %s" % str(power)
