@@ -1,5 +1,6 @@
 # VESSELS - Boats etc.
 
+import math
 from evennia import DefaultObject
 from evennia.utils import search, inherits_from
 from evennia.utils.create import create_object
@@ -265,4 +266,31 @@ class VesselObject(FloatingObject):
             print "course: %s" % str(course)
         position = move_vector(self.db.position, course)
         self.arrive_at(position)
+
+    def sail(self, wind, heading):
+        # TODO: seriously consider moving this to a sailing module.
+        '''
+        take wind (direction & speed) and boats heading.
+        then calculate true wind angle TWA
+        then look TWA and wind speed WS up in the polare
+        interpolate if necessary
+        return the boat speed and course over water.
+        '''
+        print "sailing attempted"
+
+        # calculate TWA
+        wind_direction = wind[0]
+        twa = math.copysign(wind_direction - heading, 1)
+        if twa > 180:
+            twa = 2 * 180 - twa
+
+        # lookup polar
+        polar = self.db.polar
+        print "polar name = %s" % polar
+        # get find the bounding box of 1 to 4 windspeed and twa values
+
+        # interpolate
+
+        # return a boat speed and heading (should be same heading)
+
 # last line

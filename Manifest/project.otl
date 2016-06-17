@@ -5,13 +5,15 @@ Current Work Order
 		boat can sail at any angle at 1/2 WS
 		: This take wind and converts its direction to the ships heading and
 		: converts the speed to 1/2 itself. 
-	[_] 25% Medium Sailing with POLARS
+	[_] 25% Easy Sailing with POLARS
 		[X] get wind and current from world wind server.
 		[_] look up vessel's polar in DB
 			Where do I store this data?
 				: First thing: put POLs in a folder.
+		[_] Amend Vessel Typclass to require polar value
+			simply store a polar class in the db
 		[_] review boats heading
-		[_] calculate sail power and leeway?
+		[_] calculate sail power
 			[_] WIND_ANGLE = WIND_DIRECTION - BOAT_HEADING
 			[_] BOATSPEED = WIND_SPEED * WIND_ANGLE * BOAT_POLAR
 		Sailpower replaces wind and power 
