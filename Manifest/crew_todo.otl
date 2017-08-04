@@ -31,5 +31,25 @@ Crew To do list.
 		: A starting ship might have poor morale and so merger doesn't happen
 		: as easily.
 	Ship AI
-		
+		Task Failure
+			: If a ship only works as well as its Crew performs I see two ways
+			: a task can fail. (1) by the Shop not being good  enough, or (2)
+			: by an individual sailor failing.
+			: (1) means that the ship has an aggregate performance rating that
+			: takes into account both its mechanical qualities as well as the
+			: skill and morale of its crew. When directed to perform a task,
+			: the rating is tested by probability roll and a failure indicates
+			: that it does not complete the task. The computer should now
+			: immediately conduct an audit of the Ship to determine what
+			: caused the failure. This can result in damage to a particalar
+			: part of the boat being discovered, or blame can be attributed to
+			: a sailor or group of sailors.
+			: (2) In the midst of a task a sailor can de-merge from the group
+			: and individually flub their task. The consequences of this
+			: failure flow up and can potentially cause the entire taks to
+			: fail.
+		Success
+			: Perhaps, as an individual is failing, another crew-member nearby
+			: can leap in and compensate, perhaps heroically averting disaster
+			: causing the task to succeed after all.
 
