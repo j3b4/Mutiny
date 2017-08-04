@@ -1,0 +1,35 @@
+Crew To do list.
+	build a character typeclass
+	learn how non-puppeted objects use commands
+		i think it's very easy
+	learn how to write decision making scripts
+	build a chain of command
+		any npc will respond to spoken/audible commands that hey hear
+		every tick an NPC has to decide what to do with themselves
+			1. follow their own inclinations
+			2. if they hear an order they have to decide whether to obey it
+	merger of AI
+		to simplify things, reduce overhead perhap
+		: npcs can "merge" into a group or a project That is, they join a
+		: group working on a particular task for a while stop making
+		: tick-by-tick decisions for themselves.
+		:
+		: however their name gets added to a roster of members of the group
+		: along with a number perhaps beside their name that indicates their
+		: potential for dissafection or falling out of step. Every interval
+		: (longer that a tick perhaps) the group script checks to see if
+		: individuals fall out.  When that happens, they dismerge with the
+		: group and start making decisions for themselves. 
+		:
+		: Group morale score can influence the test on every member of the
+		: group.
+		:
+		: Upshot is... a perfect ship works like a well-oiled machine and
+		: everyone pulls their weight. However, as morale breaks down,
+		: individuals start to exert their own will. 
+		:
+		: A starting ship might have poor morale and so merger doesn't happen
+		: as easily.
+	Ship AI
+		
+
