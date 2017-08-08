@@ -52,4 +52,47 @@ Crew To do list.
 			: Perhaps, as an individual is failing, another crew-member nearby
 			: can leap in and compensate, perhaps heroically averting disaster
 			: causing the task to succeed after all.
+Simplest steps
+	What is an AI entity in a game?
+Theory 
+	Expressionism:Intelligence, personality, even needs are global scripts
+		: "Hunger" for example is a global script or algorithm
+		: Entities need only to subscribe to certain global concepts or
+		: needs to use certain forms of intelligence.
+		: So a typeclass is assumed to subscribe to a list of needs, they
+		: don't need to calculate for themselves
+	Hunger
+		: Objects have attributes like food/hunger and they track them as time
+		: goes by. Though even that could be global. Ie. global hunger
+		: searches every interval for every unit that can have hunger and
+		: adjusts the attribute.
+		:
+		: When a unit becomes "hungry" then it subscribes to the 'hunger'
+		: script to decide what to do about it. All the strategies are stored
+		: in the global.
+		You are hungry.
+			do you have food? 
+				yes: eat it
+			do you know where food is located?
+				yes: move to it
+				no: use search algorithim
+		Searching: for object (food)
+			do you see object (food)
+				yes: get it
+					exit to caller
+			do you see a container?
+				yes: open it
+					does it contain object (food)
+						yes: restart searching
+				no:
+		does one develope a pseudo-code for ai scripting
+
+Pin in it....
+	: All this thinking has reminded me that I don't want to do this quite
+	: yet. AI means nothing in a vacuum.  I need places and things for
+	: entities to interact with in order for AI to make sense. So I need to
+	: build the places and things first.
+	:
+	: That means put this on the shelf and get back to ships, towns or global
+	: navigaation.
 
