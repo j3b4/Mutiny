@@ -1,4 +1,46 @@
 Current Work Order
+	[_] % Implement ships
+		barehull
+			: This is the ship's envelope. A room that contains all parts 
+			: of the ship.  Navigation and Combat is defined on it.
+		Code parts
+			typeclass BareHull
+				: the boat itself as a thing
+				modify VesselObject
+			typeclass ShipStation
+				: all the places tp be within a ship
+			typeclass - other classes substations?
+				specific parts of the ship might get their own TC
+				ie mast, quarter deck, poop, ward room etc.
+		[_] multi-roomed ships
+			: ships have rooms with different functions
+			list of room examples:
+				main deck, quarter-deck, the 
+				masthead, the bilge, state room, ward
+				galley, gun deck etc...
+		Shipbuilding tools
+			: I want a set of commands customised to allow @builders to build
+			: unique ships, and later to be able to automatically produce
+			: them.
+			build hull
+				a floating objected typeclass
+			build a deck
+				an inhabitiable space on boat
+				enter boat => deck
+			Shipstation command
+				create/drop ShipStation object. 
+				: The command to build a shipstation must fail if not inside a
+				: vessel object.
+				: or better creating a shipstation should require explicit
+				: vessel object
+				entrance
+		Skylarking
+			: the art of moving deliberately around from place to place on a
+			: ship
+			directions:
+				: forward, aft, port, starboard, windward, looard, up, down,
+				: aloft, below 
+
 	Fake Sail -  no polars
 		[X] get wind and current from world wind server.
 		review boats heading
@@ -246,25 +288,6 @@ Design Strategy
 	World Building
 		: Ideally use an historical geocode db to locate land
 		: also use db of coastline means of positioning the dry land
-	[_] % Implement ships
-		barehull
-			: This is the ship's envelope. A room that contains all parts 
-			: of the ship.  Navigation and Combat is defined on it.
-		Code parts
-			typeclass BareHull
-				: the boat itself as a thing
-				modify VesselObject
-			typeclass ShipStation
-				: all the places tp be within a ship
-			typeclass - other classes substations?
-				specific parts of the ship might get their own TC
-				ie mast, quarter deck, poop, ward room etc.
-		[_] multi-roomed ships
-			: ships have rooms with different functions
-			list of room examples:
-				main deck, quarter-deck, the 
-				masthead, the bilge, state room, ward
-				galley, gun deck etc...
 	Implement Crew (npcs that sail or help you sail) 
 		look to it.
 		NPCs are character entities.

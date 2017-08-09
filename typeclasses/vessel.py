@@ -212,6 +212,7 @@ class VesselObject(FloatingObject):
         """
         view = self.at_look(self.location)
         return view
+        # Honestly I don't think this does anything.
 
     def steer_to(self, heading):
         '''
@@ -288,9 +289,54 @@ class VesselObject(FloatingObject):
         polar = self.db.polar
         print "polar name = %s" % polar
         # get find the bounding box of 1 to 4 windspeed and twa values
-
         # interpolate
-
         # return a boat speed and heading (should be same heading)
+
+
+class ShipStation(DefaultObject):
+    '''
+    ShipStations are parts of a large vessel. Stations can be rooms or objects
+    all must be attached or contained by a master VesselObject
+    The station must relay information between the Vessel and its own contents.
+    '''
+
+    def at_object_creation(self):
+        '''
+        At creation, define the master vessel - this is immutable since a
+        station must be a part of a certain ship.
+        '''
+        pass
+
+    def at_msg_receive(self, text):
+        '''
+        When the vessel messages contents, this station decides whether to
+        relay anything to its own contents -ie. players or NPCs.
+        '''
+        self.msg_contents(text)
+        pass
+
+    ###
+    ###
+    ###
+    # Below I've copied the command setting functions from the vessel object. 
+    # But this will not be satisfactory. Well, perhaps I can divy up command
+    # sets to different parts of the vessel. That actually makes some sense
+    # since command sets very specidificaly defines most ShipStations. 
+    # So, some ship station typeclasses will have built in comman sets, others
+    # can be customuized.
+    # but as for the custom look?  Yeah I can tweak it.
+
+    def at_object_receive(self, moved_obj, source_location):
+        if moved_obj.is_typeclass("characters.Character"):
+            # only pc or npcs can have these commands
+            moved_obj.cmdset.add(CmdSetOnboard, permanent=True)
+            print "Adding Onboard commands to %s" % moved_obj
+
+    def at_object_leave(self, moved_obj, target_location):
+        moved_obj.cmdset.delete(CmdSetOnboard)
+        print "Deleting Onboard commands from %s" % moved_obj
+        moved_obj.cmdset.delete(CmdSetConn)
+        print "Deleting Conning commands from %s" % moved_obj
+
 
 # last line

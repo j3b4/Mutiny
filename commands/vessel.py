@@ -81,25 +81,33 @@ class CmdLookout(default_cmds.CmdLook):
         describe the boat or boat-section you are in as well as the area
         the boat is presently passing through.
         """
+        # TODO edit this to look outside the vessel from the pov at a shipt
+        # station
         # locks = "cmd:cmdinside()"
         help_category = "Mutinous Commands"
         # TODO: add a return_outside_view hook to the vessel object.
 
         def func(self):
             caller = self.caller
-            vessel = caller.location
+            station = caller.location
+            vessel = station.location
+            # this will cause an error if called from onboard a vessel without
+            # a ship station.
             outside = vessel.location
             " First copy default look function"
+            caller.msg("LOOKING FROM ONBOARD A VESSEL/SHIPSTATION")
             if not self.args:
-                target = vessel
+                target = station
                 if not target:
                     caller.msg("No location to look at!")
                     return
                 # no args means this is where the vessel look should sit.
                 outboard_view = (vessel.at_look(outside))
-                # TODO: Process the outboard_view, strip out exits.
+                # TODO: Fix the colours.
+                # TODO: customize this for different stations.
                 inboard_view = caller.at_look(target)
-                caller.msg("You're on the %s" % vessel.key)
+                caller.msg("You're on the %s of the %s" % (station.key,
+                                                           vessel.key))
                 # caller.msg("Outside you see:")
                 caller.msg(outboard_view)
                 # caller.msg("Inside you see:\n")

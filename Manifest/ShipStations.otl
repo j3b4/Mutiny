@@ -1,0 +1,37 @@
+ShipStation:
+	Outside a ship on a dock
+		Board
+	ExtView(ShipStation):
+		: Lookout()
+		Aloft(ExtView):
+			: ScanHorizon()
+			: ScanShip()
+		OnDeck(ExtView):
+			: Jettison()
+			: Sails()
+			MidShip(OnDeck):
+				Debark()
+	Helm or Bridge station
+		GetUnderway
+		HeaveTo
+		SteerTo
+	At the Bow
+		WeighAnchor
+		Anchor
+
+	Not sure yet
+		Conn
+			: should be replaceable with the various stations
+		Travel
+		GlobalMeasure
+CmdSetOnboard(CmdSet):
+	Lookout
+		: add at every topside station with a view
+
+CmdSetVessel(CmdSet):
+    "Add these commands to the vessel when it is created."
+        self.add(CmdDebark())
+        self.add(CmdBoard())
+        self.add(CmdGlobalMeasure())
+        # add the conn command below
+# last line
