@@ -375,4 +375,54 @@ class CmdCurrent(MuxCommand):
             self.caller.msg(string % (direction, speed))
             WorldWind.set_current(direction, speed)
 
+
+class CmdBoardingArea(MuxCommand):
+    '''
+    Use this command on a vessel to set it's default boarding area. That is
+    the place on the vessel that the player will be delivered to upon
+    "boarding".
+
+    Usage:
+      @boardingarea <vessel> <shipstation>
+
+    '''
+    key = "@boardingarea"
+    aliases = ["@board", "@ba"]
+    help_category = "Portage Building"
+    locks = "cmd:perm(dig) or perm(Builders)"
+
+    def func(self):
+        '''get arguments from command line, add an attribute to target'''
+        if not self.args:
+            string = "Usage: @setboardingarea <vessel> <shipstation>"
+            self.caller.msg(string)
+            return
+        vessel = self.caller.search(self.lhs, global_search=True)
+        if not vessel:
+            return
+        if not self.rhs:
+            # just view the boarding area
+            boarding_area = vessel.db.boarding_area
+            if not boarding_area:
+                string = "The %s has no boarding area set." % vessel.name
+            else:
+                string = "The %s's boarding area is %s(%s))."
+                string = string % (vessel, boarding_area, boarding_area.dbref)
+        else:
+            # set a new boarding area
+            new_ba = self.caller.search(self.rhs, global_search=True)
+            if not new_ba:
+                return
+            old_ba = vessel.db.boarding_area
+            vessel.db.boarding_area = new_ba
+            if old_ba:
+                string = "%s's boading area changed from %s(%s) to %s(%s)."
+                string = string % (vessel, old_ba, old_ba.dbref, new_ba,
+                                   new_ba.dfref)
+            else:
+                string = "%s' boarding area set to %s(%s)."
+                string = string % (vessel, new_ba, new_ba.dbref)
+        self.caller.msg(string)
+
+
 # Last line

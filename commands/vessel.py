@@ -50,10 +50,13 @@ class CmdBoard(Command):
             if not vessel.is_typeclass("vessel.VesselObject"):
                 self.caller.msg("You cannot board the %s." % vessel)
                 return
+            # TODO: search vessel.contents for an object that inherits from
+            # TODO: implement an attribute in the vessel.db that designates one
+            # of it's contents to be its "boarding_area"
+            boarding_area = vessel.db.boarding_area
             self.caller.msg("You board the %s" % vessel)
             # here we move the caller
-            self.caller.move_to(vessel)
-            # TODO: identify the boarding station
+            self.caller.move_to(boarding_area)
 
 
 class CmdDebark(Command):
@@ -561,21 +564,9 @@ class CmdSails(Command):
 # COMMAND SETS                      #
 #####################################
 
-class CmdSetOnboard(CmdSet):
-    "Add this look command to the player when they enter the vessel"
-    # TODO: Consider moving this to conning set, to simulate the requirement to
-    # get up on the conning tower to be able to realls see out there.
-
-    key = "Onboard Commands"
-    priority = 1
-
-    def at_cmdset_creation(self):
-        self.add(CmdLookout())
-        self.add(CmdConn())
-
-
 class CmdSetConn(CmdSet):
     "This adds the Conning commands to be attached to sea rooms"
+    # TODO: divy these up to different stations.
     # These commands control the entire ship in a powerful "driving mode"
     # In the future they might be unavailable ot regular users. Since they
     # allow instant movement in any direction on the grid.
@@ -607,12 +598,21 @@ class CmdSetVessel(CmdSet):
         # self.add(CmdGlobalMeasure())
 
 
-class CmdSetMidShip(CmdSet):
-    "Commands available from the midships."
-    key = "MidShip Commands"
+class CmdSetOnDeck(CmdSet):
+    "Commands available from OnDeck stations."
+    key = "On Deck Commands"
     priority = 1
     duplicates = False
 
     def at_cmdset_creation(self):
+        self.add(CmdLookout())
         self.add(CmdDebark())
+        self.add(CmdConn())
+
+
+class CmdSetOnboard(CmdSet):
+    "dummy command set"
+    key = "Dummy on board commands"
+    priority = 1
+    duplicates = False
 # last line

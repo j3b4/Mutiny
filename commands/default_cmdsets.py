@@ -47,6 +47,7 @@ class CharacterCmdSet(default_cmds.CharacterCmdSet):
         self.add(builder.CmdWalk())
         self.add(builder.CmdWind())
         self.add(builder.CmdCurrent())
+        self.add(builder.CmdBoardingArea())
 
 
 class PlayerCmdSet(default_cmds.PlayerCmdSet):

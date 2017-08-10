@@ -4,8 +4,8 @@ import math
 from evennia import DefaultObject
 from evennia.utils import search, inherits_from
 from evennia.utils.create import create_object
-from commands.vessel import CmdSetVessel, CmdSetOnboard, CmdSetConn
-from commands.vessel import CmdSetMidShip
+from commands.vessel import CmdSetVessel, CmdSetConn
+from commands.vessel import CmdSetOnDeck
 # from evennia import utils
 from world.globe import add_vector, move_vector, get_weather
 from evennia import TICKER_HANDLER as tickerhandler
@@ -194,12 +194,12 @@ class VesselObject(FloatingObject):
     def at_object_receive(self, moved_obj, source_location):
         if moved_obj.is_typeclass("characters.Character"):
             # only pc or npcs can have these commands
-            moved_obj.cmdset.add(CmdSetOnboard, permanent=True)
-            print "Adding Onboard commands to %s" % moved_obj
+            moved_obj.cmdset.add(CmdSetOnDeck, permanent=True)
+            print "Adding OnDeck commands to %s" % moved_obj
 
     def at_object_leave(self, moved_obj, target_location):
-        moved_obj.cmdset.delete(CmdSetOnboard)
-        print "Deleting Onboard commands from %s" % moved_obj
+        moved_obj.cmdset.delete(CmdSetOnDeck)
+        print "Deleting OnDeckcommands from %s" % moved_obj
         moved_obj.cmdset.delete(CmdSetConn)
         print "Deleting Conning commands from %s" % moved_obj
 
@@ -317,8 +317,6 @@ class ShipStation(DefaultObject):
         pass
 
     ###
-    ###
-    ###
     # Below I've copied the command setting functions from the vessel object.
     # But this will not be satisfactory. Well, perhaps I can divy up command
     # sets to different parts of the vessel. That actually makes some sense
@@ -327,27 +325,27 @@ class ShipStation(DefaultObject):
     # can be customuized.
     # but as for the custom look?  Yeah I can tweak it.
 
+
+class OnDeck(ShipStation):
+    '''
+    OnDeck is a high level ShipStation that includes all stations which have a
+    full exterior view, potentially allow debarking and boarding. Are exposed
+    to weather. I'm not sure what other features.
+    '''
+    def at_object_creation(self):
+        ''' add '''
+        self.cmdset.add_default(CmdSetOnDeck)
+
     def at_object_receive(self, moved_obj, source_location):
         if moved_obj.is_typeclass("characters.Character"):
             # only pc or npcs can have these commands
-            moved_obj.cmdset.add(CmdSetOnboard, permanent=True)
-            print "Adding Onboard commands to %s" % moved_obj
+            moved_obj.cmdset.add(CmdSetOnDeck, permanent=True)
+            print "Adding OnOndeck commands to %s" % moved_obj
 
     def at_object_leave(self, moved_obj, target_location):
-        moved_obj.cmdset.delete(CmdSetOnboard)
-        print "Deleting Onboard commands from %s" % moved_obj
+        moved_obj.cmdset.delete(CmdSetOnDeck)
+        print "Deleting OnDeckcommands from %s" % moved_obj
         moved_obj.cmdset.delete(CmdSetConn)
         print "Deleting Conning commands from %s" % moved_obj
-
-
-class MidShip(ShipStation):
-    '''
-    Midship is a ShipStation that provides the 'debark' command,
-    it is also the defaul destination of the 'board' command.
-    '''
-    def at_object_creation(self):
-        ''' at the debark command.'''
-        # TODO: edit debark to work.
-        self.cmdset.add_default(CmdSetMidShip)
 
 # last line
