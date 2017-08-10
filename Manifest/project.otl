@@ -24,6 +24,7 @@ Current Work Order
 			: them.
 			build hull
 				a floating objected typeclass
+				allows 'board' command
 			build a deck
 				an inhabitiable space on boat
 				enter boat => deck

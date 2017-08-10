@@ -19,8 +19,15 @@ class CmdBoard(Command):
         board <vessel>
 
     This command is available to players in the same location
-    as the vessel and allows them to embark.
+    as the vessel and allows them to embark. When executed, 'board'
+    should move the caller to the designated boarding area of the
+    vessel.
     """
+    # TODO: 'board' should move players to the "main deck/midships" station if
+    # possible. How does this work? The Vessel Object needs to store the
+    # reference to its ShipStations.
+    # The stations are "contents" of the vessel. The midship will have a
+    # typeclass.  This should work. Try to avoid duplicate stations.
 
     key = "board"
     aliases = ["embark", "go onboard", "come aboard", ]
@@ -43,8 +50,10 @@ class CmdBoard(Command):
             if not vessel.is_typeclass("vessel.VesselObject"):
                 self.caller.msg("You cannot board the %s." % vessel)
                 return
-            self.caller.msg("You to board the %s" % vessel)
+            self.caller.msg("You board the %s" % vessel)
+            # here we move the caller
             self.caller.move_to(vessel)
+            # TODO: identify the boarding station
 
 
 class CmdDebark(Command):
@@ -54,8 +63,9 @@ class CmdDebark(Command):
     Usage:
         debark
 
-    This command is available when you are on a vessel. It will move you to the
-    room presently containing the vessel.
+    This command is available when you are on a vessel at the debarking
+    station. Typically "Mid Ships".
+    It will move you to the room presently containing the vessel.
 
     TODO:  debark from one ship to another or create a "transfer" command.
     """
@@ -67,7 +77,9 @@ class CmdDebark(Command):
 
     def func(self):
         vessel = self.obj
-        parent = vessel.location
+        # parent reflects that the boarding station is nested in the vessel
+        # object.
+        parent = vessel.location.location
         self.caller.move_to(parent)
 
 
@@ -545,6 +557,10 @@ class CmdSails(Command):
             vessel.msg_contents(self.usage)
 
 
+#####################################
+# COMMAND SETS                      #
+#####################################
+
 class CmdSetOnboard(CmdSet):
     "Add this look command to the player when they enter the vessel"
     # TODO: Consider moving this to conning set, to simulate the requirement to
@@ -587,8 +603,16 @@ class CmdSetVessel(CmdSet):
     duplicates = False
 
     def at_cmdset_creation(self):
-        self.add(CmdDebark())
         self.add(CmdBoard())
-        self.add(CmdGlobalMeasure())
-        # add the conn command below
+        # self.add(CmdGlobalMeasure())
+
+
+class CmdSetMidShip(CmdSet):
+    "Commands available from the midships."
+    key = "MidShip Commands"
+    priority = 1
+    duplicates = False
+
+    def at_cmdset_creation(self):
+        self.add(CmdDebark())
 # last line

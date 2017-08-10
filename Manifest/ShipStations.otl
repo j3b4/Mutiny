@@ -24,6 +24,8 @@ ShipStation:
 			: should be replaceable with the various stations
 		Travel
 		GlobalMeasure
+
+
 CmdSetOnboard(CmdSet):
 	Lookout
 		: add at every topside station with a view
@@ -32,6 +34,3 @@ CmdSetVessel(CmdSet):
     "Add these commands to the vessel when it is created."
         self.add(CmdDebark())
         self.add(CmdBoard())
-        self.add(CmdGlobalMeasure())
-        # add the conn command below
-# last line

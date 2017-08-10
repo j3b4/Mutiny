@@ -1,0 +1,40 @@
+# Commands for Ships and Boats etc.
+
+Locations on bo
+
+class CmdBoard(Command):
+class CmdDebark(Command):
+class CmdLookout(default_cmds.CmdLook):
+class CmdConn(Command):
+class CmdGlobalMeasure(Command):
+class CmdTravel(Command):
+class CmdGetUnderway(Command):
+class CmdHeaveTo(Command):
+class CmdWeighAnchor(Command):
+class CmdAnchor(Command):
+class CmdSteerTo(Command):
+class CmdSails(Command):
+
+class CmdSetOnboard(CmdSet):
+    "Add this look command to the player when they enter the vessel"
+        (CmdLookout())
+        (CmdConn())
+
+class CmdSetConn(CmdSet):
+    "This adds the Conning commands to be attached to sea rooms"
+        self.add(CmdTravel())
+        self.add(CmdGetUnderway())
+        self.add(CmdHeaveTo())
+        self.add(CmdSteerTo())
+        self.add(CmdAnchor())
+        self.add(CmdWeighAnchor())
+        self.add(CmdSails())
+
+
+class CmdSetVessel(CmdSet):
+    "Add these commands to the vessel when it is created."
+        self.add(CmdDebark())
+        self.add(CmdBoard())
+        self.add(CmdGlobalMeasure())
+        # add the conn command below
+# last line

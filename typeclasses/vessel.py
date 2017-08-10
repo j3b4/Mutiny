@@ -5,6 +5,7 @@ from evennia import DefaultObject
 from evennia.utils import search, inherits_from
 from evennia.utils.create import create_object
 from commands.vessel import CmdSetVessel, CmdSetOnboard, CmdSetConn
+from commands.vessel import CmdSetMidShip
 # from evennia import utils
 from world.globe import add_vector, move_vector, get_weather
 from evennia import TICKER_HANDLER as tickerhandler
@@ -318,10 +319,10 @@ class ShipStation(DefaultObject):
     ###
     ###
     ###
-    # Below I've copied the command setting functions from the vessel object. 
+    # Below I've copied the command setting functions from the vessel object.
     # But this will not be satisfactory. Well, perhaps I can divy up command
     # sets to different parts of the vessel. That actually makes some sense
-    # since command sets very specidificaly defines most ShipStations. 
+    # since command sets very specidificaly defines most ShipStations.
     # So, some ship station typeclasses will have built in comman sets, others
     # can be customuized.
     # but as for the custom look?  Yeah I can tweak it.
@@ -338,5 +339,15 @@ class ShipStation(DefaultObject):
         moved_obj.cmdset.delete(CmdSetConn)
         print "Deleting Conning commands from %s" % moved_obj
 
+
+class MidShip(ShipStation):
+    '''
+    Midship is a ShipStation that provides the 'debark' command,
+    it is also the defaul destination of the 'board' command.
+    '''
+    def at_object_creation(self):
+        ''' at the debark command.'''
+        # TODO: edit debark to work.
+        self.cmdset.add_default(CmdSetMidShip)
 
 # last line
