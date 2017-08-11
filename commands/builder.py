@@ -9,7 +9,7 @@ Stage one: simply modify @tunnel and @dig to require coordinates
 """
 
 from django.conf import settings
-from evennia.utils import create, search
+from evennia.utils import create, search, inherits_from
 from commands.command import MuxCommand
 # from world.globe import COMPASS_ROSE
 
@@ -378,58 +378,40 @@ class CmdCurrent(MuxCommand):
 
 class CmdBoardingArea(MuxCommand):
     '''
-    Use this command on a vessel to set it's default boarding area. That is
-    the place on the vessel that the player will be delivered to upon
-    "boarding".
-
     Usage:
-      @boardingarea <vessel> <shipstation>
+      @boardingarea
 
     '''
-    key = "@boardingarea"
-    aliases = ["@board", "@ba"]
+    # TODO: re-write this as command available only on an exterior station.
+    key = "@setboardingarea"
+    aliases = ["@boardhere", "@sba"]
     help_category = "Portage Building"
     locks = "cmd:perm(dig) or perm(Builders)"
 
     def func(self):
-        '''get arguments from command line, add an attribute to target'''
-        if not self.args:
-            string = "Usage: @setboardingarea <vessel> <shipstation>"
-            self.caller.msg(string)
-            return
-        vessel = self.caller.search(self.lhs, global_search=True)
-        # TODO: see if removing global_search will limit this to vessels in the
-        # current room with the builder, or for builders in the room.
+        '''get arguments from location'''
+        vessel = self.caller.location.location
+        # the caller's location is the station, the station's location is the
+        # vessel.
         if not vessel:
             return
-        if not self.rhs:
-            # just view the boarding area
-            boarding_area = vessel.db.boarding_area
-            if not boarding_area:
-                string = "The %s has no boarding area set." % vessel.name
-            else:
-                string = "The %s's boarding area is %s(%s))."
-                string = string % (vessel, boarding_area, boarding_area.dbref)
+        if not inherits_from(vessel, "typeclasses.vessel.VesselObject"):
+            alert = "%s is not a VesselObject" % vessel
+            self.caller.msg(alert)
+            return
+        # set a new boarding area
+        new_ba = self.caller.location
+        if not new_ba:
+            return
+        old_ba = vessel.db.boarding_area
+        vessel.db.boarding_area = new_ba
+        if old_ba:
+            string = "%s's boading area changed from %s(%s) to %s(%s)."
+            string = string % (vessel, old_ba, old_ba.dbref, new_ba,
+                               new_ba.dbref)
         else:
-            # set a new boarding area
-            new_ba = self.caller.search(self.rhs, global_search=True)
-            # TODO:  figure out how to limit this to proper ship stations on
-            # the vessel the builder is on/at.
-            # One option might be to use evmenu to provide a list of eligible
-            # stations --- but not for now thanks.
-            if not new_ba:
-                string = "%s does not exist" % self.rhs
-                self.caller.msg(string)
-                return
-            old_ba = vessel.db.boarding_area
-            vessel.db.boarding_area = new_ba
-            if old_ba:
-                string = "%s's boading area changed from %s(%s) to %s(%s)."
-                string = string % (vessel, old_ba, old_ba.dbref, new_ba,
-                                   new_ba.dbref)
-            else:
-                string = "%s's boarding area set to %s(%s)."
-                string = string % (vessel, new_ba, new_ba.dbref)
+            string = "%s's boarding area set to %s(%s)."
+            string = string % (vessel, new_ba, new_ba.dbref)
         self.caller.msg(string)
 
 
