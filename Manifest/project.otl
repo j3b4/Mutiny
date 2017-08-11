@@ -25,15 +25,10 @@ Current Work Order
 			build hull
 				a floating objected typeclass
 				allows 'board' command
-			build a deck
-				an inhabitiable space on boat
-				enter boat => deck
 			Shipstation command
 				create/drop ShipStation object. 
-				: The command to build a shipstation must fail if not inside a
-				: vessel object.
-				: or better creating a shipstation should require explicit
-				: vessel object
+				: How about implement ship building commands as methods in the
+				: vessel typeclass?
 				entrance
 		Skylarking
 			: the art of moving deliberately around from place to place on a

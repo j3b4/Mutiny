@@ -293,6 +293,14 @@ class VesselObject(FloatingObject):
         # interpolate
         # return a boat speed and heading (should be same heading)
 
+    def set_boarding_area(self, station):
+        '''
+        This method designates one of the vessel's stations to be the default
+        arrival location for characters using the "board" command from outside
+        the vessel.
+        '''
+        self.db.boarding_area = station
+
 
 class ShipStation(DefaultObject):
     '''

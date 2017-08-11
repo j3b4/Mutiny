@@ -398,6 +398,8 @@ class CmdBoardingArea(MuxCommand):
             self.caller.msg(string)
             return
         vessel = self.caller.search(self.lhs, global_search=True)
+        # TODO: see if removing global_search will limit this to vessels in the
+        # current room with the builder, or for builders in the room.
         if not vessel:
             return
         if not self.rhs:
@@ -411,16 +413,22 @@ class CmdBoardingArea(MuxCommand):
         else:
             # set a new boarding area
             new_ba = self.caller.search(self.rhs, global_search=True)
+            # TODO:  figure out how to limit this to proper ship stations on
+            # the vessel the builder is on/at.
+            # One option might be to use evmenu to provide a list of eligible
+            # stations --- but not for now thanks.
             if not new_ba:
+                string = "%s does not exist" % self.rhs
+                self.caller.msg(string)
                 return
             old_ba = vessel.db.boarding_area
             vessel.db.boarding_area = new_ba
             if old_ba:
                 string = "%s's boading area changed from %s(%s) to %s(%s)."
                 string = string % (vessel, old_ba, old_ba.dbref, new_ba,
-                                   new_ba.dfref)
+                                   new_ba.dbref)
             else:
-                string = "%s' boarding area set to %s(%s)."
+                string = "%s's boarding area set to %s(%s)."
                 string = string % (vessel, new_ba, new_ba.dbref)
         self.caller.msg(string)
 
