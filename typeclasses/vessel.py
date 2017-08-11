@@ -79,6 +79,8 @@ class FloatingObject(DefaultObject):
             vessel.msg_contents("%s already exists." % room)
             room = room[0]
             # TODO: fix this^ throw on multimatch rooms there should only
+            # TODO: don't bother if we are already at the room ie. we're not
+            # moving, holding position. 
             # ever be one room per coordinates
             # unless it is dry land
             if inherits_from(room, "typeclasses.rooms.DryLandRoom"):
@@ -234,6 +236,11 @@ class VesselObject(FloatingObject):
         if not self.db.adrift:
             self.cast_off()
 
+    def hold(self):  # stop rowing (or other power)
+        ''' stop rowing '''
+        self.db.power = 0
+        self.db.underway = False
+
     def make_way(self):  # over ride the floating objects make_way
         '''
         move in response to impelling forces:
@@ -268,6 +275,8 @@ class VesselObject(FloatingObject):
             print "course: %s" % str(course)
         position = move_vector(self.db.position, course)
         self.arrive_at(position)
+        # TODO: decide when to quiet this down so that it isn't so noisy when
+        # staying still.
 
     def sail(self, wind, heading):
         # TODO: seriously consider moving this to a sailing module.

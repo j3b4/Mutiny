@@ -459,7 +459,7 @@ class CmdHeaveTo(Command):
         vessel = self.obj.location.location
         vessel.msg_contents("You call HOLD! to stop the rowing.")
         vessel.get_underway(0)
-        # vessel.heave_to()
+        vessel.hold()
 
 
 class CmdWeighAnchor(Command):
