@@ -344,12 +344,6 @@ class OnDeck(ShipStation):
         ''' add '''
         self.cmdset.add_default(CmdSetOnDeck)
 
-    def at_object_receive(self, moved_obj, source_location):
-        if moved_obj.is_typeclass("characters.Character"):
-            # only pc or npcs can have these commands
-            moved_obj.cmdset.add(CmdSetOnDeck, permanent=True)
-            print "Adding OnOndeck commands to %s" % moved_obj
-
     def at_object_leave(self, moved_obj, target_location):
         moved_obj.cmdset.delete(CmdSetOnDeck)
         print "Deleting OnDeckcommands from %s" % moved_obj
