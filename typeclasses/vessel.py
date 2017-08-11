@@ -343,11 +343,4 @@ class OnDeck(ShipStation):
     def at_object_creation(self):
         ''' add '''
         self.cmdset.add_default(CmdSetOnDeck)
-
-    def at_object_leave(self, moved_obj, target_location):
-        moved_obj.cmdset.delete(CmdSetOnDeck)
-        print "Deleting OnDeckcommands from %s" % moved_obj
-        moved_obj.cmdset.delete(CmdSetConn)
-        print "Deleting Conning commands from %s" % moved_obj
-
 # last line

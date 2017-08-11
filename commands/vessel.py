@@ -175,7 +175,7 @@ class CmdNorth(Command):
     def func(self):
         # get the direction
         captain = self.caller
-        vessel = self.caller.location
+        vessel = self.caller.location.location
         key = self.key
         vector = self.vector
 
@@ -386,7 +386,7 @@ class CmdTravel(Command):
             caller.msg(self.usage)
             return
         self.heading, self.distance = self.args.split()
-        vessel = caller.location
+        vessel = caller.location.location
         report = caller.msg
         heading = int(self.heading)
         print heading
@@ -432,7 +432,7 @@ class CmdGetUnderway(Command):
     usage = "row <speed>"
 
     def func(self):
-        vessel = self.obj.location
+        vessel = self.obj.location.location
         heading = vessel.db.heading
         if self.args:
             speed = int(self.args)
@@ -456,9 +456,10 @@ class CmdHeaveTo(Command):
     usage = "hold"
 
     def func(self):
-        vessel = self.obj.location
+        vessel = self.obj.location.location
         vessel.msg_contents("You call HOLD! to stop the rowing.")
-        vessel.heave_to()
+        vessel.get_underway(0)
+        # vessel.heave_to()
 
 
 class CmdWeighAnchor(Command):
@@ -472,7 +473,7 @@ class CmdWeighAnchor(Command):
     usage = "weigh anchor"
 
     def func(self):
-        vessel = self.obj.location
+        vessel = self.obj.location.location
         vessel.msg_contents("You weigh anchor, and are now adrift")
         vessel.cast_off()
 
@@ -488,7 +489,7 @@ class CmdAnchor(Command):
     usage = "anchor"
 
     def func(self):
-        vessel = self.obj.location
+        vessel = self.obj.location.location
         vessel.msg_contents("You heave anchor")
         vessel.anchor()
 
@@ -519,7 +520,7 @@ class CmdSteerTo(Command):
     def func(self):
         "set the heading attribute"
         helm = self.obj
-        vessel = self.obj.location
+        vessel = self.obj.location.location  # command is used at a location
         if self.heading:
             vessel.steer_to(self.heading)
             string = "%s steers the %s to %s!" % (helm, vessel, self.heading)
@@ -545,7 +546,7 @@ class CmdSails(Command):
     usage = "Usage: sails <up/down>"
 
     def func(self):
-        vessel = self.obj.location
+        vessel = self.obj.location.location
         order = self.args.strip()
         canvas = vessel.db.sails
         if not order:
